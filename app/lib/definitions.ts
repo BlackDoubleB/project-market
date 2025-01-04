@@ -18,7 +18,7 @@ export type User = {
     product_id: string;
     amount: number;
     date: string;
-    status: 'card' | 'cash';
+    method: 'card' | 'cash';
   };
   
   export type Revenue = {
@@ -48,7 +48,7 @@ export type User = {
     image_url: string;
     date: string;
     amount: number;
-    status: 'card' | 'cash';
+    method: 'card' | 'cash';
   };
   
   export type ProductsTableType = {
@@ -80,5 +80,5 @@ export type User = {
     id: string;
     product_id: string;
     amount: number;
-    status: 'card' | 'cash';
+    method: 'card' | 'cash';
   };

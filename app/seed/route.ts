@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
-import { db } from '@vercel/postgres';
+import { db } from "@vercel/postgres";
+
 import { sales, products, revenue, users } from '../lib/placeholder-data';
 
 const client = await db.connect();
+
 
 async function seedUsers() {
   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
@@ -36,7 +38,7 @@ async function seedSales() {
   await client.sql`
     CREATE TABLE IF NOT EXISTS sales (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      products_id UUID NOT NULL,
+      product_id UUID NOT NULL,
       category_id UUID NOT NULL,
       amount INT NOT NULL,
       method VARCHAR(255) NOT NULL,
@@ -46,9 +48,9 @@ async function seedSales() {
 
   const insertedSales = await Promise.all(
     sales.map(
-      (sales) => client.sql`
+      (sale) => client.sql`
         INSERT INTO sales (product_id, category_id, amount, method, date)
-        VALUES (${sales.product_id},${sales.category_id}, ${sales.amount}, ${sales.method}, ${sales.date})
+        VALUES (${sale.product_id},${sale.category_id}, ${sale.amount}, ${sale.method}, ${sale.date})
         ON CONFLICT (id) DO NOTHING;
       `,
     ),
@@ -70,9 +72,9 @@ async function seedProducts() {
 
   const insertedProducts = await Promise.all(
     products.map(
-      (products) => client.sql`
+      (product) => client.sql`
         INSERT INTO products (id, name, image_url)
-        VALUES (${products.id}, ${products.name}, ${products.image_url})
+        VALUES (${product.id}, ${product.name}, ${product.image_url})
         ON CONFLICT (id) DO NOTHING;
       `,
     ),
@@ -103,10 +105,10 @@ async function seedRevenue() {
 }
 
 export async function GET() {
-  return Response.json({
-    message:
-      'Uncomment this file and remove this line. You can delete this file when you are finished.',
-  });
+  // return Response.json({
+  //   message:
+  //     'Uncomment this file and remove this line. You can delete this file when you are finished.',
+  // });
   try {
     await client.sql`BEGIN`;
     await seedUsers();

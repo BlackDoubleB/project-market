@@ -25,81 +25,46 @@ const products = [
         image_url: '/products/RelojCurrenKrec57180303AzulHombre.png'
     },
     {
-        id: '13D07535-C59E-4157-A011-J8H6EF8E0CBE',
+        id: '76d65c26-f784-44a2-ac19-586678f7c2f2',
         name: 'Auriculares Bluetooth QCY H3 ANC 70Hrs con cancelacion de ruido Blanco',
         image_url: '/products/AuricularesBluetoothQCYH3ANC70HrsconcancelacionderuidoBlanco.png'
     },
     {
-        id: '76d65c26-f784-44a2-ac19-586678f7c2f2',
+        id: 'CC27C14A-0ACF-4F4A-A6C9-D45682C144B9',
         name: 'Libro de Hechizos Harry Potter',
         image_url: '/products/LibrodeHechizosHarryPotter.png'
     },
     {
-        id: 'CC27C14A-0ACF-4F4A-A6C9-D45682C144B9',
+        id: '13D07535-C59E-4157-A011-F8D2EF4E0CBB',
         name: 'Sofa 2 Cuerpos Moscu Hys',
         image_url: '/products/Sofa2CuerposMoscuHys.png'
-    },
-    {
-        id: '13D07535-C59E-4157-A011-F8D2EF4E0CBB',
-        name: 'Tocobo Cootton Barra Solar SPF 50 -Tocobo 19 Gramos',
-        image_url: '/products/TocoboCoottonBarraSolarSPF50-Tocobo19Gramos.png'
-    },
-    {
-        id: '13D07535-C59E-4157-A011-G8E3EF5E0CBA',
-        name: 'Set De Maletin De Jueguete Disney Helados Frozen',
-        image_url: '/products/SetDeMaletinDeJuegueteDisneyHeladosFrozen.png'
-    },
-    {
-        id: '13D07535-C59E-4157-A011-H8F4EF6E0CBC',
-        name: 'Zapatillas Nike Hombre WAFFLE TRAINER 2 SE DM0180-100',
-        image_url: '/products/ZapatillasNikeHombreWAFFLETRAINER2SEDM0180-100.png'
-    },
-    {
-        id: '13D07535-C59E-4157-A011-I8G5EF7E0CBD',
-        name: 'Arroz Arabe Bandeja 500g',
-        image_url: '/products/ArrozArabeBandeja500g.png'
     }
 ];
 
-const categories = [{
-    id: '1',
+const categories = [
+{
+    id: 'b995425f-cebb-4f68-b505-08d2168e7e72',
     name: 'Shoes',
 },
 {
-    id: '2',
+    id: '3533c876-4494-444d-b3cd-ac91e723e89d',
     name: 'Clothes',
 },
 {
-    id: '3',
+    id: '59475b1d-35bd-4369-8cde-5419e4e8edf9',
     name: 'Accessories',
 },
 {
-    id: '4',
+    id: 'f0638f0e-6196-468c-b957-2e9f4332c2e0',
     name: 'Electronics',
 },
 {
-    id: '5',
+    id: '340ad912-456d-41a3-9fc7-6475662b468a',
     name: 'Books',
 },
 {
-    id: '6',
+    id: 'f145a9f4-65d8-4061-a513-d3bab3727d54',
     name: 'Home',
-},
-{
-    id: '7',
-    name: 'Beauty',
-},
-{
-    id: '8',
-    name: 'Toys',
-},
-{
-    id: '9',
-    name: 'Sports',
-},
-{
-    id: '10',
-    name: 'Food',
 }
 ];
 const sales = [
@@ -118,7 +83,7 @@ const sales = [
         date: '2022-11-14',
     },
     {
-        product_id: products[4].id,
+        product_id: products[2].id,
         category_id: categories[2].id,
         amount: 3040,
         method: 'cash',
@@ -127,7 +92,7 @@ const sales = [
     {
         product_id: products[3].id,
         category_id: categories[3].id,
-        amount: 44800,
+        amount: 4480,
         method: 'cash',
         date: '2023-09-10',
     },
@@ -144,34 +109,6 @@ const sales = [
         amount: 54246,
         method: 'card',
         date: '2023-07-16',
-    },
-    {
-        product_id: products[6].id,
-        category_id: categories[6].id,
-        amount: 666,
-        method: 'card',
-        date: '2023-06-27',
-    },
-    {
-        product_id: products[7].id,
-        category_id: categories[7].id,
-        amount: 32545,
-        method: 'cash',
-        date: '2023-06-09',
-    },
-    {
-        product_id: products[8].id,
-        category_id: categories[8].id,
-        amount: 1250,
-        method: 'cash',
-        date: '2023-06-17',
-    },
-    {
-        product_id: products[9].id,
-        category_id: categories[9].id,
-        amount: 8546,
-        method: 'cash',
-        date: '2023-06-07',
     }
 ];
 

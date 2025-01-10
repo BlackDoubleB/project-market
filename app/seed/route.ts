@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { db } from "@vercel/postgres";
 
-import { sales, products, revenue, users } from '../lib/placeholder-data';
+import { sales, products, revenue, users, categories } from '../lib/placeholder-data';
 
 const client = await db.connect();
 
@@ -83,6 +83,28 @@ async function seedProducts() {
   return insertedProducts;
 }
 
+async function seedCategories(){
+  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+  await client.sql`
+  CREATE TABLE IF NOT EXISTS categories(
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+  );
+  `;
+
+  const insertedCategories = await Promise.all(
+    categories.map(
+      (category) => client.sql`
+      INSERT INTO categories (id, name)
+      VALUES (${category.id}, ${category.name})
+      ON CONFLICT (id) DO NOTHING
+      `
+    )
+  );
+  return insertedCategories
+}
+
 async function seedRevenue() {
   await client.sql`
     CREATE TABLE IF NOT EXISTS revenue (
@@ -113,6 +135,7 @@ export async function GET() {
     await client.sql`BEGIN`;
     await seedUsers();
     await seedProducts();
+    await seedCategories();
     await seedSales();
     await seedRevenue();
     await client.sql`COMMIT`;
@@ -121,5 +144,8 @@ export async function GET() {
   } catch (error) {
     await client.sql`ROLLBACK`;
     return Response.json({ error }, { status: 500 });
+  } finally {
+    client.release(); // Libera la conexión al pool
   }
 }
+// la función debe llamarse GET si quieres que se ejecute cuando el cliente haga una solicitud HTTP GET.

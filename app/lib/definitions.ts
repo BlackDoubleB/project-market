@@ -9,13 +9,13 @@ export type User = {
   export type Product = {
     id: string;
     name: string;
-    email: string;
     image_url: string;
   };
   
   export type Sale = {
     id: string;
     product_id: string;
+    category_id:string;
     amount: number;
     date: string;
     method: 'card' | 'cash';
@@ -27,12 +27,10 @@ export type User = {
   };
   
 
-
   export type LatestSale = {
     id: string;
     name: string;
     image_url: string;
-    email: string;
     amount: string;
   };
   
@@ -44,7 +42,6 @@ export type User = {
     id: string;
     product_id: string;
     name: string;
-    email: string;
     image_url: string;
     date: string;
     amount: number;
@@ -54,7 +51,6 @@ export type User = {
   export type ProductsTableType = {
     id: string;
     name: string;
-    email: string;
     image_url: string;
     total_sales: number;
     total_card: number;
@@ -64,7 +60,6 @@ export type User = {
   export type FormattedProductsTable = {
     id: string;
     name: string;
-    email: string;
     image_url: string;
     total_sales: number;
     total_card: string;

@@ -8,8 +8,13 @@ export type User = {
   
   export type Product = {
     id: string;
-    name: string;
+    name_product: string;
     image_url: string;
+  };
+
+  export type Category = {
+    id: string;
+    name_category: string;
   };
   
   export type Sale = {
@@ -29,7 +34,8 @@ export type User = {
 
   export type LatestSale = {
     id: string;
-    name: string;
+    name_product: string;
+    name_category: string;
     image_url: string;
     amount: string;
   };
@@ -57,7 +63,7 @@ export type User = {
     total_cash: number;
   };
   
-  export type FormattedProductsTable = {
+  export type FormatedProductsTable = {
     id: string;
     name: string;
     image_url: string;
@@ -67,6 +73,11 @@ export type User = {
   };
   
   export type ProductField = {
+    id: string;
+    name: string;
+  };
+
+  export type CategoryField = {
     id: string;
     name: string;
   };

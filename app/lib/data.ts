@@ -31,8 +31,8 @@ export async function fetchLatestSales() {
     const data = await sql<LatestSaleRaw>`
       SELECT 
       sales.amount, 
-      products.id, products.name, products.image_url, 
-      categories.id, categories.name
+      products.id, products.name AS name_product, products.image_url, 
+      categories.id, categories.name AS name_category
       FROM sales
       JOIN products ON sales.product_id = products.id
       JOIN categories ON sales.category_id = categories.id
@@ -41,6 +41,7 @@ export async function fetchLatestSales() {
 
     const latestSales = data.rows.map((sale) => ({
       ...sale,
+      //El sale automaticamente al devolver un objeto por cada iteracion, lo guarda en un array y el return latestSales devolvera eso cuando lo invoquemos
       amount: formatCurrency(sale.amount),
     }));
     return latestSales;
@@ -54,7 +55,7 @@ export async function fetchCardData() {
   try {
     const saleCountPromise = sql`SELECT COUNT(*) FROM sales`;
     const productCountPromise = sql`SELECT COUNT(*) FROM products`;
-    const saleStatusPromise = sql`SELECT
+    const saleMethodPromise = sql`SELECT
          SUM(CASE WHEN method = 'cash' THEN amount ELSE 0 END) AS "cash",
          SUM(CASE WHEN method = 'card' THEN amount ELSE 0 END) AS "card"
          FROM sales`;
@@ -62,7 +63,7 @@ export async function fetchCardData() {
     const data = await Promise.all([
         saleCountPromise,
         productCountPromise,
-        saleStatusPromise,
+        saleMethodPromise,
     ]);
 
     const numberOfSales = Number(data[0].rows[0].count ?? '0');
@@ -96,19 +97,19 @@ export async function fetchFilteredSales(
         sales.id,
         sales.amount,
         sales.date,
-        sales.status,
+        sales.method,
         products.name,
         products.image_url
         categories.name
       FROM sales
-      JOIN products ON sales.customer_id = products.id
+      JOIN products ON sales.product_id_id = products.id
       JOIN categories ON sales.category_id = categories.id
       WHERE
         products.name ILIKE ${`%${query}%`} OR
         categories.name ILIKE ${`%${query}%`} OR
         sales.amount::text ILIKE ${`%${query}%`} OR
         sales.date::text ILIKE ${`%${query}%`} OR
-        sales.status ILIKE ${`%${query}%`}
+        sales.method ILIKE ${`%${query}%`}
       ORDER BY sales.date DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
@@ -131,7 +132,7 @@ export async function fetchSalesPages(query: string) {
       categories.name ILIKE ${`%${query}%`} OR
       sales.amount::text ILIKE ${`%${query}%`} OR
       sales.date::text ILIKE ${`%${query}%`} OR
-      sales.status ILIKE ${`%${query}%`}
+      sales.method ILIKE ${`%${query}%`}
   `;
 
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
@@ -150,7 +151,7 @@ export async function fetchSaleById(id: string) {
         sales.product_id,
         sales.category_id
         sales.amount,
-        sales.status
+        sales.method
       FROM sales
       WHERE sales.id = ${id};
     `;
@@ -215,5 +216,23 @@ export async function fetchFilteredProducts(query: string) {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch product table.');
+  }
+}
+
+export async function fetchCategories() {
+  try {
+    const data = await sql<ProductField>`
+      SELECT
+        id,
+        name
+      FROM categories
+      ORDER BY name ASC
+    `;
+
+    const categories = data.rows;
+    return categories;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all categories.');
   }
 }

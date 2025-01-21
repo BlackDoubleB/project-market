@@ -1,46 +1,34 @@
-import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import PaymentsIcon from '@mui/icons-material/Payments';
+import { Icon } from '@iconify/react';
 import { lusitana } from '@/app/ui/fonts';
+import { fetchCardData } from '@/app/lib/data';
+import { ReactNode } from 'react';
 
-
-const iconMap = {
-  sales: PointOfSaleIcon,
-  products: InventoryIcon,
-  card: CreditCardIcon,
-  cash: PaymentsIcon,
+const { numberOfSales, numberOfProducts, totalCardSales, totalCashSales } = await fetchCardData();
+const iconMap: Record<string, ReactNode> ={
+  sales: <Icon icon="mdi:sale" />,
+  products: <Icon icon="lsicon:goods-outline" />,
+  card: <Icon icon="ion:card" />,
+  cash: <Icon icon="tabler:cash" />,
 };
 
-// export default async function CardWrapper() {
-//   return (
-//     <>  
-//       <Card title="Cash" value={totalCashSales} type="cash" />
-//       <Card title="Card" value={totalCardSales} type="card" />
-//       <Card title="Total Sales" value={numberOfSales} type="sales" />
-//       <Card
-//         title="Total Products"
-//         value={numberOfProducts}
-//         type="products"
-//       />
-//     </>
-//   );
-// }
+export default async function CardWrapper() {
+  return (
+    <>  
+      <Card title="Cash" value={totalCashSales} type="cash" />
+      <Card title="Card" value={totalCardSales} type="card" />
+      <Card title="Total Sales" value={numberOfSales} type="sales" />
+      <Card title="Total Products" value={numberOfProducts} type="products"/>
+    </>
+  );
+}
 
-export function Card({
-  title,
-  value,
-  type,
-}: {
-  title: string;
-  value: number | string;
-  type: 'sales' | 'products' | 'card' | 'cash';
+export function Card({title,value,type,}: {title: string; value: number | string; type: keyof typeof iconMap;
 }) {
-  const Icon = iconMap[type];
+  const Icon: ReactNode= iconMap[type];
   return (
     <div className="rounded-xl bg-gray-50 p-2 shadow-sm">
       <div className="flex p-4">
-        {Icon ? <Icon className="h-5 w-5 text-gray-700" /> : null}
+        {Icon}
         <h3 className="ml-2 text-sm font-medium">{title}</h3>
       </div>
       <p

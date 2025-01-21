@@ -1,10 +1,10 @@
 import { generateYAxis } from '@/app/lib/utils';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';import { lusitana } from '@/app/ui/fonts';
-import { Revenue } from '@/app/lib/definitions';
+import { Icon } from '@iconify/react';
+import { lusitana } from '@/app/ui/fonts';
+import { fetchRevenue } from '@/app/lib/data';
 
-
-export default async function RevenueChart({revenue,}: {revenue: Revenue[];
-}) {
+export default async function RevenueChart() {
+  const revenue = await fetchRevenue(); 
   const chartHeight = 350;
 
   const { yAxisLabels, topLabel } = generateYAxis(revenue);
@@ -45,7 +45,7 @@ export default async function RevenueChart({revenue,}: {revenue: Revenue[];
           ))}
         </div>
         <div className="flex items-center pb-2 pt-6">
-          <CalendarMonthIcon className="h-5 w-5 text-gray-500" />
+          <Icon icon="iwwa:month" className="h-5 w-5 text-gray-500" />
           <h3 className="ml-2 text-sm text-gray-500 ">Last 12 months</h3>
         </div>
       </div> 

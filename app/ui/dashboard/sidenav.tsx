@@ -1,7 +1,6 @@
 import NavLinks from '@/app/ui/dashboard/nav-links';
-
-import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
-// import { signOut } from '@/auth';
+import { Icon } from '@iconify/react';
+import { signOut } from '@/auth';
 
 export default function SideNav() {
   return (
@@ -10,13 +9,13 @@ export default function SideNav() {
         <NavLinks />
         <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
         <form
-        //   action={async () => {
-        //     'use server';
-        //     await signOut();
-        //   }}
+          action={async () => {
+            'use server';
+            await signOut();
+          }}
         >
           <button className="flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
-            <PowerSettingsNewIcon className="w-6" />
+          <Icon icon="uil:setting" className="w-6" />
             <div className="hidden md:block">Sign Out</div>
           </button>
         </form>

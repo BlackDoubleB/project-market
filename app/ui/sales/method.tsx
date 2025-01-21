@@ -1,5 +1,4 @@
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import PaymentsIcon from '@mui/icons-material/Payments';
+import { Icon } from '@iconify/react';
 import clsx from 'clsx';
 
 export default function SaleMethod({ method }: { method: string }) {
@@ -15,15 +14,15 @@ export default function SaleMethod({ method }: { method: string }) {
     >
       {method === 'card' ? (
         <>
-          Pending
-          <CreditCardIcon className="ml-1 w-4 text-gray-500" />
+          Card
+          <Icon icon="zmdi:card" className="ml-1 w-4 text-gray-500" />
         </>
       ) : null}
       
       {method === 'cash' ? (
         <>
-          Paid
-          <PaymentsIcon className="ml-1 w-4 text-white" />
+          cash
+          <Icon icon="mdi:cash" className="ml-1 w-4 text-white"/>
         </>
       ) : null}
     </span>

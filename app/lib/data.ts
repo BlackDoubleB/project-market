@@ -15,10 +15,7 @@ export async function fetchRevenue() {
   try {
     console.log('Fetching revenue data...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const data = await sql<Revenue>`SELECT * FROM revenue`;
-    console.log('Data fetch completed after 3 seconds.');
-
     return data.rows;
   } catch (error) {
     console.error('Database Error:', error);
@@ -99,10 +96,10 @@ export async function fetchFilteredSales(
         sales.date,
         sales.method,
         products.name,
-        products.image_url
+        products.image_url,
         categories.name
       FROM sales
-      JOIN products ON sales.product_id_id = products.id
+      JOIN products ON sales.product_id = products.id
       JOIN categories ON sales.category_id = categories.id
       WHERE
         products.name ILIKE ${`%${query}%`} OR
@@ -149,7 +146,7 @@ export async function fetchSaleById(id: string) {
       SELECT
         sales.id,
         sales.product_id,
-        sales.category_id
+        sales.category_id,
         sales.amount,
         sales.method
       FROM sales

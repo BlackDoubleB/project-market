@@ -1,9 +1,7 @@
 import Image from "next/image";
 import { lusitana } from "@/app/ui/fonts";
-import FacebookIcon from '@mui/icons-material/Facebook';
-import XIcon from '@mui/icons-material/X';
-import InstagramIcon from '@mui/icons-material/Instagram';
 import Link from "next/link";
+import { Icon } from '@iconify/react';
 export default function Home() {
   return (
     <div className={`bg-black text-cyan-50 grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 ${lusitana.className}`}>
@@ -43,10 +41,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <InstagramIcon
-            width={16}
-            height={16}
-          />
+          <Icon icon="mdi:instagram" />
         </Link>
         <Link
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
@@ -54,12 +49,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <XIcon
-            fontSize="small"
-            width={16}
-            height={16}
-          />
-          
+          <Icon icon="iconoir:x" />
         </Link>
         <Link
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
@@ -67,11 +57,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <FacebookIcon
-          fontSize="medium"
-            width={16}
-            height={16}
-          />
+          <Icon icon="mdi:facebook" />
         </Link>
       </footer>
     </div>

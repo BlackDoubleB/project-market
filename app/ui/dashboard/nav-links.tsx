@@ -1,21 +1,17 @@
 "use client"
+import { Icon } from '@iconify/react';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import Link from 'next/link';
 
-
-import PersonIcon from '@mui/icons-material/Person';
-import HomeIcon from '@mui/icons-material/Home';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-
 const links = [
-  { name: 'Home', href: '/dashboard', icon: HomeIcon },
+  { name: 'Home', href: '/dashboard', icon: <Icon icon="material-symbols:home" />   },
   {
     name: 'Sales',
     href: '/dashboard/sales',
-    icon: ContentCopyIcon,
+    icon: <Icon icon="mdi:sale" />,
   },
-  { name: 'Products', href: '/dashboard/products', icon: PersonIcon },
+  { name: 'Products', href: '/dashboard/products', icon: <Icon icon="material-symbols:person" /> },
 ];
 
 export default function NavLinks() {
@@ -23,7 +19,6 @@ export default function NavLinks() {
   return (
     <>
       {links.map((link) => {
-        const LinkIcon = link.icon;
         return (
           <Link
             key={link.name}
@@ -35,7 +30,7 @@ export default function NavLinks() {
               },
             )}
           >
-            <LinkIcon className="w-6" />
+            {link.icon}
             <p className="hidden md:block">{link.name}</p>
           </Link>
         );

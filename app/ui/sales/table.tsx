@@ -10,39 +10,52 @@ export default async function InvoicesTable({
   query: string;
   currentPage: number;
 }) {
-  
+
   const sales = await fetchFilteredSales(query, currentPage);
 
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+
+          {/* Primer sub div */}
           <div className="md:hidden">
             {sales?.map((sale) => (
               <div
                 key={sale.id}
-                className="mb-2 w-full rounded-md bg-white p-4"
+                className="mb-2 rounded-md bg-white p-4"
               >
-                <div className="flex items-center justify-between border-b pb-4">
-                  <div>
+
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p>{sale.category_name}</p>
+                  <div className='flex '>
                     <div className="mb-2 flex items-center">
                       <Image
                         src={sale.image_url}
-                        className="mr-2 rounded-full"
-                        width={28}
-                        height={28}
-                        alt={`${sale.name}'s profile picture`}
+                        className="mr-2 rounded-full min-w-8"
+                        width={30}
+                        height={30}
+                        alt={`${sale.product_name}'s profile picture`}
                       />
-                      <p>{sale.name}</p>
+                    </div>
+                    <div className='w-24 xxs:w-48 xs:w-80'>
+                      <p className='truncate' >{sale.product_name}</p>
                     </div>
                   </div>
-                  <SaleMethod method={sale.method} />
                 </div>
+
+
+
+
                 <div className="flex w-full items-center justify-between pt-4">
                   <div>
-                    <p className="text-xl font-medium">
-                      {formatCurrency(sale.amount)}
-                    </p>
+                    
+                      <p className="text-xl font-medium">
+                        {formatCurrency(sale.amount)}
+                      </p>
+                      <SaleMethod method={sale.method} />
+               
+
                     <p>{formatDateToLocal(sale.date)}</p>
                   </div>
                   <div className="flex justify-end gap-2">
@@ -53,14 +66,19 @@ export default async function InvoicesTable({
               </div>
             ))}
           </div>
+          {/* Fin primer sub div */}
+
+          {/* Inicio Table*/}
           <table className="hidden min-w-full text-gray-900 md:table">
+
+            {/* Inicio Thead*/}
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Customer
+                  Product
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Email
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Category
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   Amount
@@ -69,13 +87,16 @@ export default async function InvoicesTable({
                   Date
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Status
+                  Method
                 </th>
                 <th scope="col" className="relative py-3 pl-6 pr-3">
                   <span className="sr-only">Edit</span>
                 </th>
               </tr>
             </thead>
+            {/* Fin Thead*/}
+
+            {/* Inicio Tbody*/}
             <tbody className="bg-white">
               {sales?.map((sale) => (
                 <tr
@@ -89,12 +110,14 @@ export default async function InvoicesTable({
                         className="rounded-full"
                         width={28}
                         height={28}
-                        alt={`${sale.name}'s profile picture`}
+                        alt={`${sale.product_name}'s profile picture`}
                       />
-                      <p>{sale.name}</p>
+                      <p>{sale.product_name}</p>
                     </div>
                   </td>
-                 
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {sale.category_name}
+                  </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {formatCurrency(sale.amount)}
                   </td>
@@ -113,7 +136,10 @@ export default async function InvoicesTable({
                 </tr>
               ))}
             </tbody>
+            {/* Fin Tbody*/}
+
           </table>
+          {/* Fin Table*/}
         </div>
       </div>
     </div>

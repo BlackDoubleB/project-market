@@ -8,6 +8,10 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        'xxs': '300px',
+        'xs': '400px'
+      },
       gridTemplateColumns: {
         '13': 'repeat(13, minmax(0, 1fr))',
       },
@@ -17,6 +21,5 @@ export default {
       },
     },
   },
-  
   plugins: [],
 } satisfies Config;

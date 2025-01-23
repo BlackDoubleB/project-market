@@ -6,13 +6,21 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Button } from '@/app/ui/button';
 import { categories } from '@/app/lib/placeholder-data';
-
+import clsx from 'clsx';
+import { useState } from 'react';
 
 export default function Form({ products }: { products: ProductField[] }) {
-
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | null>(null);
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(createSale, initialState);
 
+
+  const handlePaymentMethodChange = (method: 'cash' | 'card') => {
+    setPaymentMethod((prevMethod) => prevMethod === method ? null : method);
+  };
+  
+
+  
   return (
     <form action={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
@@ -137,22 +145,30 @@ export default function Form({ products }: { products: ProductField[] }) {
           </legend>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
             <div className="flex gap-4">
+
               <div className="flex items-center">
                 <input
                   id="cash"
                   name="method"
                   type="radio"
-                  value="cash"
+                  value= "cash"
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                  onChange={() => handlePaymentMethodChange('cash')}
+              
+                  checked={paymentMethod === 'cash'}
                 />
                 <label
                   htmlFor="cash"
-                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
+                  className={clsx(
+                    "ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-green-600 hover:text-white",
+                    paymentMethod === 'cash' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600'
+                  )}
                 >
-                    cash
-                    <Icon icon="mdi:clock" className="h-4 w-4" />
+                    Cash
+                    <Icon icon="mdi:cash-multiple" className="h-4 w-4" />
                 </label>
               </div>
+
               <div className="flex items-center">
                 <input
                   id="card"
@@ -160,15 +176,22 @@ export default function Form({ products }: { products: ProductField[] }) {
                   type="radio"
                   value="card"
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                  checked={paymentMethod === 'card'}
+                  onChange={() => handlePaymentMethodChange('card')}
+                 
                 />
                 <label
                   htmlFor="card"
-                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white"
+                  className={clsx(
+                    "ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-green-600 hover:text-white",
+                    paymentMethod === 'card' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600'
+                  )}
                 >
                   Card 
-                  <Icon icon="material-symbols:check" className="h-4 w-4" />
+                  <Icon icon="ion:card" className="h-4 w-4"/>
                 </label>
               </div>
+
             </div>
           </div>
 

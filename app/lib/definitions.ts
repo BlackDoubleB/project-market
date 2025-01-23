@@ -37,17 +37,17 @@ export type User = {
     name_product: string;
     name_category: string;
     image_url: string;
-    amount: string;
+    amount: string | number;
   };
   
-  export type LatestSaleRaw = Omit<LatestSale, 'amount'> & {
+  /* export type LatestSaleRaw = Omit<LatestSale, 'amount'> & {
     amount: number;
-  };
+  }; */
   
   export type SalesTable = {
     id: string;
-    product_id: string;
-    name: string;
+    product_name: string;
+    category_name: string;
     image_url: string;
     date: string;
     amount: number;

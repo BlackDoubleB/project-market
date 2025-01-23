@@ -65,6 +65,7 @@ export async function createSale(prevState: State, formData: FormData) {
       message: `Database Error: Failed to Create Sale.`, error
     };
   }
+  revalidatePath('/dashboard');
   revalidatePath('/dashboard/sales');
   redirect('/dashboard/sales');
 }
@@ -104,7 +105,7 @@ export async function updateSale(
 
    
   }
- 
+  revalidatePath('/dashboard');
   revalidatePath('/dashboard/sales');
   redirect('/dashboard/sales');
 }
@@ -114,11 +115,14 @@ export async function deleteSale(id: string) {
   try {
     await sql`DELETE FROM sales WHERE id = ${id}`;
     revalidatePath('/dashboard/sales');
+    revalidatePath('/dashboard');
     return { message: 'Deleted Sale.' };
   } catch(error) {
       console.error('Error deleting sale:', error);
     return { message: 'Database Error: Failed to Delete Sale.' };
   }
+
+  
 
 }
 

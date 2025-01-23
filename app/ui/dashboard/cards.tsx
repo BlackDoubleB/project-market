@@ -3,7 +3,9 @@ import { lusitana } from '@/app/ui/fonts';
 import { fetchCardData } from '@/app/lib/data';
 import { ReactNode } from 'react';
 
-const { numberOfSales, numberOfProducts, totalCardSales, totalCashSales } = await fetchCardData();
+
+
+
 const iconMap: Record<string, ReactNode> ={
   sales: <Icon icon="mdi:sale" />,
   products: <Icon icon="lsicon:goods-outline" />,
@@ -12,6 +14,7 @@ const iconMap: Record<string, ReactNode> ={
 };
 
 export default async function CardWrapper() {
+  const { numberOfSales, numberOfProducts, totalCardSales, totalCashSales } = await fetchCardData();
   return (
     <>  
       <Card title="Cash" value={totalCashSales} type="cash" />

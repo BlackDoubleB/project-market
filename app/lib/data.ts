@@ -5,8 +5,8 @@ import {
   ProductsTableType,
   SaleForm,
   SalesTable,
-  LatestSaleRaw,
   Revenue,
+  LatestSale,
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -25,7 +25,7 @@ export async function fetchRevenue() {
 
 export async function fetchLatestSales() {
   try {
-    const data = await sql<LatestSaleRaw>`
+    const data = await sql<LatestSale>`
       SELECT 
       sales.amount, 
       products.id, products.name AS name_product, products.image_url, 
@@ -36,12 +36,19 @@ export async function fetchLatestSales() {
       ORDER BY sales.date DESC
       LIMIT 5`;
 
-    const latestSales = data.rows.map((sale) => ({
+    const g: Array<LatestSale> = data.rows.map((sale) => {
+      return {
+        ...sale,
+        amount: formatCurrency(Number(sale.amount)),
+      }
+    });
+
+    /* const latestSales = data.rows.map((sale) => ({
       ...sale,
       //El sale automaticamente al devolver un objeto por cada iteracion, lo guarda en un array y el return latestSales devolvera eso cuando lo invoquemos
       amount: formatCurrency(sale.amount),
-    }));
-    return latestSales;
+    })); */
+    return g;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch the latest sales.');
@@ -95,9 +102,9 @@ export async function fetchFilteredSales(
         sales.amount,
         sales.date,
         sales.method,
-        products.name,
+        products.name as product_name,
         products.image_url,
-        categories.name
+        categories.name as category_name
       FROM sales
       JOIN products ON sales.product_id = products.id
       JOIN categories ON sales.category_id = categories.id

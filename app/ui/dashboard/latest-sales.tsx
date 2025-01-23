@@ -16,14 +16,14 @@ export default async function LatestInvoices() {
           {latestSales.map((sale, i) => {
             return (
               <div
-                key={sale.id}
+                key={i}
                 className={clsx(
-                  'relative truncate bg-red-400 flex flex-row items-center justify-between py-4',
+                  'relative truncate flex flex-row items-center justify-between py-4',
                   {
                     'border-t': i !== 0,
                   },
                 )}>
-                <div className="truncate bg-yellow-100 flex items-center lg:w-[calc(100%-4rem)]">
+                <div className="truncate flex items-center lg:w-[calc(100%-4rem)]">
                   <Image
                     src={sale.image_url}
                     alt={`${sale.name_product}'s profile picture`}
@@ -41,7 +41,7 @@ export default async function LatestInvoices() {
                   </div>
                 </div>
                 <p
-                  className={`${lusitana.className}  text-sm font-medium md:text-base bg-blue-400 absolute right-0`}
+                  className={`${lusitana.className}  text-sm font-medium md:text-base absolute right-0`}
                 >
                   {sale.amount}
                 </p>

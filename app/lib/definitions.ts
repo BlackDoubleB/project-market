@@ -43,7 +43,12 @@ export type User = {
   /* export type LatestSaleRaw = Omit<LatestSale, 'amount'> & {
     amount: number;
   }; */
-  
+  export type ProductsTable = {
+    id: string;
+    name_product: string;
+    image_url: string;
+  };
+
   export type SalesTable = {
     id: string;
     product_name: string;
@@ -85,6 +90,7 @@ export type User = {
   export type SaleForm = {
     id: string;
     product_id: string;
+    category_id: string;
     amount: number;
     method: 'card' | 'cash';
   };

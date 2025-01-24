@@ -1,6 +1,6 @@
 import Form from '@/app/ui/sales/edit-form';
 import Breadcrumbs from '@/app/ui/sales/breadcrumbs';
-import { fetchSaleById, fetchProducts } from '@/app/lib/data';
+import { fetchSaleById, fetchProducts,fetchCategories } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 
  
@@ -8,9 +8,10 @@ export default async function Page(props: { params: Promise<{ id: string }> })
 {
     const params = await props.params;
     const id = params.id;
-    const [sale, products] = await Promise.all([
+    const [sale, products, categories] = await Promise.all([
         fetchSaleById(id),
         fetchProducts(),
+        fetchCategories()
       ]);
       
       if (!sale) {
@@ -29,7 +30,7 @@ export default async function Page(props: { params: Promise<{ id: string }> })
           },
         ]}
       />
-      <Form sale={sale} products={products} />
+      <Form sale={sale} products={products} categories={categories} />
     </main>
   );
 }

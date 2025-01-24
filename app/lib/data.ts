@@ -1,6 +1,7 @@
 
 import { sql } from '@vercel/postgres';
 import {
+  ProductsTable,
   ProductField,
   ProductsTableType,
   SaleForm,
@@ -65,9 +66,9 @@ export async function fetchCardData() {
          FROM sales`;
 
     const data = await Promise.all([
-        saleCountPromise,
-        productCountPromise,
-        saleMethodPromise,
+      saleCountPromise,
+      productCountPromise,
+      saleMethodPromise,
     ]);
 
     const numberOfSales = Number(data[0].rows[0].count ?? '0');
@@ -76,10 +77,10 @@ export async function fetchCardData() {
     const totalCashSales = formatCurrency(data[2].rows[0].cash ?? '0');
 
     return {
-        numberOfSales,
-        numberOfProducts,
-        totalCardSales,
-        totalCashSales,
+      numberOfSales,
+      numberOfProducts,
+      totalCardSales,
+      totalCashSales,
     };
   } catch (error) {
     console.error('Database Error:', error);
@@ -88,6 +89,8 @@ export async function fetchCardData() {
 }
 
 const ITEMS_PER_PAGE = 6;
+
+//Sales
 
 export async function fetchFilteredSales(
   query: string,
@@ -174,6 +177,7 @@ export async function fetchSaleById(id: string) {
   }
 }
 
+//Products
 export async function fetchProducts() {
   try {
     const data = await sql<ProductField>`
@@ -223,6 +227,34 @@ export async function fetchFilteredProducts(query: string) {
   }
 }
 
+export async function fetchFilteredProductsNav(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const products = await sql<ProductsTable>`
+      SELECT
+        products.id,
+        products.name AS name_product,
+        products.image_url
+      FROM products
+      WHERE
+        products.name ILIKE ${`%${query}%`} 
+      ORDER BY products.name DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return products.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch products.');
+  }
+}
+
+
+//Categories
 export async function fetchCategories() {
   try {
     const data = await sql<ProductField>`
@@ -240,3 +272,4 @@ export async function fetchCategories() {
     throw new Error('Failed to fetch all categories.');
   }
 }
+

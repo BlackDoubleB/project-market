@@ -18,13 +18,14 @@ const FormSchema = z.object({
   amount: z.coerce
     .number()
     .gt(0, { message: 'Please enter an amount greater than $0.' }),
-    method: z.enum(['cash', 'card'], {
+  method: z.enum(['cash', 'card'], {
     invalid_type_error: 'Please select an sale method.',
   }),
   date: z.string(),
 });
 
 const CreateSale = FormSchema.omit({ id: true, date: true });
+const CreateProduct = FormSchema.omit({ id: true, date: true, categoryId: true, amount: true, method: true });
 
 export type State = {
   errors?: {
@@ -35,7 +36,7 @@ export type State = {
   };
   message?: string | null;
 };
- 
+
 export async function createSale(prevState: State, formData: FormData) {
   const validatedFields = CreateSale.safeParse({
     productId: formData.get('productId'),
@@ -43,36 +44,63 @@ export async function createSale(prevState: State, formData: FormData) {
     amount: formData.get('amount'),
     method: formData.get('method'),
   });
- 
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Sale.',
     };
   }
- 
+
   const { productId, categoryId, amount, method } = validatedFields.data;
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
- 
+
   try {
     await sql`
       INSERT INTO sales (product_id, category_id, amount, method, date)
       VALUES (${productId},${categoryId}, ${amountInCents}, ${method}, ${date})
     `;
-  } catch(error) {
+  } catch (error) {
     return {
       message: `Database Error: Failed to Create Sale.`, error
     };
   }
-  revalidatePath('/dashboard');
   revalidatePath('/dashboard/sales');
   redirect('/dashboard/sales');
 }
 
+export async function createProduct(prevState: State, formData: FormData) {
+  const validatedFields = CreateProduct.safeParse({
+    productId: formData.get('productId')
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Product.',
+    };
+  }
+
+  const { productId } = validatedFields.data;
+
+  try {
+    await sql`
+      INSERT INTO products (product_id,)
+      VALUES (${productId})
+    `;
+  } catch (error) {
+    return {
+      message: `Database Error: Failed to Create Product.`, error
+    };
+  }
+  revalidatePath('/dashboard/products');
+  redirect('/dashboard/products');
+}
+
 // Use Zod to update the expected types
 const UpdateSale = FormSchema.omit({ id: true, date: true });
- 
+
 export async function updateSale(
   id: string,
   prevState: State,
@@ -80,51 +108,45 @@ export async function updateSale(
 ) {
   const validatedFields = UpdateSale.safeParse({
     productId: formData.get('productId'),
+    categoryId: formData.get('categoryId'),
     amount: formData.get('amount'),
     method: formData.get('method'),
   });
- 
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Update Sale.',
     };
   }
- 
-  const { productId, amount, method } = validatedFields.data;
+
+  const { productId, categoryId, amount, method } = validatedFields.data;
   const amountInCents = amount * 100;
- 
+
   try {
     await sql`
       UPDATE sales
-      SET product_id = ${productId}, amount = ${amountInCents}, method = ${method}
+      SET product_id = ${productId},category_id = ${categoryId}, amount = ${amountInCents}, method = ${method}
       WHERE id = ${id}
     `;
   } catch {
     return { message: 'Database Error: Failed to Update Sale.' };
 
-   
+
   }
-  revalidatePath('/dashboard');
   revalidatePath('/dashboard/sales');
   redirect('/dashboard/sales');
 }
 
 export async function deleteSale(id: string) {
-  // throw new Error('Failed to Delete Sale');
-  try {
-    await sql`DELETE FROM sales WHERE id = ${id}`;
-    revalidatePath('/dashboard/sales');
-    revalidatePath('/dashboard');
-    return { message: 'Deleted Sale.' };
-  } catch(error) {
-      console.error('Error deleting sale:', error);
-    return { message: 'Database Error: Failed to Delete Sale.' };
-  }
-
-  
-
+  await sql`DELETE FROM sales WHERE id = ${id}`;
+  revalidatePath('/dashboard/sales');
 }
+export async function deleteProduct(id: string) {
+  await sql`DELETE FROM products WHERE id = ${id}`;
+  revalidatePath('/dashboard/products');
+}
+
 
 export async function authenticate(
   prevState: string | undefined,

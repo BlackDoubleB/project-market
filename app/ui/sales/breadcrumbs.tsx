@@ -27,6 +27,7 @@ export default function Breadcrumbs({breadcrumbs,}: {breadcrumbs:Breadcrumb[];
             ) : null}
           </li>
         ))}
+        
       </ol>
     </nav>
   );

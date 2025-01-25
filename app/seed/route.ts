@@ -26,6 +26,7 @@ async function seedUsers() {
         VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
         ON CONFLICT (id) DO NOTHING;
       `;
+      
     }),
   );
 

@@ -3,9 +3,9 @@ import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-
 import { signIn } from '@/auth';
 import { AuthError } from "next-auth";
+import bcrypt from 'bcrypt';
 
 const FormSchema = z.object({
   id: z.string(),
@@ -24,6 +24,19 @@ const FormSchema = z.object({
   date: z.string(),
 });
 
+const FormSchemaUser = z.object({
+  // Campos de la tabla 'user'
+  id_role: z.string({
+    invalid_type_error: 'Please select a role.',
+  }),
+  user_name: z.string(),
+  password: z.string(),
+  // Campos de la tabla 'people'
+  people_name: z.string().min(1, 'Name is required'),
+  dni: z.string().min(1, 'DNI is required'),
+  last_name: z.string().min(1, 'Last Name is required'),
+});
+
 const CreateSale = FormSchema.omit({ id: true, date: true });
 const CreateProduct = FormSchema.omit({ id: true, date: true, categoryId: true, amount: true, method: true });
 
@@ -36,6 +49,64 @@ export type State = {
   };
   message?: string | null;
 };
+
+export type StateUser = {
+  errors?: {
+    id_role?: string[];
+    user_name?: string[];
+    password?: string[];
+    people_name?: string[];
+    dni?: string[];
+    last_name?: string[]
+  };
+  message?: string | null;
+};
+
+
+export async function createUser(prevState: StateUser, formData: FormData) {
+  const validatedFields = FormSchemaUser.safeParse({
+    id_role: formData.get('id_role'),
+    user_name: formData.get('user_name'),
+    password: formData.get('password'),
+    people_name: formData.get('people_name'),
+    dni: formData.get('dni'),
+    last_name: formData.get('last_name'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create User.',
+    };
+  }
+
+  const { id_role, user_name, password, people_name, dni, last_name } = validatedFields.data;
+  const date_register = new Date();
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const result = await sql`
+      INSERT INTO people (people_name, dni, last_name, register_date)
+      VALUES (${people_name}, ${dni}, ${last_name}, ${date_register.toISOString()})
+      RETURNING id
+    `;
+
+    const id_people_generated = result.rows[0].id;
+
+    await sql`
+      INSERT INTO users (id_role, id_people, user_name, password)
+      VALUES (${id_role}, ${id_people_generated}, ${user_name}, ${hashedPassword})
+    `;
+
+    revalidatePath('/login/create');
+    redirect('/login');
+  } catch (error) {
+    return {
+      message: `Database Error: Failed to Create User.`, error
+    };
+  }
+}
+  
 
 export async function createSale(prevState: State, formData: FormData) {
   const validatedFields = CreateSale.safeParse({

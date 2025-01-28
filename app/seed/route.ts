@@ -36,7 +36,7 @@ async function seedPeople() {
     CREATE TABLE IF NOT EXISTS people (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       dni CHAR(8) NOT NULL,
-      name VARCHAR(255) NOT NULL,
+      people_name VARCHAR(255) NOT NULL,
       lastname VARCHAR(255) NOT NULL,
       date_register TIMESTAMP  NOT NULL)
   `;
@@ -44,8 +44,8 @@ async function seedPeople() {
   const insertedPeople = await Promise.all(
     people.map(async (person) => {
       return client.sql`
-        INSERT INTO people (id, dni, name, lastname,date_register)
-        VALUES (${person.id}, ${person.dni}, ${person.name},${person.lastname},${person.date_register.toISOString()})
+        INSERT INTO people (id, dni, people_name, lastname,date_register)
+        VALUES (${person.id}, ${person.dni}, ${person.people_name},${person.lastname},${person.date_register.toISOString()})
         ON CONFLICT (id) DO NOTHING;
       `;
 

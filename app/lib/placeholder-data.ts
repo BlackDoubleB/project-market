@@ -126,7 +126,7 @@ const people = [
     {
         id: uuidv4(),
         dni: 77149964,
-        name: "blanca",
+        people_name: "blanca",
         lastname: 'blacido aparicio',
         date_register: date
     }

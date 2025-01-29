@@ -9,8 +9,7 @@ export type people = {
   id: string,
   dni: string,
   name: string,
-  lastname: string,
-  date_register: string
+  lastname: string
 }
 
 export type User = {
@@ -19,7 +18,7 @@ export type User = {
   id_people: string,
   user_name: string,
   password: string,
-  date_login: string
+  date_register: string
 };
 
 export type Category = {
@@ -121,6 +120,6 @@ export type SaleForm = {
 
 //ACTUALIZACION
 export type RolesField = {
-  id: string;
-  name: string;
+  role_id: string;
+  role_name: string;
 };

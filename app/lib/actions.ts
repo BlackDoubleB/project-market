@@ -25,16 +25,17 @@ const FormSchema = z.object({
 });
 
 const FormSchemaUser = z.object({
-  // Campos de la tabla 'user'
-  id_role: z.string({
+  // Campos de la tabla 'role'
+  role_id: z.string({
     invalid_type_error: 'Please select a role.',
   }),
-  user_name: z.string(),
-  password: z.string(),
+  //campos de la tabla user
+  user_name: z.string().min(1, 'Username is required'),
+  password: z.string().min(1, 'Password is required'),
   // Campos de la tabla 'people'
-  people_name: z.string().min(1, 'Name is required'),
+  person_name: z.string().min(1, 'Name is required'),
   dni: z.string().min(1, 'DNI is required'),
-  last_name: z.string().min(1, 'Last Name is required'),
+  lastname: z.string().min(1, 'Last Name is required'),
 });
 
 const CreateSale = FormSchema.omit({ id: true, date: true });
@@ -52,12 +53,12 @@ export type State = {
 
 export type StateUser = {
   errors?: {
-    id_role?: string[];
+    role_id?:string[];
+    person_name?: string[];
+    dni?: string[];
+    lastname?: string[]
     user_name?: string[];
     password?: string[];
-    people_name?: string[];
-    dni?: string[];
-    last_name?: string[]
   };
   message?: string | null;
 };
@@ -65,12 +66,12 @@ export type StateUser = {
 
 export async function createUser(prevState: StateUser, formData: FormData) {
   const validatedFields = FormSchemaUser.safeParse({
-    id_role: formData.get('id_role'),
-    user_name: formData.get('user_name'),
-    password: formData.get('password'),
-    people_name: formData.get('people_name'),
+    role_id: formData.get('role_id'),
+    person_name: formData.get('person_name'),
     dni: formData.get('dni'),
-    last_name: formData.get('last_name'),
+    lastname: formData.get('lastname'),
+    user_name: formData.get('user_name'),
+    password: formData.get('password')
   });
 
   if (!validatedFields.success) {
@@ -80,33 +81,35 @@ export async function createUser(prevState: StateUser, formData: FormData) {
     };
   }
 
-  const { id_role, user_name, password, people_name, dni, last_name } = validatedFields.data;
-  const date_register = new Date();
+  const { role_id, person_name, dni, lastname, user_name, password } = validatedFields.data;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10)
-    const result = await sql`
-      INSERT INTO people (people_name, dni, last_name, register_date)
-      VALUES (${people_name}, ${dni}, ${last_name}, ${date_register.toISOString()})
-      RETURNING id
-    `;
+    const resultPeople = await sql`
+      INSERT INTO people (dni, person_name, lastname)
+      VALUES (${dni}, ${person_name}, ${lastname})
+      RETURNING person_id
+      `;
 
-    const id_people_generated = result.rows[0].id;
+    const person_id = resultPeople.rows[0]?.person_id;
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const date_register = new Date();
 
     await sql`
-      INSERT INTO users (id_role, id_people, user_name, password)
-      VALUES (${id_role}, ${id_people_generated}, ${user_name}, ${hashedPassword})
+      INSERT INTO users (role_id, person_id, user_name, password, date_register)
+      VALUES (${role_id}, ${person_id}, ${user_name}, ${hashedPassword},${date_register.toISOString()})
     `;
 
-    revalidatePath('/login/create');
-    redirect('/login');
   } catch (error) {
+    console.error("❌ Error al crear usuario:", error);
     return {
-      message: `Database Error: Failed to Create User.`, error
+      message: 'Database Error: Failed to Create User.',
+      error: error
     };
   }
+  revalidatePath('/login/create');
+  redirect('/login');
 }
-  
+
 
 export async function createSale(prevState: State, formData: FormData) {
   const validatedFields = CreateSale.safeParse({
@@ -213,11 +216,11 @@ export async function deleteSale(id: string) {
   await sql`DELETE FROM sales WHERE id = ${id}`;
   revalidatePath('/dashboard/sales');
 }
+
 export async function deleteProduct(id: string) {
   await sql`DELETE FROM products WHERE id = ${id}`;
   revalidatePath('/dashboard/products');
 }
-
 
 export async function authenticate(
   prevState: string | undefined,

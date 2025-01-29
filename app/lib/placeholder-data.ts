@@ -4,76 +4,76 @@ const date: Date = new Date();
 
 const categories = [
     {
-        id: uuidv4(),
-        name: 'Shoes',
+        category_id: uuidv4(),
+        category_name: 'Shoes',
     },
     {
-        id: uuidv4(),
-        name: 'Clothes',
+        category_id: uuidv4(),
+        category_name: 'Clothes',
     },
     {
-        id: uuidv4(),
-        name: 'Accessories',
+        category_id: uuidv4(),
+        category_name: 'Accessories',
     },
     {
-        id: uuidv4(),
-        name: 'Electronics',
+        category_id: uuidv4(),
+        category_name: 'Electronics',
     },
     {
-        id: uuidv4(),
-        name: 'Books',
+        category_id: uuidv4(),
+        category_name: 'Books',
     },
     {
-        id: uuidv4(),
-        name: 'Home',
+        category_id: uuidv4(),
+        category_name: 'Home',
     }
 ];
 
 const products = [
     {
-        id: uuidv4(),
-        id_category: categories[0].id,
-        name: 'Sandalias Casuales Footloose Mujeres Fch-Nz006 Marie Delux',
+        product_id: uuidv4(),
+        category_id: categories[0].category_id,
+        product_name: 'Sandalias Casuales Footloose Mujeres Fch-Nz006 Marie Delux',
         image_url: `/products/SandaliasCasualesFootlooseMujeresFch-Nz006MarieDelux.png`,
         price: 20,
         date: date
     },
     {
-        id: uuidv4(),
-        id_category: categories[1].id,
-        name: 'Sueter de punto TRAF Color Blanco',
+        product_id: uuidv4(),
+        category_id: categories[1].category_id,
+        product_name: 'Sueter de punto TRAF Color Blanco',
         image_url: '/products/SueterdepuntoTRAFColorBlanco.png',
         price: '50',
         date: date
     },
     {
-        id: uuidv4(),
-        id_category: categories[2].id,
-        name: 'Reloj Curren Krec57180303 Azul Hombre',
+        product_id: uuidv4(),
+        category_id: categories[2].category_id,
+        product_name: 'Reloj Curren Krec57180303 Azul Hombre',
         image_url: '/products/RelojCurrenKrec57180303AzulHombre.png',
         price: 500,
         date: date
     },
     {
-        id: uuidv4(),
-        id_category: categories[3].id,
-        name: 'Auriculares Bluetooth QCY H3 ANC 70Hrs con cancelacion de ruido Blanco',
+        product_id: uuidv4(),
+        category_id: categories[3].category_id,
+        product_name: 'Auriculares Bluetooth QCY H3 ANC 70Hrs con cancelacion de ruido Blanco',
         image_url: '/products/AuricularesBluetoothQCYH3ANC70HrsconcancelacionderuidoBlanco.png',
         price: 150,
         date: date
     },
     {
-        id:uuidv4(),
-        id_category: categories[4].id,
-        name: 'Libro de Hechizos Harry Potter',
+        product_id:uuidv4(),
+        category_id: categories[4].category_id,
+        product_name: 'Libro de Hechizos Harry Potter',
         image_url: '/products/LibrodeHechizosHarryPotter.png',
         price: 250,
         date: date
     },
     {
-        id: uuidv4(),
-        id_category: categories[5].id,
-        name: 'Sofa 2 Cuerpos Moscu Hys',
+        product_id: uuidv4(),
+        category_id: categories[5].category_id,
+        product_name: 'Sofa 2 Cuerpos Moscu Hys',
         image_url: '/products/Sofa2CuerposMoscuHys.png',
         price: 2500,
         date: date
@@ -82,143 +82,142 @@ const products = [
 
 const stock = [
     {
-        id: uuidv4(),
-        id_product: products[0].id,
+        stock_id: uuidv4(),
+        product_id: products[0].product_id,
         quantity: 10,
-        date: date,
+        date_register: date,
     },
     {
-        id: uuidv4(),
-        id_product: products[1].id,
+        stock_id: uuidv4(),
+        product_id: products[1].product_id,
         quantity: 10,
-        date: date,
+        date_register: date,
     }, {
-        id: uuidv4(),
-        id_product: products[2].id,
+        stock_id: uuidv4(),
+        product_id: products[2].product_id,
         quantity: 10,
-        date: date,
+        date_register: date,
     }, {
-        id: uuidv4(),
-        id_product: products[3].id,
+        stock_id: uuidv4(),
+        product_id: products[3].product_id,
         quantity: 10,
-        date: date,
+        date_register: date,
     }, {
-        id: uuidv4(),
-        id_product: products[4].id,
+        stock_id: uuidv4(),
+        product_id: products[4].product_id,
         quantity: 10,
-        date: date,
+        date_register: date,
     }, {
-        id: uuidv4(),
-        id_product: products[5].id,
+        stock_id: uuidv4(),
+        product_id: products[5].product_id,
         quantity: 10,
-        date: date,
+        date_register: date,
     }
 ]
 
-const role = [
+const roles = [
     {
-        id: uuidv4(),
-        name: 'admin'
+        role_id: uuidv4(),
+        role_name: 'admin'
     }
 ]
 
 const people = [
     {
-        id: uuidv4(),
+        person_id: uuidv4(),
         dni: 77149964,
-        people_name: "blanca",
-        lastname: 'blacido aparicio',
-        date_register: date
+        person_name: "blanca",
+        lastname: 'blacido aparicio'
     }
 ];
 
 const users = [
     {
-        id: uuidv4(),
-        id_role: role[0].id,
-        id_people: people[0].id,
+        user_id: uuidv4(),
+        role_id: roles[0].role_id,
+        person_id: people[0].person_id,
         user_name: 'User',
         password: '123456',
-        date_login: date,
+        date_register: date
     },
 ];
 
 const sales = [
     {
-        id: uuidv4(),
-        id_user: users[0].id,
+        sale_id: uuidv4(),
+        user_id: users[0].user_id,
         method: 'card',
-        date: date,
+        date_register: date,
         total: 15795,
     },
     {
-        id: uuidv4(),
-        id_user: users[0].id,
+        sale_id: uuidv4(),
+        user_id: users[0].user_id,
         method: 'card',
-        date: date,
+        date_register: date,
         total: 20348,
     },
     {
-        id: uuidv4(),
-        id_user: users[0].id,
+        sale_id: uuidv4(),
+        user_id: users[0].user_id,
         method: 'cash',
-        date: date,
+        date_register: date,
         total: 3040,
     },
     {
-        id: uuidv4(),
-        id_user: users[0].id,
+        sale_id: uuidv4(),
+        user_id: users[0].user_id,
         method: 'cash',
-        date: date,
+        date_register: date,
         total: 4480,
     },
     {
-        id: uuidv4(),
-        id_user: users[0].id,
+        sale_id: uuidv4(),
+        user_id: users[0].user_id,
         method: 'card',
-        date: date,
+        date_register: date,
         total: 34577,
     },
     {
-        id: uuidv4(),
-        id_user: users[0].id,
+        sale_id: uuidv4(),
+        user_id: users[0].user_id,
         method: 'card',
-        date: date,
+        date_register: date,
         total: 54246,
     }
 ];
 
 const detail_sale_products = [
     {
-        id_sale:sales[0].id,
-        id_product:products[0].id,
+        sale_id:sales[0].sale_id,
+        product_id:products[0].product_id,
         quantity: 1,
     },
     {
-        id_sale:sales[1].id,
-        id_product:products[1].id,
+        sale_id:sales[1].sale_id,
+        product_id:products[1].product_id,
         quantity: 1,
     },
     {
-        id_sale:sales[2].id,
-        id_product:products[2].id,
+        sale_id:sales[2].sale_id,
+        product_id:products[2].product_id,
         quantity: 1,
     },
     {
-        id_sale:sales[3].id,
-        id_product:products[3].id,
+        sale_id:sales[3].sale_id,
+        product_id:products[3].product_id,
         quantity: 1,
     },
     {
-        id_sale:sales[4].id,
-        id_product:products[4].id,
+        sale_id:sales[4].sale_id,
+        product_id:products[4].product_id,
         quantity: 1,
     },
     {
-        id_sale:sales[5].id,
-        id_product:products[5].id,
+        sale_id:sales[5].sale_id,
+        product_id:products[5].product_id,
         quantity: 1,
     }
 ];
 
-export { categories, stock, products, detail_sale_products, sales, users, role, people };
+export { categories, stock, products, detail_sale_products, sales, users, roles, people };

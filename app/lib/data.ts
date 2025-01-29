@@ -1,28 +1,17 @@
 
 import { sql } from '@vercel/postgres';
 import {
+  RolesField,
   ProductsTable,
   ProductField,
   ProductsTableType,
   SaleForm,
   SalesTable,
-  Revenue,
   LatestSale,
 } from './definitions';
 import { formatCurrency } from './utils';
 
-export async function fetchRevenue() {
 
-  try {
-    console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    const data = await sql<Revenue>`SELECT * FROM revenue`;
-    return data.rows;
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch revenue data.');
-  }
-}
 
 export async function fetchLatestSales() {
   try {
@@ -193,6 +182,24 @@ export async function fetchProducts() {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch all products.');
+  }
+}
+//Roles
+export async function fetchRoles() {
+  try {
+    const data = await sql<RolesField>`
+      SELECT
+      role_id,
+      role_name
+      FROM roles
+      ORDER BY role_name ASC
+    `;
+
+    const roles = data.rows;
+    return roles;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all roles.');
   }
 }
 

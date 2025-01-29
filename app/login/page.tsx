@@ -1,5 +1,5 @@
 
-import LoginForm from '@/app/ui/login-form';
+import LoginForm from '@/app/ui/login/login-form';
 import MarketLogo from '@/app/ui/market-logo';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';

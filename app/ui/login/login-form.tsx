@@ -1,7 +1,7 @@
 'use client';
 
 import { Icon } from '@iconify/react';
-import { Button } from './button';
+import { Button } from '../button';
 import { useActionState } from 'react';
 import { authenticate } from '@/app/lib/actions';
 

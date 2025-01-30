@@ -1,6 +1,7 @@
 
 import { sql } from '@vercel/postgres';
 import {
+  RolesTable,
   RolesField,
   ProductsTable,
   ProductField,
@@ -117,6 +118,32 @@ export async function fetchFilteredSales(
   }
 }
 
+export async function fetchFilteredRoles(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const roles = await sql<RolesTable>`
+      SELECT
+        roles.role_id,
+        roles.role_name
+      FROM roles
+      WHERE
+        roles.role_name::text ILIKE ${`%${query}%`} 
+      ORDER BY roles.role_name DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return roles.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch roles.');
+  }
+}
+
+
 export async function fetchSalesPages(query: string) {
   try {
     const count = await sql`SELECT COUNT(*)
@@ -138,6 +165,23 @@ export async function fetchSalesPages(query: string) {
     throw new Error('Failed to fetch total number of sales.');
   }
 }
+
+export async function fetchRolesPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM roles
+    WHERE
+      role_id.role_name::text ILIKE ${`%${query}%`} 
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of roles.');
+  }
+}
+
 
 export async function fetchSaleById(id: string) {
   try {

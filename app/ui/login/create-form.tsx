@@ -13,7 +13,10 @@ export default function Form({ roles }: { roles: RolesField[] }) {
 
   return (
     <form action={formAction}>
-      <div className="rounded-md bg-gray-50 p-4 md:p-6">
+      <div className='flex justify-center'>
+        <h1 className="text-2xl py-10 text-black font-semibold">Registration</h1>
+      </div>
+      <div className="rounded-md p-4 md:p-6">
         {/* Role */}
         <div className="mb-4">
           <label htmlFor="role_id" className="mb-2 block text-sm font-medium">
@@ -181,8 +184,8 @@ export default function Form({ roles }: { roles: RolesField[] }) {
         </div>
         {/* Fin User/user_name */}
 
-         {/* User/Password */}
-         <div className="mb-4">
+        {/* User/Password */}
+        <div className="mb-4">
           <label htmlFor="password" className="mb-2 block text-sm font-medium"
             aria-describedby="password-error">
             Enter your Password
@@ -212,16 +215,16 @@ export default function Form({ roles }: { roles: RolesField[] }) {
 
         </div>
         {/* Fin User/user_name */}
-      </div>
 
-      <div className="mt-6 flex justify-end gap-4">
-        <Link
-          href="/login"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-        >
-          Cancel
-        </Link>
-        <Button type="submit">Create User</Button>
+        <div className="mt-6 flex justify-end gap-4">
+          <Link
+            href="/login"
+            className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+          >
+            Cancel
+          </Link>
+          <Button type="submit">Create User</Button>
+        </div>
       </div>
     </form>
   );

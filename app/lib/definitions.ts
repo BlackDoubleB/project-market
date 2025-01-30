@@ -66,6 +66,11 @@ export type LatestSale = {
   amount: string | number;
 };
 
+//Table
+export type RolesTable ={
+  role_id: string;
+  role_name:string;
+}
 export type ProductsTable = {
   id: string;
   name_product: string;

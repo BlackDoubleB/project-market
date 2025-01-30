@@ -38,6 +38,9 @@ const FormSchemaUser = z.object({
   lastname: z.string().min(1, 'Last Name is required'),
 });
 
+const FormSchemaRole = z.object({
+  role_name: z.string().min(1, 'Role name  is required'),
+});
 const CreateSale = FormSchema.omit({ id: true, date: true });
 const CreateProduct = FormSchema.omit({ id: true, date: true, categoryId: true, amount: true, method: true });
 
@@ -63,6 +66,13 @@ export type StateUser = {
   message?: string | null;
 };
 
+export type StateRole = {
+  errors?: {
+    role_name?: string[];
+    
+  };
+  message?: string | null;
+};
 
 export async function createUser(prevState: StateUser, formData: FormData) {
   const validatedFields = FormSchemaUser.safeParse({
@@ -110,6 +120,36 @@ export async function createUser(prevState: StateUser, formData: FormData) {
   redirect('/login');
 }
 
+export async function createRole(prevState:StateRole, formData:FormData){
+  const validatedFields = FormSchemaRole.safeParse({
+    role_name: formData.get('role_id')
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Field. Failed to Create Role.',
+    };
+  }
+
+  const { role_name} = validatedFields.data;
+
+  try {
+    await sql`
+      INSERT INTO roles (role_name)
+      VALUES (${role_name})
+    `;
+
+  } catch (error) {
+    console.error("❌ Error al crear rol:", error);
+    return {
+      message: 'Database Error: Failed to Create Rol.',
+      error: error
+    };
+  }
+  revalidatePath('/dashboard/roles');
+  redirect('/dashboard/roles');
+}
 
 export async function createSale(prevState: State, formData: FormData) {
   const validatedFields = CreateSale.safeParse({
@@ -215,6 +255,12 @@ export async function updateSale(
 export async function deleteSale(id: string) {
   await sql`DELETE FROM sales WHERE id = ${id}`;
   revalidatePath('/dashboard/sales');
+}
+
+
+export async function deleteRole(id: string) {
+  await sql`DELETE FROM roles WHERE id = ${id}`;
+  revalidatePath('/dashboard/roles');
 }
 
 export async function deleteProduct(id: string) {

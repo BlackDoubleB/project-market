@@ -23,7 +23,9 @@ export default function LoginPage() {
             <div>
               <div className='flex hover:bg-gray-200  rounded-lg p-2 cursor-pointer gap-2 items-center  transform transition-transform duration-200 active:scale-95'>
                 <Icon icon="material-symbols:arrow-left-alt" className='w-5 h-6 ' />
-                <p className={`${lusitana.className} bg-inherit text-sm font-medium`} >Regresar</p>
+                <p className={`${lusitana.className} bg-inherit text-sm font-medium`}>
+                  Regresar
+                </p>
               </div>
             </div>
           </div>

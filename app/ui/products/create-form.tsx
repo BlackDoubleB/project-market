@@ -1,26 +1,17 @@
 'use client';
 import { createSale, State } from '@/app/lib/actions';
 import { useActionState } from 'react';
-import { ProductField } from '@/app/lib/definitions';
+import { RolesField } from '@/app/lib/definitions';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Button } from '@/app/ui/button';
 import { categories } from '@/app/lib/placeholder-data';
 import clsx from 'clsx';
-import { useState } from 'react';
 
-export default function Form({ products }: { products: ProductField[] }) {
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | null>(null);
+export default function Form({ roles }: { roles: RolesField[] }) {
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(createSale, initialState);
 
-
-  const handlePaymentMethodChange = (method: 'cash' | 'card') => {
-    setPaymentMethod((prevMethod) => prevMethod === method ? null : method);
-  };
-  
-
-  
   return (
     <form action={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">

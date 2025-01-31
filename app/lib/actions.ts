@@ -39,10 +39,14 @@ const FormSchemaUser = z.object({
 });
 
 const FormSchemaRole = z.object({
-  role_name: z.string().min(1, 'Role name  is required'),
+  role_name: z.string().min(1, 'role name is required'),
 });
-const CreateSale = FormSchema.omit({ id: true, date: true });
-const CreateProduct = FormSchema.omit({ id: true, date: true, categoryId: true, amount: true, method: true });
+
+
+const FormSchemaCategory = z.object({
+  category_name: z.string().min(1, 'category name is required'),
+});
+
 
 export type State = {
   errors?: {
@@ -68,11 +72,18 @@ export type StateUser = {
 
 export type StateRole = {
   errors?: {
-    role_name?: string[];
-    
+    role_name?: string[];  
   };
   message?: string | null;
 };
+
+export type StateCategory = {
+  errors?: {
+    category_name?: string[];
+  };
+  message?: string | null;
+};
+
 
 export async function createUser(prevState: StateUser, formData: FormData) {
   const validatedFields = FormSchemaUser.safeParse({
@@ -122,7 +133,7 @@ export async function createUser(prevState: StateUser, formData: FormData) {
 
 export async function createRole(prevState:StateRole, formData:FormData){
   const validatedFields = FormSchemaRole.safeParse({
-    role_name: formData.get('role_id')
+    role_name: formData.get('role_name')
   });
 
   if (!validatedFields.success) {
@@ -149,6 +160,37 @@ export async function createRole(prevState:StateRole, formData:FormData){
   }
   revalidatePath('/dashboard/roles');
   redirect('/dashboard/roles');
+}
+
+export async function createCategory(prevState:StateCategory, formData:FormData){
+  const validatedFields = FormSchemaCategory.safeParse({
+    category_name: formData.get('category_name')
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Field. Failed to Create Category.',
+    };
+  }
+
+  const { category_name} = validatedFields.data;
+
+  try {
+    await sql`
+      INSERT INTO categories (category_name)
+      VALUES (${category_name})
+    `;
+
+  } catch (error) {
+    console.error("❌ Error al crear categoria:", error);
+    return {
+      message: 'Database Error: Failed to Create Category.',
+      error: error
+    };
+  }
+  revalidatePath('/dashboard/categories');
+  redirect('/dashboard/categories');
 }
 
 export async function createSale(prevState: State, formData: FormData) {
@@ -252,6 +294,36 @@ export async function updateSale(
   redirect('/dashboard/sales');
 }
 
+export async function updateCategory(
+  id: string,
+  prevState: StateCategory,
+  formData: FormData,
+) {
+  const validatedFields = FormSchemaCategory.safeParse({
+    category_name: formData.get('category_name'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Categories.',
+    };
+  }
+
+  const { category_name} = validatedFields.data;
+
+  try {
+    await sql`
+      UPDATE categories
+      SET category_name = ${category_name}
+      WHERE category_id = ${id}
+    `;
+  } catch {
+    return { message: 'Database Error: Failed to Update Categories.' };
+    }
+  revalidatePath('/dashboard/categories');
+  redirect('/dashboard/categories');
+}
 export async function deleteSale(id: string) {
   await sql`DELETE FROM sales WHERE id = ${id}`;
   revalidatePath('/dashboard/sales');
@@ -261,6 +333,11 @@ export async function deleteSale(id: string) {
 export async function deleteRole(id: string) {
   await sql`DELETE FROM roles WHERE id = ${id}`;
   revalidatePath('/dashboard/roles');
+}
+
+export async function deleteCategory(id: string) {
+  await sql`DELETE FROM categories WHERE id = ${id}`;
+  revalidatePath('/dashboard/categories');
 }
 
 export async function deleteProduct(id: string) {

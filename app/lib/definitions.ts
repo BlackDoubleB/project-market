@@ -71,6 +71,12 @@ export type RolesTable ={
   role_id: string;
   role_name:string;
 }
+
+export type CategoriesTable ={
+  category_id: string;
+  category_name:string;
+}
+
 export type ProductsTable = {
   id: string;
   name_product: string;
@@ -111,8 +117,8 @@ export type ProductField = {
 };
 
 export type CategoryField = {
-  id: string;
-  name: string;
+  category_id: string;
+  category_name: string;
 };
 
 export type SaleForm = {
@@ -121,6 +127,11 @@ export type SaleForm = {
   category_id: string;
   amount: number;
   method: 'card' | 'cash';
+};
+
+export type CategoryForm = {
+  category_id: string;
+  category_name: string;
 };
 
 //ACTUALIZACION

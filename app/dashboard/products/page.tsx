@@ -1,4 +1,4 @@
-import Pagination from '@/app/ui/sales/pagination';
+import Pagination from '@/app/ui/pagination';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/products/table';
 import { lusitana } from '@/app/ui/fonts';

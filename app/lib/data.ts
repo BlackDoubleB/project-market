@@ -4,8 +4,11 @@ import {
   RolesTable,
   RolesField,
   ProductsTable,
+  CategoriesTable,
+  CategoryField,
   ProductField,
   ProductsTableType,
+  CategoryForm,
   SaleForm,
   SalesTable,
   LatestSale,
@@ -127,12 +130,12 @@ export async function fetchFilteredRoles(
   try {
     const roles = await sql<RolesTable>`
       SELECT
-        roles.role_id,
-        roles.role_name
+        role_id,
+        role_name
       FROM roles
       WHERE
-        roles.role_name::text ILIKE ${`%${query}%`} 
-      ORDER BY roles.role_name DESC
+        role_name::text ILIKE ${`%${query}%`} 
+      ORDER BY role_name DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
 
@@ -140,6 +143,30 @@ export async function fetchFilteredRoles(
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch roles.');
+  }
+}
+export async function fetchFilteredCategories(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const categories = await sql<CategoriesTable>`
+      SELECT
+        category_id,
+        category_name
+      FROM categories
+      WHERE
+        category_name::text ILIKE ${`%${query}%`} 
+      ORDER BY category_name DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return categories.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch categories.');
   }
 }
 
@@ -171,7 +198,7 @@ export async function fetchRolesPages(query: string) {
     const count = await sql`SELECT COUNT(*)
     FROM roles
     WHERE
-      role_id.role_name::text ILIKE ${`%${query}%`} 
+      role_name::text ILIKE ${`%${query}%`} 
   `;
 
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
@@ -182,6 +209,21 @@ export async function fetchRolesPages(query: string) {
   }
 }
 
+export async function fetchCategoriesPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM categories
+    WHERE
+      category_name::text ILIKE ${`%${query}%`} 
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of roles.');
+  }
+}
 
 export async function fetchSaleById(id: string) {
   try {
@@ -207,6 +249,28 @@ export async function fetchSaleById(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch sale.');
+  }
+}
+
+export async function fetchCategoryById(id: string) {
+  try {
+    const data = await sql<CategoryForm>`
+      SELECT
+        category_id,
+        category_name
+      FROM categories
+      WHERE category_id = ${id};
+    `;
+
+    const categories = data.rows.map((category) => ({
+      ...category,
+    }));
+
+    console.log(categories);
+    return categories[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch category.');
   }
 }
 
@@ -308,12 +372,12 @@ export async function fetchFilteredProductsNav(
 //Categories
 export async function fetchCategories() {
   try {
-    const data = await sql<ProductField>`
+    const data = await sql<CategoryField>`
       SELECT
-        id,
-        name
+        category_id,
+        category_name
       FROM categories
-      ORDER BY name ASC
+      ORDER BY category_name ASC
     `;
 
     const categories = data.rows;

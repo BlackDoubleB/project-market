@@ -134,6 +134,11 @@ export type CategoryForm = {
   category_name: string;
 };
 
+export type RoleForm = {
+  role_id: string;
+  role_name:string;
+};
+
 //ACTUALIZACION
 export type RolesField = {
   role_id: string;

@@ -8,6 +8,7 @@ import {
   CategoryField,
   ProductField,
   ProductsTableType,
+  RoleForm,
   CategoryForm,
   SaleForm,
   SalesTable,
@@ -225,6 +226,27 @@ export async function fetchCategoriesPages(query: string) {
   }
 }
 
+export async function fetchRoleById(id: string) {
+  try {
+    const data = await sql<RoleForm>`
+      SELECT
+        role_id,
+        role_name
+      FROM roles
+      WHERE role_id = ${id};
+    `;
+
+    const roles = data.rows.map((role) => ({
+      ...role,
+    }));
+
+    console.log(roles);
+    return roles[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch role.');
+  }
+}
 export async function fetchSaleById(id: string) {
   try {
     const data = await sql<SaleForm>`

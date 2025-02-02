@@ -1,4 +1,4 @@
-import Pagination from '@/app/ui/roles/pagination';
+import Pagination from '@/app/ui/pagination';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/roles/table';
 import { CreateRole } from '@/app/ui/roles/buttons';
@@ -23,7 +23,7 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
-  const totalRoles = await fetchRolesPages(query);
+  const totalPages = await fetchRolesPages(query);
 
 return (
   <div className="w-full">
@@ -42,7 +42,7 @@ return (
     </Suspense>
 
     <div className="mt-5 flex w-full justify-center">
-      <Pagination totalRoles={totalRoles} />
+      <Pagination totalPages={totalPages} />
     </div>
 
   </div>

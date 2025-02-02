@@ -5,13 +5,36 @@ import clsx from 'clsx';
 import Link from 'next/link';
 
 const links = [
-  { name: 'Home', href: '/dashboard', icon: <Icon icon="material-symbols:home" />   },
+  { name: 'Home', 
+    href: '/dashboard', 
+    icon: <Icon icon="material-symbols:home"/>
+  },
+
   {
     name: 'Sales',
     href: '/dashboard/sales',
-    icon: <Icon icon="mdi:sale" />,
+    icon: <Icon icon="hugeicons:sale-tag-02" />
   },
-  { name: 'Products', href: '/dashboard/products', icon: <Icon icon="material-symbols:person" /> },
+
+  { name: 'Products', 
+    href: '/dashboard/products', 
+    icon: <Icon icon="fluent-mdl2:product-list" />
+  },
+
+  { name: 'Categories', 
+    href: '/dashboard/categories', 
+    icon: <Icon icon="carbon:categories"/>
+  },
+
+  { name: 'Roles', 
+    href: '/dashboard/roles', 
+    icon: <Icon icon="ci:users" />
+  },
+
+  { name: 'Acount', 
+    href: '/dashboard/acount', 
+    icon: <Icon icon="icon-park-outline:config" />
+  }
 ];
 
 export default function NavLinks() {

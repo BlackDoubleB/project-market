@@ -294,6 +294,37 @@ export async function updateSale(
   redirect('/dashboard/sales');
 }
 
+export async function updateRole(
+  id: string,
+  prevState: StateRole,
+  formData: FormData,
+) {
+  const validatedFields = FormSchemaRole.safeParse({
+    role_name: formData.get('role_name'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Roles.',
+    };
+  }
+
+  const { role_name } = validatedFields.data;
+
+  try {
+    await sql`
+      UPDATE roles
+      SET role_name = ${role_name}
+      WHERE role_id = ${id}
+    `;
+  } catch {
+    return { message: 'Database Error: Failed to Update Role.' };
+  }
+  revalidatePath('/dashboard/roles');
+  redirect('/dashboard/roles');
+}
+
 export async function updateCategory(
   id: string,
   prevState: StateCategory,
@@ -331,7 +362,7 @@ export async function deleteSale(id: string) {
 }
 
 export async function deleteRole(id: string) {
-  await sql`DELETE FROM roles WHERE id = ${id}`;
+  await sql`DELETE FROM roles WHERE role_id = ${id}`;
   revalidatePath('/dashboard/roles');
 }
 

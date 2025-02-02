@@ -1,8 +1,8 @@
-import CardWrapper  from '@/app/ui/dashboard/cards';
-import LatestSales from '@/app/ui/dashboard/latest-sales';
+// import CardWrapper  from '@/app/ui/dashboard/cards';
+// import LatestSales from '@/app/ui/dashboard/latest-sales';
 import { lusitana } from '@/app/ui/fonts';
-import { Suspense } from 'react';
-import { LatestSalesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
+// import { Suspense } from 'react';
+// import { LatestSalesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 
 
 
@@ -14,7 +14,7 @@ export default async function Page() {
         Dashboard
       </h1>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {/* <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Suspense fallback={<CardsSkeleton />}>
           <CardWrapper />
         </Suspense>
@@ -24,7 +24,7 @@ export default async function Page() {
         <Suspense fallback={<LatestSalesSkeleton />}>
           <LatestSales />
         </Suspense>
-      </div>
+      </div> */}
 
     </main>
   );

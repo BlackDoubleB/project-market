@@ -60,7 +60,7 @@ export type State = {
 
 export type StateUser = {
   errors?: {
-    role_id?:string[];
+    role_id?: string[];
     person_name?: string[];
     dni?: string[];
     lastname?: string[]
@@ -72,7 +72,7 @@ export type StateUser = {
 
 export type StateRole = {
   errors?: {
-    role_name?: string[];  
+    role_name?: string[];
   };
   message?: string | null;
 };
@@ -131,7 +131,7 @@ export async function createUser(prevState: StateUser, formData: FormData) {
   redirect('/login');
 }
 
-export async function createRole(prevState:StateRole, formData:FormData){
+export async function createRole(prevState: StateRole, formData: FormData) {
   const validatedFields = FormSchemaRole.safeParse({
     role_name: formData.get('role_name')
   });
@@ -143,7 +143,7 @@ export async function createRole(prevState:StateRole, formData:FormData){
     };
   }
 
-  const { role_name} = validatedFields.data;
+  const { role_name } = validatedFields.data;
 
   try {
     await sql`
@@ -162,7 +162,7 @@ export async function createRole(prevState:StateRole, formData:FormData){
   redirect('/dashboard/roles');
 }
 
-export async function createCategory(prevState:StateCategory, formData:FormData){
+export async function createCategory(prevState: StateCategory, formData: FormData) {
   const validatedFields = FormSchemaCategory.safeParse({
     category_name: formData.get('category_name')
   });
@@ -174,7 +174,7 @@ export async function createCategory(prevState:StateCategory, formData:FormData)
     };
   }
 
-  const { category_name} = validatedFields.data;
+  const { category_name } = validatedFields.data;
 
   try {
     await sql`
@@ -310,7 +310,7 @@ export async function updateCategory(
     };
   }
 
-  const { category_name} = validatedFields.data;
+  const { category_name } = validatedFields.data;
 
   try {
     await sql`
@@ -320,24 +320,29 @@ export async function updateCategory(
     `;
   } catch {
     return { message: 'Database Error: Failed to Update Categories.' };
-    }
+  }
   revalidatePath('/dashboard/categories');
   redirect('/dashboard/categories');
 }
+
 export async function deleteSale(id: string) {
   await sql`DELETE FROM sales WHERE id = ${id}`;
   revalidatePath('/dashboard/sales');
 }
-
 
 export async function deleteRole(id: string) {
   await sql`DELETE FROM roles WHERE id = ${id}`;
   revalidatePath('/dashboard/roles');
 }
 
-export async function deleteCategory(id: string) {
-  await sql`DELETE FROM categories WHERE id = ${id}`;
-  revalidatePath('/dashboard/categories');
+export async function deleteCategory(id: string): Promise<boolean> {
+  try {
+    await sql`DELETE FROM categories WHERE id = ${id}`;
+    return true; // Indica que la eliminación fue exitosa
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    return false; // Indica que hubo un error
+  }
 }
 
 export async function deleteProduct(id: string) {

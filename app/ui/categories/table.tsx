@@ -1,5 +1,6 @@
 import { UpdateCategory, DeleteCategory } from '@/app/ui/categories/buttons';
 import { fetchFilteredCategories } from '@/app/lib/data';
+
 export default async function CategoriesTable({
   query,
   currentPage,
@@ -7,14 +8,14 @@ export default async function CategoriesTable({
   query: string;
   currentPage: number;
 }) {
-
+ 
   const categories = await fetchFilteredCategories(query, currentPage);
 
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-
+          
           {/* Table para md > */}
           <div className="md:hidden">
             {categories?.map((category) => (

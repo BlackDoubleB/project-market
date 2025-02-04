@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from "next-auth";
 import bcrypt from 'bcrypt';
+import { v2 as cloudinary } from 'cloudinary';
 
 const FormSchema = z.object({
   id: z.string(),
@@ -406,7 +407,7 @@ export async function deleteCategory(id: string): Promise<boolean> {
   }
 }
 
-export async function deleteProduct(id: string) {
+export async function deleteProduct(id: string): Promise<boolean>  {
   try {
     await sql`DELETE FROM products WHERE product_id = ${id}`;
     revalidatePath('/dashboard/products');

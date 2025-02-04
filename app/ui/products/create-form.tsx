@@ -12,8 +12,7 @@ export default function Form({ products }: { products: ProductField[] }) {
     const [state, formAction] = useActionState(createProduct, initialState);
 
     return (
-        <form action={formAction} 
-        >
+        <form action={formAction} encType="multipart/form-data">
             <div className="rounded-md bg-gray-50 p-4 md:p-6">
 
                 {/* Category Name */}

@@ -1,12 +1,13 @@
 import Pagination from '@/app/ui/pagination';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/products/table';
-import { lusitana } from '@/app/ui/fonts';
-import { SalesTableSkeleton } from '@/app/ui/skeletons';
-import { Suspense } from 'react';
-import { fetchSalesPages } from '@/app/lib/data';
-import { Metadata } from 'next';
 import { CreateProduct } from '@/app/ui/products/buttons';
+import { lusitana } from '@/app/ui/fonts';
+import { ProductsTableSkeleton } from '@/app/ui/skeletons';
+import { Suspense } from 'react';
+import { fetchProductsPages } from '@/app/lib/data';
+import { Metadata } from 'next';
+
 
 export const metadata: Metadata = {
   title: 'Products',
@@ -23,7 +24,7 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
-  const totalPages = await fetchSalesPages(query);
+  const totalPages = await fetchProductsPages(query);
 
 return (
   <div className="w-full">
@@ -37,7 +38,7 @@ return (
       <CreateProduct />
     </div>
 
-    <Suspense key={query + currentPage} fallback={<SalesTableSkeleton />}>
+    <Suspense key={query + currentPage} fallback={<ProductsTableSkeleton />}>
       <Table query={query} currentPage={currentPage} />
     </Suspense>
 

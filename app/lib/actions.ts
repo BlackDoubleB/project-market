@@ -47,6 +47,14 @@ const FormSchemaCategory = z.object({
   category_name: z.string().min(1, 'category name is required'),
 });
 
+const FormSchemaProduct = z.object({
+  product_name: z.string().min(1, 'product name is required'),
+  category_id: z.string({
+    invalid_type_error: 'Please select a category.',
+  }),
+  image_url: z.string().min(1, 'image is required'),
+  price: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' })
+});
 
 export type State = {
   errors?: {
@@ -80,6 +88,16 @@ export type StateRole = {
 export type StateCategory = {
   errors?: {
     category_name?: string[];
+  };
+  message?: string | null;
+};
+
+export type StateProduct = {
+  errors?: {
+    product_name?: string[];
+    category_id?: string[];
+    image_url?: string[];
+    price?: string[];
   };
   message?: string | null;
 };
@@ -193,42 +211,14 @@ export async function createCategory(prevState: StateCategory, formData: FormDat
   redirect('/dashboard/categories');
 }
 
-export async function createSale(prevState: State, formData: FormData) {
-  const validatedFields = CreateSale.safeParse({
-    productId: formData.get('productId'),
-    categoryId: formData.get('categoryId'),
-    amount: formData.get('amount'),
-    method: formData.get('method'),
-  });
 
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Sale.',
-    };
-  }
 
-  const { productId, categoryId, amount, method } = validatedFields.data;
-  const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
-
-  try {
-    await sql`
-      INSERT INTO sales (product_id, category_id, amount, method, date)
-      VALUES (${productId},${categoryId}, ${amountInCents}, ${method}, ${date})
-    `;
-  } catch (error) {
-    return {
-      message: `Database Error: Failed to Create Sale.`, error
-    };
-  }
-  revalidatePath('/dashboard/sales');
-  redirect('/dashboard/sales');
-}
-
-export async function createProduct(prevState: State, formData: FormData) {
-  const validatedFields = CreateProduct.safeParse({
-    productId: formData.get('productId')
+export async function createProduct(prevState: StateProduct, formData: FormData) {
+  const validatedFields = FormSchemaProduct.safeParse({
+    product_name: formData.get('product_name'),
+    category_id:formData.get('category_id'),
+    image_url: formData.get('image_url'),
+    price: formData.get('price')
   });
 
   if (!validatedFields.success) {
@@ -238,12 +228,15 @@ export async function createProduct(prevState: State, formData: FormData) {
     };
   }
 
-  const { productId } = validatedFields.data;
+  const { product_name, category_id, image_url,price } = validatedFields.data;
 
   try {
+  // eslint-disable-next-line
+  let date_register = new Date();
+
     await sql`
-      INSERT INTO products (product_id,)
-      VALUES (${productId})
+      INSERT INTO products (product_name, category_id, image_url, price, date_register)
+      VALUES (${product_name}, ${category_id}, ${image_url}, ${price}, ${date_register.toISOString()})
     `;
   } catch (error) {
     return {
@@ -254,7 +247,7 @@ export async function createProduct(prevState: State, formData: FormData) {
   redirect('/dashboard/products');
 }
 
-// Use Zod to update the expected types
+
 const UpdateSale = FormSchema.omit({ id: true, date: true });
 
 export async function updateSale(
@@ -356,6 +349,41 @@ export async function updateCategory(
   redirect('/dashboard/categories');
 }
 
+export async function updateProduct(
+  id: string,
+  prevState: StateProduct,
+  formData: FormData,
+) {
+  const validatedFields = FormSchemaProduct.safeParse({
+    product_name: formData.get('product_name'),
+    category_id:formData.get('category_id'),
+    image_url: formData.get('image_url'),
+    price: formData.get('price')
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Categories.',
+    };
+  }
+  const { product_name, category_id, image_url,price } = validatedFields.data;
+
+  try {
+    // eslint-disable-next-line
+    let date_register = new Date();
+    await sql`
+      UPDATE products
+      SET product_name = ${product_name}, category_id = ${category_id}, image_url = ${image_url}, price = ${price}, date_register = ${date_register.toISOString()}
+      WHERE product_id = ${id}
+    `;
+  } catch {
+    return { message: 'Database Error: Failed to Update Products.' };
+  }
+  revalidatePath('/dashboard/products');
+  redirect('/dashboard/products');
+}
+
 export async function deleteSale(id: string) {
   await sql`DELETE FROM sales WHERE id = ${id}`;
   revalidatePath('/dashboard/sales');
@@ -368,8 +396,10 @@ export async function deleteRole(id: string) {
 
 export async function deleteCategory(id: string): Promise<boolean> {
   try {
-    await sql`DELETE FROM categories WHERE id = ${id}`;
+    await sql`DELETE FROM categories WHERE category_id = ${id}`;
+    revalidatePath('/dashboard/categories');
     return true; // Indica que la eliminación fue exitosa
+    
   } catch (error) {
     console.error('Error deleting category:', error);
     return false; // Indica que hubo un error
@@ -377,8 +407,15 @@ export async function deleteCategory(id: string): Promise<boolean> {
 }
 
 export async function deleteProduct(id: string) {
-  await sql`DELETE FROM products WHERE id = ${id}`;
-  revalidatePath('/dashboard/products');
+  try {
+    await sql`DELETE FROM products WHERE product_id = ${id}`;
+    revalidatePath('/dashboard/products');
+    return true; 
+    
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    return false; 
+  }
 }
 
 export async function authenticate(

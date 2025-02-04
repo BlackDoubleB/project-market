@@ -7,7 +7,6 @@ import {
   CategoriesTable,
   CategoryField,
   ProductField,
-  ProductsTableType,
   RoleForm,
   CategoryForm,
   SaleForm,
@@ -146,6 +145,7 @@ export async function fetchFilteredRoles(
     throw new Error('Failed to fetch roles.');
   }
 }
+
 export async function fetchFilteredCategories(
   query: string,
   currentPage: number,
@@ -171,6 +171,36 @@ export async function fetchFilteredCategories(
   }
 }
 
+export async function fetchFilteredProducts(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const products = await sql<ProductsTable>`
+      SELECT
+      product_id,
+      category_name,
+      product_name,
+      image_url,
+      price,
+      date_register
+  date
+      FROM products
+      JOIN categories ON products.category_id = categories.category_id
+      WHERE
+      product_name::text ILIKE ${`%${query}%`} 
+      ORDER BY product_name DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return products.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch products.');
+  }
+}
 
 export async function fetchSalesPages(query: string) {
   try {
@@ -226,6 +256,22 @@ export async function fetchCategoriesPages(query: string) {
   }
 }
 
+export async function fetchProductsPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM products
+    WHERE
+      product_name::text ILIKE ${`%${query}%`} 
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of Products.');
+  }
+}
+
 export async function fetchRoleById(id: string) {
   try {
     const data = await sql<RoleForm>`
@@ -247,6 +293,7 @@ export async function fetchRoleById(id: string) {
     throw new Error('Failed to fetch role.');
   }
 }
+
 export async function fetchSaleById(id: string) {
   try {
     const data = await sql<SaleForm>`
@@ -296,74 +343,6 @@ export async function fetchCategoryById(id: string) {
   }
 }
 
-//Products
-export async function fetchProducts() {
-  try {
-    const data = await sql<ProductField>`
-      SELECT
-        id,
-        name
-      FROM products
-      ORDER BY name ASC
-    `;
-
-    const products = data.rows;
-    return products;
-  } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch all products.');
-  }
-}
-//Roles
-export async function fetchRoles() {
-  try {
-    const data = await sql<RolesField>`
-      SELECT
-      role_id,
-      role_name
-      FROM roles
-      ORDER BY role_name ASC
-    `;
-
-    const roles = data.rows;
-    return roles;
-  } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch all roles.');
-  }
-}
-
-export async function fetchFilteredProducts(query: string) {
-  try {
-    const data = await sql<ProductsTableType>`
-		SELECT
-		  products.id,
-		  products.name,
-		  products.image_url,
-		  COUNT(sales.id) AS total_sales,
-		  SUM(CASE WHEN sales.method = 'cash' THEN sales.amount ELSE 0 END) AS total_cash,
-		  SUM(CASE WHEN sales.method = 'card' THEN sales.amount ELSE 0 END) AS total_card
-		FROM products
-		LEFT JOIN sales ON products.id = sales.product_id
-		WHERE
-		  products.name ILIKE ${`%${query}%`}
-		GROUP BY products.id, products.name, products.image_url
-		ORDER BY products.name ASC
-	  `;
-
-    const products = data.rows.map((product) => ({
-      ...product,
-      total_card: formatCurrency(product.total_card),
-      total_cash: formatCurrency(product.total_cash),
-    }));
-
-    return products;
-  } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch product table.');
-  }
-}
-
 export async function fetchFilteredProductsNav(
   query: string,
   currentPage: number,
@@ -389,8 +368,24 @@ export async function fetchFilteredProductsNav(
     throw new Error('Failed to fetch products.');
   }
 }
+//Roles
+export async function fetchRoles() {
+  try {
+    const data = await sql<RolesField>`
+      SELECT
+      role_id,
+      role_name
+      FROM roles
+      ORDER BY role_name ASC
+    `;
 
-
+    const roles = data.rows;
+    return roles;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all roles.');
+  }
+}
 //Categories
 export async function fetchCategories() {
   try {
@@ -409,4 +404,26 @@ export async function fetchCategories() {
     throw new Error('Failed to fetch all categories.');
   }
 }
+//Products
+export async function fetchProducts() {
+  try {
+    const data = await sql<ProductField>`
+      SELECT
+        product_id,
+        category_id,
+        category_name,
+        product_name,
+        image_url,
+        date_register
+      FROM products
+      JOIN categories AS products.cat
+      ORDER BY product_name ASC
+    `;
 
+    const products = data.rows;
+    return products;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all products.');
+  }
+}

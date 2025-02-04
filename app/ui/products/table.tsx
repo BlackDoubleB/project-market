@@ -1,7 +1,5 @@
-import Image from 'next/image';
-import { UpdateSale, DeleteSale } from '@/app/ui/sales/buttons';
-import { fetchFilteredProductsNav } from '@/app/lib/data';
-
+import { UpdateProduct, DeleteProduct } from '@/app/ui/products/buttons';
+import { fetchFilteredProducts } from '@/app/lib/data';
 export default async function ProductsTable({
   query,
   currentPage,
@@ -10,43 +8,36 @@ export default async function ProductsTable({
   currentPage: number;
 }) {
 
-  const products = await fetchFilteredProductsNav(query, currentPage);
+  const products = await fetchFilteredProducts(query, currentPage);
 
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
 
-          {/* Primer sub div */}
+          {/* md> */}
           <div className="md:hidden">
             {products?.map((product) => (
-              <div
-                key={product.id}
-                className="mb-2 rounded-md bg-white p-4"
-              >
-
+              <div key={product.product_id} className="mb-2 rounded-md bg-white p-4">
                 <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{product.name_product}</p>
-                  <div className='flex '>
-                    <div className="mb-2 flex items-center">
-                      <Image
-                        src={product.image_url}
-                        className="mr-2 rounded-full min-w-8"
-                        width={30}
-                        height={30}
-                        alt={`${product.name_product}'s profile picture`}
-                      />
-                    </div>
-                    <div className='w-24 xxs:w-48 xs:w-80'>
-                      <p className='truncate' >{product.name_product}</p>
-                    </div>
-                  </div>
+                  <p>{product.category_name}</p>
                 </div>
-
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p>{product.product_name}</p>
+                </div>
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p>{product.image_url}</p>
+                </div>
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p>{product.price}</p>
+                </div>
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p>{product.date_register}</p>
+                </div>
                 <div className="flex w-full items-center justify-between pt-4">
                   <div className="flex justify-end gap-2">
-                    <UpdateSale id={product.id} />
-                    <DeleteSale id={product.id} />
+                    <UpdateProduct id={product.product_id} />
+                    <DeleteProduct id={product.product_id} />
                   </div>
                 </div>
               </div>
@@ -61,12 +52,20 @@ export default async function ProductsTable({
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Imagen
+                  Category Name
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Producto
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Product Name
                 </th>
-
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Image
+                </th>
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Price
+                </th>
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Date Register
+                </th>
                 <th scope="col" className="relative py-3 pl-6 pr-3">
                   <span className="sr-only">Edit</span>
                 </th>
@@ -77,31 +76,28 @@ export default async function ProductsTable({
             {/* Inicio Tbody*/}
             <tbody className="bg-white">
               {products?.map((product) => (
-                <tr
-                  key={product.id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
-                >
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={product.image_url}
-                        className="rounded-full"
-                        width={28}
-                        height={28}
-                        alt={`${product.name_product}'s profile picture`}
-                      />
-                    </div>
+                <tr key={product.product_id}
+                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
 
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {product.category_name}
                   </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex items-center gap-3">
-                      <p>{product.name_product}</p>
-                    </div>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {product.product_name}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {product.image_url}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {product.price}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {product.date_register}
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <UpdateSale id={product.id} />
-                      <DeleteSale id={product.id} />
+                      <UpdateProduct id={product.product_id} />
+                      <DeleteProduct id={product.product_id} />
                     </div>
                   </td>
                 </tr>

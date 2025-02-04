@@ -1,7 +1,4 @@
-import Image from 'next/image';
 import { UpdateRole, DeleteRole } from '@/app/ui/roles/buttons';
-import SaleMethod from '@/app/ui/sales/method';
-import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import { fetchFilteredRoles } from '@/app/lib/data';
 export default async function RolesTable({
   query,

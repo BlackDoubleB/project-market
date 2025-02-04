@@ -78,9 +78,12 @@ export type CategoriesTable ={
 }
 
 export type ProductsTable = {
-  id: string;
-  name_product: string;
+  product_id: string;
+  category_name: string;
+  product_name: string;
   image_url: string;
+  price: number;
+  date_register: string;
 };
 
 export type SalesTable = {
@@ -112,8 +115,13 @@ export type FormatedProductsTable = {
 };
 
 export type ProductField = {
-  id: string;
-  name: string;
+  product_id:string;
+  category_id:string;
+  category_name:string;
+  product_name:string;
+  image_url:string;
+  price:number;
+  date_register:string;
 };
 
 export type CategoryField = {

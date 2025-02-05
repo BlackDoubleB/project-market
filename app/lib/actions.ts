@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from "next-auth";
 import bcrypt from 'bcrypt';
-import { v2 as cloudinary } from 'cloudinary';
+
 
 const FormSchema = z.object({
   id: z.string(),
@@ -102,6 +102,7 @@ export type StateProduct = {
   };
   message?: string | null;
 };
+
 
 
 export async function createUser(prevState: StateUser, formData: FormData) {
@@ -213,13 +214,12 @@ export async function createCategory(prevState: StateCategory, formData: FormDat
 }
 
 
-
 export async function createProduct(prevState: StateProduct, formData: FormData) {
   const validatedFields = FormSchemaProduct.safeParse({
     product_name: formData.get('product_name'),
-    category_id:formData.get('category_id'),
-    image_url: formData.get('image_url'),
-    price: formData.get('price')
+    category_id: formData.get('category_id'),
+    image_url: formData.get('image_url'), 
+    price: formData.get('price'),
   });
 
   if (!validatedFields.success) {
@@ -229,23 +229,32 @@ export async function createProduct(prevState: StateProduct, formData: FormData)
     };
   }
 
-  const { product_name, category_id, image_url,price } = validatedFields.data;
+  const { product_name, category_id, image_url, price } = validatedFields.data;
 
   try {
-  // eslint-disable-next-line
-  let date_register = new Date();
+    const date_register = new Date();
 
-    await sql`
+    if (!product_name || !category_id || !image_url || !price) {
+      throw new Error("Missing required fields");
+    }
+    const insertResult = await sql`
       INSERT INTO products (product_name, category_id, image_url, price, date_register)
       VALUES (${product_name}, ${category_id}, ${image_url}, ${price}, ${date_register.toISOString()})
     `;
+
+    if (!insertResult) {
+      throw new Error("Failed to insert product into the database");
+    }
+
   } catch (error) {
+    console.error('❌ Error al crear producto:', error);
     return {
-      message: `Database Error: Failed to Create Product.`, error
+      message: 'Database Error: Failed to Create Product.',
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
   revalidatePath('/dashboard/products');
-  redirect('/dashboard/products');
+   redirect('/dashboard/products');
 }
 
 
@@ -357,7 +366,7 @@ export async function updateProduct(
 ) {
   const validatedFields = FormSchemaProduct.safeParse({
     product_name: formData.get('product_name'),
-    category_id:formData.get('category_id'),
+    category_id: formData.get('category_id'),
     image_url: formData.get('image_url'),
     price: formData.get('price')
   });
@@ -368,7 +377,7 @@ export async function updateProduct(
       message: 'Missing Fields. Failed to Update Categories.',
     };
   }
-  const { product_name, category_id, image_url,price } = validatedFields.data;
+  const { product_name, category_id, image_url, price } = validatedFields.data;
 
   try {
     // eslint-disable-next-line
@@ -400,22 +409,22 @@ export async function deleteCategory(id: string): Promise<boolean> {
     await sql`DELETE FROM categories WHERE category_id = ${id}`;
     revalidatePath('/dashboard/categories');
     return true; // Indica que la eliminación fue exitosa
-    
+
   } catch (error) {
     console.error('Error deleting category:', error);
     return false; // Indica que hubo un error
   }
 }
 
-export async function deleteProduct(id: string): Promise<boolean>  {
+export async function deleteProduct(id: string): Promise<boolean> {
   try {
     await sql`DELETE FROM products WHERE product_id = ${id}`;
     revalidatePath('/dashboard/products');
-    return true; 
-    
+    return true;
+
   } catch (error) {
     console.error('Error deleting product:', error);
-    return false; 
+    return false;
   }
 }
 

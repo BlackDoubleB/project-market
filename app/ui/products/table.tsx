@@ -85,9 +85,9 @@ export default async function ProductsTable({
                   <td className="whitespace-nowrap px-3 py-3">
                     {product.product_name}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {product.image_url}
-                  </td>
+                 <td className="whitespace-nowrap px-3 py-3">
+                 <img  src={product.image_url} alt={product.product_name} className="w-20 h-20" />
+                 </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {product.price}
                   </td>

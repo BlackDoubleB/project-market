@@ -14,6 +14,7 @@ import {
   LatestSale,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { error } from 'console';
 
 
 
@@ -409,14 +410,14 @@ export async function fetchProducts() {
   try {
     const data = await sql<ProductField>`
       SELECT
-        product_id,
-        category_id,
-        category_name,
-        product_name,
-        image_url,
-        date_register
+        products.product_id,
+        products.category_id,
+        categories.category_name,
+        products.product_name,
+        products.image_url,
+        products.date_register
       FROM products
-      JOIN categories AS products.cat
+      JOIN categories ON products.category_id = categories.category_id
       ORDER BY product_name ASC
     `;
 
@@ -424,6 +425,6 @@ export async function fetchProducts() {
     return products;
   } catch (err) {
     console.error('Database Error:', err);
-    throw new Error('Failed to fetch all products.');
+    throw new Error('Failed to fetch all products.' + err);
   }
 }

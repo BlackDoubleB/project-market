@@ -143,7 +143,7 @@ async function seedProducts() {
       product_name VARCHAR(255) NOT NULL,
       image_url TEXT NOT NULL,
       price NUMERIC(10,2) NOT NULL,
-      date TIMESTAMP NOT NULL,
+      date_register TIMESTAMP NOT NULL,
       CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(category_id)
     );
   `;
@@ -151,8 +151,8 @@ async function seedProducts() {
   const insertedProducts = await Promise.all(
     products.map(
       (product) => client.sql`
-        INSERT INTO products (product_id, category_id, product_name, image_url, price, date)
-        VALUES (${product.product_id}, ${product.category_id},${product.product_name}, ${product.image_url},${product.price},${product.date.toISOString()})
+        INSERT INTO products (product_id, category_id, product_name, image_url, price, date_register)
+        VALUES (${product.product_id}, ${product.category_id},${product.product_name}, ${product.image_url},${product.price},${product.date_register.toISOString()})
         ON CONFLICT (product_id) DO NOTHING;
       `,
     ),

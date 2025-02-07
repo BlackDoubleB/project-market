@@ -1,5 +1,8 @@
 import { UpdateProduct, DeleteProduct } from '@/app/ui/products/buttons';
 import { fetchFilteredProducts } from '@/app/lib/data';
+import { format } from 'date-fns';
+
+
 export default async function ProductsTable({
   query,
   currentPage,
@@ -31,9 +34,7 @@ export default async function ProductsTable({
                 <div className=" flex flex-col items-start justify-between border-b pb-4">
                   <p>{product.price}</p>
                 </div>
-                <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{product.date_register}</p>
-                </div>
+                
                 <div className="flex w-full items-center justify-between pt-4">
                   <div className="flex justify-end gap-2">
                     <UpdateProduct id={product.product_id} />
@@ -85,15 +86,20 @@ export default async function ProductsTable({
                   <td className="whitespace-nowrap px-3 py-3">
                     {product.product_name}
                   </td>
-                 <td className="whitespace-nowrap px-3 py-3">
-                 <img  src={product.image_url} alt={product.product_name} className="w-20 h-20" />
-                 </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    <img src={product.image_url} alt={product.product_name} className="w-20 h-20" />
+                  </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {product.price}
                   </td>
+
                   <td className="whitespace-nowrap px-3 py-3">
-                    {product.date_register}
+                    {product.date_register
+                      ? format(new Date(product.date_register), 'yyyy-MM-dd HH:mm:ss')
+                      : 'N/A'}
                   </td>
+                  
+
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
                       <UpdateProduct id={product.product_id} />

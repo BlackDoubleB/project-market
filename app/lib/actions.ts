@@ -57,6 +57,12 @@ const FormSchemaProduct = z.object({
   price: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' })
 });
 
+const FormSchemaStock = z.object({
+  quantity: z.coerce.number().gt(0, { message: 'Please enter an number'}),
+  product_id: z.string({invalid_type_error: 'Please select a product.'}),
+});
+
+
 export type State = {
   errors?: {
     productId?: string[];
@@ -103,6 +109,13 @@ export type StateProduct = {
   message?: string | null;
 };
 
+export type StateStock = {
+  errors?: {
+    quantity?: string[];
+    product_id?: string[]; 
+  };
+  message?: string | null;
+};
 
 
 export async function createUser(prevState: StateUser, formData: FormData) {
@@ -213,7 +226,6 @@ export async function createCategory(prevState: StateCategory, formData: FormDat
   redirect('/dashboard/categories');
 }
 
-
 export async function createProduct(prevState: StateProduct, formData: FormData) {
   const validatedFields = FormSchemaProduct.safeParse({
     product_name: formData.get('product_name'),
@@ -257,6 +269,38 @@ export async function createProduct(prevState: StateProduct, formData: FormData)
    redirect('/dashboard/products');
 }
 
+export async function createStock(prevState: StateStock, formData: FormData) {
+  const validatedFields = FormSchemaStock.safeParse({
+    quantity: formData.get('quantity'),
+    product_id: formData.get('product_id'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Field. Failed to Create Stock.',
+    };
+  }
+
+  const { quantity, product_id } = validatedFields.data;
+
+  try {
+    const date_register = new Date();
+    await sql`
+      INSERT INTO stock (quantity,product_id,date_register)
+      VALUES (${quantity},${product_id},${date_register.toISOString()})
+    `;
+
+  } catch (error) {
+    console.error("❌ Error al crear stock:", error);
+    return {
+      message: 'Database Error: Failed to Create Stock.',
+      error: error
+    };
+  }
+  revalidatePath('/dashboard/stock');
+  redirect('/dashboard/stock');
+}
 
 const UpdateSale = FormSchema.omit({ id: true, date: true });
 
@@ -382,6 +426,11 @@ export async function updateProduct(
   try {
     // eslint-disable-next-line
     let date_register = new Date();
+    
+    if (!product_name || !category_id || !image_url || !price) {
+      throw new Error("Missing required fields");
+    }
+
     await sql`
       UPDATE products
       SET product_name = ${product_name}, category_id = ${category_id}, image_url = ${image_url}, price = ${price}, date_register = ${date_register.toISOString()}
@@ -392,6 +441,38 @@ export async function updateProduct(
   }
   revalidatePath('/dashboard/products');
   redirect('/dashboard/products');
+}
+
+export async function updateStock(
+  id: string,
+  prevState: StateStock,
+  formData: FormData,
+) {
+  const validatedFields = FormSchemaStock.safeParse({
+    quantity: formData.get('quantity'),
+    product_id:formData.get('product_id')
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Stock.',
+    };
+  }
+
+  const { quantity,product_id } = validatedFields.data;
+
+  try {
+    await sql`
+      UPDATE stock
+      SET quantity = ${quantity}, product_id = ${product_id}
+      WHERE stock_id = ${id}
+    `;
+  } catch {
+    return { message: 'Database Error: Failed to Update Stock.' };
+  }
+  revalidatePath('/dashboard/stock');
+  redirect('/dashboard/stock');
 }
 
 export async function deleteSale(id: string) {
@@ -424,6 +505,18 @@ export async function deleteProduct(id: string): Promise<boolean> {
 
   } catch (error) {
     console.error('Error deleting product:', error);
+    return false;
+  }
+}
+
+export async function deleteStock(id: string): Promise<boolean> {
+  try {
+    await sql`DELETE FROM stock WHERE stock_id = ${id}`;
+    revalidatePath('/dashboard/stock');
+    return true;
+
+  } catch (error) {
+    console.error('Error deleting stock:', error);
     return false;
   }
 }

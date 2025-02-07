@@ -14,6 +14,10 @@ export default function Form({ products }: { products: ProductField[] }) {
     const initialState: StateProduct = { message: null, errors: {} };
     const [state, formAction] = useActionState(createProduct, initialState);
 
+    const uniqueProducts = Array.from(new Set(products.map((product) => product.category_id))).map((categoryId) => {
+        return products.find((product) => product.category_id === categoryId);
+    });
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setFile(e.target.files[0]);
@@ -22,39 +26,39 @@ export default function Form({ products }: { products: ProductField[] }) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-    
+
         if (!file) {
             alert('Por favor, selecciona una imagen');
             return;
         }
-    
+
         const form = e.currentTarget as HTMLFormElement;
         if (!form) {
             console.error('Form is null or undefined');
             return;
         }
-    
+
         const formData = new FormData();
         formData.append('file', file);
-    
+
         try {
             // Subir la imagen a Cloudinary
             const response = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData,
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 setImageUrl(data.url); // Guardar la URL de la imagen
-    
+
                 // Crear un nuevo FormData para enviar los datos del producto
                 const productFormData = new FormData();
                 productFormData.append('product_name', form.product_name.value);
                 productFormData.append('category_id', form.category_id.value);
                 productFormData.append('price', form.price.value);
                 productFormData.append('image_url', data.url);
-    
+
                 // ✅ Usa startTransition para ejecutar formAction de forma segura
                 startTransition(() => {
                     formAction(productFormData);
@@ -68,7 +72,7 @@ export default function Form({ products }: { products: ProductField[] }) {
     };
 
     return (
-        <form action={formAction} onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
             <div className="rounded-md bg-gray-50 p-4 md:p-6">
                 {/* Category Name */}
                 <div className="mb-4">
@@ -86,10 +90,12 @@ export default function Form({ products }: { products: ProductField[] }) {
                             <option value="" disabled>
                                 Select a category
                             </option>
-                            {products.map((product, index) => (
-                                <option key={`${product.category_id}-${index}`} value={product.category_id}>
-                                    {product.category_name}
-                                </option>
+                            {uniqueProducts.map((product) => (
+                                product && (
+                                    <option key={product.category_id} value={product.category_id}>
+                                        {product.category_name}
+                                    </option>
+                                )
                             ))}
 
                         </select>
@@ -134,7 +140,7 @@ export default function Form({ products }: { products: ProductField[] }) {
 
                 {/* Image URL */}
                 <div className="mb-4">
-                    <label htmlFor="file_input" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" aria-describedby="image_url">
+                    <label htmlFor="file_input" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Upload file
                     </label>
                     <div className="relative mt-2 rounded-md">
@@ -144,6 +150,7 @@ export default function Form({ products }: { products: ProductField[] }) {
                                 name="image_url"
                                 type="file"
                                 onChange={handleFileChange}
+                                aria-describedby="image_url"
                                 className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                             />
                         </div>
@@ -161,7 +168,8 @@ export default function Form({ products }: { products: ProductField[] }) {
 
                 {/* Price */}
                 <div className="mb-4">
-                    <label htmlFor="price" className="mb-2 block text-sm font-medium" aria-describedby="price">
+                    <label htmlFor="
+                    price" className="mb-2 block text-sm font-medium" aria-describedby="price">
                         Price
                     </label>
                     <div className="relative mt-2 rounded-md">

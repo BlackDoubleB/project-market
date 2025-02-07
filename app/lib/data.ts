@@ -5,17 +5,18 @@ import {
   RolesField,
   ProductsTable,
   CategoriesTable,
+  StockTable,
   CategoryField,
   ProductField,
   RoleForm,
   CategoryForm,
+  ProductForm,
+  StockForm,
   SaleForm,
   SalesTable,
   LatestSale,
 } from './definitions';
 import { formatCurrency } from './utils';
-import { error } from 'console';
-
 
 
 export async function fetchLatestSales() {
@@ -181,13 +182,13 @@ export async function fetchFilteredProducts(
   try {
     const products = await sql<ProductsTable>`
       SELECT
-      product_id,
-      category_name,
-      product_name,
-      image_url,
-      price,
-      date_register
-  date
+      products.product_id,
+      categories.category_name,
+      products.product_name,
+      products.image_url,
+      products.price,
+      products.date_register
+
       FROM products
       JOIN categories ON products.category_id = categories.category_id
       WHERE
@@ -200,6 +201,35 @@ export async function fetchFilteredProducts(
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch products.');
+  }
+}
+
+export async function fetchFilteredStock(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const stock = await sql<StockTable>`
+      SELECT
+           stock.stock_id,
+           products.product_id,
+           products.product_name,
+           stock.quantity,
+           stock.date_register
+      FROM stock
+      JOIN products ON stock.product_id = products.product_id
+      WHERE
+        product_name::text ILIKE ${`%${query}%`} 
+      ORDER BY product_name DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return stock.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch stock.');
   }
 }
 
@@ -273,6 +303,23 @@ export async function fetchProductsPages(query: string) {
   }
 }
 
+export async function fetchStockPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM stock
+    JOIN products ON products.product_id = stock.product_id
+    WHERE
+      product_name::text ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of Stocks.');
+  }
+}
+
 export async function fetchRoleById(id: string) {
   try {
     const data = await sql<RoleForm>`
@@ -341,6 +388,60 @@ export async function fetchCategoryById(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch category.');
+  }
+}
+
+export async function fetchProductById(id: string) {
+  try {
+    const data = await sql<ProductForm>`
+      SELECT
+          products.product_id,
+          categories.category_id,
+          categories.category_name,
+          products.product_name,
+          products.image_url,
+          products.price,
+          products.date_register
+      FROM products
+      JOIN categories ON products.category_id = categories.category_id
+      WHERE product_id = ${id}
+    `;
+
+    const products = data.rows.map((product) => ({
+      ...product,
+    }));
+
+    console.log(products);
+    return products[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch product.');
+  }
+}
+
+export async function fetchStockById(id: string) {
+  try {
+    const data = await sql<StockForm>`
+      SELECT
+        stock.stock_id,
+        products.product_id,
+        products.product_name,
+        stock.quantity,
+        stock.date_register
+      FROM stock
+      JOIN products ON products.product_id = stock.product_id
+      WHERE stock_id = ${id};
+    `;
+
+    const stock = data.rows.map((st) => ({
+      ...st,
+    }));
+
+    console.log(stock);
+    return stock[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch stock.');
   }
 }
 

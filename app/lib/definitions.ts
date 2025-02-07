@@ -86,6 +86,14 @@ export type ProductsTable = {
   date_register: string;
 };
 
+export type StockTable ={
+  stock_id: string;
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  date_register: string;
+}
+
 export type SalesTable = {
   id: string;
   product_name: string;
@@ -137,10 +145,29 @@ export type SaleForm = {
   method: 'card' | 'cash';
 };
 
+export type ProductForm = {
+  product_id: string;
+  category_id: string;
+  category_name:string;
+  product_name: string;
+  image_url:string;
+  price:number;
+  date_register:string;
+};
+
 export type CategoryForm = {
   category_id: string;
   category_name: string;
 };
+
+export type StockForm = {
+  stock_id: string;
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  date_register: string
+};
+
 
 export type RoleForm = {
   role_id: string;

@@ -9,7 +9,6 @@ const links = [
     href: '/dashboard', 
     icon: <Icon icon="material-symbols:home"/>
   },
-
   {
     name: 'Sales',
     href: '/dashboard/sales',
@@ -33,6 +32,10 @@ const links = [
 
   { name: 'Acount', 
     href: '/dashboard/acount', 
+    icon: <Icon icon="icon-park-outline:config" />
+  },
+  { name: 'Stock', 
+    href: '/dashboard/stock', 
     icon: <Icon icon="icon-park-outline:config" />
   }
 ];

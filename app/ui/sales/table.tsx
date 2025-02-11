@@ -1,9 +1,9 @@
-import Image from 'next/image';
-import { UpdateSale, DeleteSale } from '@/app/ui/sales/buttons';
-import SaleMethod from '@/app/ui/sales/method';
-import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
+import { UpdateSale } from '@/app/ui/sales/buttons';
 import { fetchFilteredSales } from '@/app/lib/data';
-export default async function InvoicesTable({
+import { format } from 'date-fns';
+
+
+export default async function SalesTable({
   query,
   currentPage,
 }: {
@@ -18,49 +18,34 @@ export default async function InvoicesTable({
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
 
-          {/* Primer sub div */}
+          {/* md> */}
           <div className="md:hidden">
             {sales?.map((sale) => (
-              <div
-                key={sale.id}
-                className="mb-2 rounded-md bg-white p-4"
-              >
-
+              <div key={sale.sale_id} className="mb-2 rounded-md bg-white p-4">
                 <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{sale.category_name}</p>
-                  <div className='flex '>
-                    <div className="mb-2 flex items-center">
-                      <Image
-                        src={sale.image_url}
-                        className="mr-2 rounded-full min-w-8"
-                        width={30}
-                        height={30}
-                        alt={`${sale.product_name}'s profile picture`}
-                      />
-                    </div>
-                    <div className='w-24 xxs:w-48 xs:w-80'>
-                      <p className='truncate' >{sale.product_name}</p>
-                    </div>
-                  </div>
+                  <p>{sale.user_name}</p>
                 </div>
-
-
-
-
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p>{sale.method}</p>
+                </div>
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p> {sale.date_register
+                      ? format(new Date(sale.date_register), 'yyyy-MM-dd HH:mm:ss')
+                      : 'N/A'}</p>
+                </div>
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p>{sale.total}</p>
+                </div>
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p>{sale.quantity}</p>
+                </div>
+                <div className=" flex flex-col items-start justify-between border-b pb-4">
+                  <p>{sale.product_name}</p>
+                </div>
+                
                 <div className="flex w-full items-center justify-between pt-4">
-                  <div>
-                    
-                      <p className="text-xl font-medium">
-                        {formatCurrency(sale.amount)}
-                      </p>
-                      <SaleMethod method={sale.method} />
-               
-
-                    <p>{formatDateToLocal(sale.date)}</p>
-                  </div>
                   <div className="flex justify-end gap-2">
-                    <UpdateSale id={sale.id} />
-                    <DeleteSale id={sale.id} />
+                    <UpdateSale id={sale.sale_id} />
                   </div>
                 </div>
               </div>
@@ -75,19 +60,22 @@ export default async function InvoicesTable({
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Product
+                  Username
                 </th>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Category
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Amount
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Date
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
                   Method
+                </th>
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Date Register
+                </th>
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Total
+                </th>
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Quantity
+                </th>
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Product Name
                 </th>
                 <th scope="col" className="relative py-3 pl-6 pr-3">
                   <span className="sr-only">Edit</span>
@@ -99,38 +87,33 @@ export default async function InvoicesTable({
             {/* Inicio Tbody*/}
             <tbody className="bg-white">
               {sales?.map((sale) => (
-                <tr
-                  key={sale.id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
-                >
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={sale.image_url}
-                        className="rounded-full"
-                        width={28}
-                        height={28}
-                        alt={`${sale.product_name}'s profile picture`}
-                      />
-                      <p>{sale.product_name}</p>
-                    </div>
+                <tr key={sale.sale_id}
+                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {sale.user_name}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {sale.category_name}
+                    {sale.method}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {formatCurrency(sale.amount)}
+                    {sale.date_register
+                      ? format(new Date(sale.date_register), 'yyyy-MM-dd HH:mm:ss')
+                      : 'N/A'}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {formatDateToLocal(sale.date)}
+                    {sale.total}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    <SaleMethod method={sale.method} />
+                    {sale.quantity}
                   </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {sale.product_name}
+                  </td>
+
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <UpdateSale id={sale.id} />
-                      <DeleteSale id={sale.id} />
+                      <UpdateSale id={sale.sale_id} />
                     </div>
                   </td>
                 </tr>

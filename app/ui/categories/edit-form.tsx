@@ -1,12 +1,12 @@
 'use client';
 import { updateCategory, StateCategory } from '@/app/lib/actions';
 import { useActionState } from 'react';
-import { CategoryForm } from '@/app/lib/definitions';
+import { CategoryById} from '@/app/lib/definitions';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
-export default function EditCategoryForm({categoryById,}: {categoryById: CategoryForm;}) {
+export default function EditCategoryForm({categoryById,}: {categoryById: CategoryById;}) {
   const initialState: StateCategory = { message: null, errors: {} };
   const updateCategoryWithId = updateCategory.bind(null, categoryById.category_id);
   const [state, formAction] = useActionState(updateCategoryWithId, initialState);

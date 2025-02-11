@@ -1,20 +1,21 @@
 
 import { sql } from '@vercel/postgres';
 import {
-  RolesTable,
-  RolesField,
-  ProductsTable,
-  CategoriesTable,
-  StockTable,
-  CategoryField,
-  ProductField,
-  RoleForm,
-  CategoryForm,
-  ProductForm,
-  StockForm,
-  SaleForm,
-  SalesTable,
+  NavTableProducts,
   LatestSale,
+  RoleFiltered,
+  CategoryFiltered,
+  ProductFiltered,
+  StockFiltered,
+  SaleFiltered,
+  CategoryById,
+  RoleById,
+  ProductById,
+  StockById,
+  RoleFetch,
+  CategoryFetch,
+  ProductFetch
+
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -39,11 +40,6 @@ export async function fetchLatestSales() {
       }
     });
 
-    /* const latestSales = data.rows.map((sale) => ({
-      ...sale,
-      //El sale automaticamente al devolver un objeto por cada iteracion, lo guarda en un array y el return latestSales devolvera eso cuando lo invoquemos
-      amount: formatCurrency(sale.amount),
-    })); */
     return g;
   } catch (error) {
     console.error('Database Error:', error);
@@ -85,44 +81,7 @@ export async function fetchCardData() {
 
 const ITEMS_PER_PAGE = 6;
 
-//Sales
-
-export async function fetchFilteredSales(
-  query: string,
-  currentPage: number,
-) {
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
-  try {
-    const sales = await sql<SalesTable>`
-      SELECT
-        sales.id,
-        sales.amount,
-        sales.date,
-        sales.method,
-        products.name as product_name,
-        products.image_url,
-        categories.name as category_name
-      FROM sales
-      JOIN products ON sales.product_id = products.id
-      JOIN categories ON sales.category_id = categories.id
-      WHERE
-        products.name ILIKE ${`%${query}%`} OR
-        categories.name ILIKE ${`%${query}%`} OR
-        sales.amount::text ILIKE ${`%${query}%`} OR
-        sales.date::text ILIKE ${`%${query}%`} OR
-        sales.method ILIKE ${`%${query}%`}
-      ORDER BY sales.date DESC
-      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
-    `;
-
-    return sales.rows;
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch sales.');
-  }
-}
-
+//FECTH FILTERED
 export async function fetchFilteredRoles(
   query: string,
   currentPage: number,
@@ -130,7 +89,7 @@ export async function fetchFilteredRoles(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const roles = await sql<RolesTable>`
+    const roles = await sql<RoleFiltered>`
       SELECT
         role_id,
         role_name
@@ -155,7 +114,7 @@ export async function fetchFilteredCategories(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const categories = await sql<CategoriesTable>`
+    const categories = await sql<CategoryFiltered>`
       SELECT
         category_id,
         category_name
@@ -180,7 +139,7 @@ export async function fetchFilteredProducts(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const products = await sql<ProductsTable>`
+    const products = await sql<ProductFiltered>`
       SELECT
       products.product_id,
       categories.category_name,
@@ -211,7 +170,7 @@ export async function fetchFilteredStock(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const stock = await sql<StockTable>`
+    const stock = await sql<StockFiltered>`
       SELECT
            stock.stock_id,
            products.product_id,
@@ -233,28 +192,41 @@ export async function fetchFilteredStock(
   }
 }
 
-export async function fetchSalesPages(query: string) {
-  try {
-    const count = await sql`SELECT COUNT(*)
-    FROM sales
-    JOIN products ON sales.product_id = products.id
-    JOIN categories ON sales.category_id = categories.id
-    WHERE
-      products.name ILIKE ${`%${query}%`} OR
-      categories.name ILIKE ${`%${query}%`} OR
-      sales.amount::text ILIKE ${`%${query}%`} OR
-      sales.date::text ILIKE ${`%${query}%`} OR
-      sales.method ILIKE ${`%${query}%`}
-  `;
+export async function fetchFilteredSales(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
-    return totalPages;
+  try {
+    const sales = await sql<SaleFiltered>`
+      SELECT
+           sales.sale_id,
+           users.user_name,
+           sales.method,
+           sales.date_register,
+           sales.total,
+           detail_sale_products.quantity,
+           products.product_name
+
+      FROM sales
+      JOIN users ON sales.user_id = users.user_id
+      JOIN detail_sale_products ON detail_sale_products.sale_id = sales.sale_id
+      JOIN products ON detail_sale_products.product_id = products.product_id
+      WHERE
+        products.product_name::text ILIKE ${`%${query}%`}
+      ORDER BY products.product_name DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return sales.rows;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of sales.');
+    throw new Error('Failed to fetch sales.');
   }
 }
 
+//FETCH PAGES
 export async function fetchRolesPages(query: string) {
   try {
     const count = await sql`SELECT COUNT(*)
@@ -320,58 +292,29 @@ export async function fetchStockPages(query: string) {
   }
 }
 
-export async function fetchRoleById(id: string) {
+export async function fetchSalesPages(query: string) {
   try {
-    const data = await sql<RoleForm>`
-      SELECT
-        role_id,
-        role_name
-      FROM roles
-      WHERE role_id = ${id};
-    `;
+    const count = await sql`SELECT COUNT(*)
+    FROM sales
+    JOIN users ON users.user_id = sales.user_id
+    JOIN detail_sale_products ON detail_sale_products.sale_id = sales.sale_id
+    JOIN products ON products.product_id = detail_sale_products.product_id
+    WHERE
+      products.product_name::text ILIKE ${`%${query}%`}
+  `;
 
-    const roles = data.rows.map((role) => ({
-      ...role,
-    }));
-
-    console.log(roles);
-    return roles[0];
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch role.');
+    throw new Error('Failed to fetch total number of sales.');
   }
 }
 
-export async function fetchSaleById(id: string) {
-  try {
-    const data = await sql<SaleForm>`
-      SELECT
-        sales.id,
-        sales.product_id,
-        sales.category_id,
-        sales.amount,
-        sales.method
-      FROM sales
-      WHERE sales.id = ${id};
-    `;
-
-    const sale = data.rows.map((sale) => ({
-      ...sale,
-      // Convert amount from cents to dollars
-      amount: sale.amount / 100,
-    }));
-
-    console.log(sale); // Invoice is an empty array []
-    return sale[0];
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch sale.');
-  }
-}
-
+//FETCH BY ID
 export async function fetchCategoryById(id: string) {
   try {
-    const data = await sql<CategoryForm>`
+    const data = await sql<CategoryById>`
       SELECT
         category_id,
         category_name
@@ -391,9 +334,31 @@ export async function fetchCategoryById(id: string) {
   }
 }
 
+export async function fetchRoleById(id: string) {
+  try {
+    const data = await sql<RoleById>`
+      SELECT
+        role_id,
+        role_name
+      FROM roles
+      WHERE role_id = ${id};
+    `;
+
+    const roles = data.rows.map((role) => ({
+      ...role,
+    }));
+
+    console.log(roles);
+    return roles[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch role.');
+  }
+}
+
 export async function fetchProductById(id: string) {
   try {
-    const data = await sql<ProductForm>`
+    const data = await sql<ProductById>`
       SELECT
           products.product_id,
           categories.category_id,
@@ -421,7 +386,7 @@ export async function fetchProductById(id: string) {
 
 export async function fetchStockById(id: string) {
   try {
-    const data = await sql<StockForm>`
+    const data = await sql<StockById>`
       SELECT
         stock.stock_id,
         products.product_id,
@@ -452,7 +417,7 @@ export async function fetchFilteredProductsNav(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const products = await sql<ProductsTable>`
+    const products = await sql<NavTableProducts>`
       SELECT
         products.id,
         products.name AS name_product,
@@ -470,10 +435,11 @@ export async function fetchFilteredProductsNav(
     throw new Error('Failed to fetch products.');
   }
 }
-//Roles
+
+//FECTH ALL
 export async function fetchRoles() {
   try {
-    const data = await sql<RolesField>`
+    const data = await sql<RoleFetch>`
       SELECT
       role_id,
       role_name
@@ -488,10 +454,10 @@ export async function fetchRoles() {
     throw new Error('Failed to fetch all roles.');
   }
 }
-//Categories
+
 export async function fetchCategories() {
   try {
-    const data = await sql<CategoryField>`
+    const data = await sql<CategoryFetch>`
       SELECT
         category_id,
         category_name
@@ -506,15 +472,16 @@ export async function fetchCategories() {
     throw new Error('Failed to fetch all categories.');
   }
 }
-//Products
+
 export async function fetchProducts() {
   try {
-    const data = await sql<ProductField>`
+    const data = await sql<ProductFetch>`
       SELECT
         products.product_id,
         products.category_id,
         categories.category_name,
         products.product_name,
+        products.price,
         products.image_url,
         products.date_register
       FROM products

@@ -2,12 +2,12 @@
 'use client';
 import { updateProduct, StateProduct } from '@/app/lib/actions';
 import { useActionState, useState, startTransition } from 'react';
-import { CategoryField, ProductForm } from '@/app/lib/definitions';
+import { CategoryFetch, ProductById } from '@/app/lib/definitions';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
-export default function EditCategoryForm({ categories, productById }: { categories: CategoryField[], productById: ProductForm; }) {
+export default function EditCategoryForm({ categories, productById }: { categories: CategoryFetch[], productById: ProductById; }) {
     const initialState: StateProduct = { message: null, errors: {} };
     const updateProductWithId = updateProduct.bind(null, productById.product_id);
     const [state, formAction] = useActionState(updateProductWithId, initialState);

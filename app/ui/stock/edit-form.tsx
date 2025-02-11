@@ -1,12 +1,12 @@
 'use client';
 import { updateStock, StateStock } from '@/app/lib/actions';
 import { useActionState } from 'react';
-import { ProductField, StockForm } from '@/app/lib/definitions';
+import { ProductFetch, StockById } from '@/app/lib/definitions';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
-export default function EditStockForm({ stockById, products }: { stockById: StockForm, products: ProductField[] }) {
+export default function EditStockForm({ stockById, products }: { stockById: StockById, products: ProductFetch[] }) {
   const initialState: StateStock = { message: null, errors: {} };
   const updateStockWithId = updateStock.bind(null, stockById.stock_id);
   const [state, formAction] = useActionState(updateStockWithId, initialState);

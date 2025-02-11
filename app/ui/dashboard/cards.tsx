@@ -3,9 +3,6 @@ import { lusitana } from '@/app/ui/fonts';
 import { fetchCardData } from '@/app/lib/data';
 import { ReactNode } from 'react';
 
-
-
-
 const iconMap: Record<string, ReactNode> ={
   sales: <Icon icon="mdi:sale" />,
   products: <Icon icon="lsicon:goods-outline" />,

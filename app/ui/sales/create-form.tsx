@@ -1,219 +1,169 @@
 'use client';
-import { createSale, State } from '@/app/lib/actions';
-import { useActionState } from 'react';
-import { ProductField } from '@/app/lib/definitions';
+import { createProduct, StateProduct } from '@/app/lib/actions';
+import { useActionState, useState } from 'react';
 import Link from 'next/link';
-import { Icon } from '@iconify/react';
 import { Button } from '@/app/ui/button';
-import { categories } from '@/app/lib/placeholder-data';
-import clsx from 'clsx';
-import { useState } from 'react';
+import { ProductFetch } from '@/app/lib/definitions';
 
-export default function Form({ products }: { products: ProductField[] }) {
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | null>(null);
-  const initialState: State = { message: null, errors: {} };
-  const [state, formAction] = useActionState(createSale, initialState);
+export default function Form({ products }: { products: ProductFetch[] }) {
+  const [selectedProducts, setSelectedProducts] = useState<Array<{
+    product_id: string;
+    category_id: string;
+    category_name: string;
+    image_url: string;
+    price: number;
+  }>>([]);
 
-
-  const handlePaymentMethodChange = (method: 'cash' | 'card') => {
-    setPaymentMethod((prevMethod) => prevMethod === method ? null : method);
-  };
+  const initialState: StateProduct = { message: null, errors: {} };
+  const [state, formAction] = useActionState(createProduct, initialState);
+  console.log(state);
   
+  // Función para manejar el cambio de selección de producto
+  function handleChange(event: React.ChangeEvent<HTMLSelectElement>, index: number) {
+    const selectedProductId = event.target.value;
+    const selectedProduct = products.find((product) => product.product_id === selectedProductId);
 
-  
+    if (selectedProduct) {
+      const updatedProducts = [...selectedProducts];
+      updatedProducts[index] = {
+        product_id: selectedProduct.product_id,
+        category_id: selectedProduct.category_id,
+        category_name: selectedProduct.category_name,
+        image_url: selectedProduct.image_url,
+        price: selectedProduct.price,
+      };
+      setSelectedProducts(updatedProducts);
+    }
+  }
+
+  // Función para añadir un nuevo conjunto de campos
+  function addProduct() {
+    setSelectedProducts([...selectedProducts, {
+      product_id: "",
+      category_id: "",
+      category_name: "",
+      image_url: "",
+      price: 0,
+    }]);
+  }
+
   return (
     <form action={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        {/* Sale Product */}
-        <div className="mb-4">
-          <label htmlFor="product" className="mb-2 block text-sm font-medium">
-            Choose product
-          </label>
+        <button type="button" id="add_product" onClick={addProduct}>
+          Añadir Producto
+        </button>
 
-          <div className="relative">
-            <select
-              id="product"
-              name="productId"
-              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue=""
-              aria-describedby="product-error"
-            >
-              <option value="" disabled>
-                Select a product
-              </option>
-              {products.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.name}
-                </option>
-              ))}
-              
-            </select>
-            <Icon icon="solar:user-circle-bold" className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500"  />
-          </div>
+        {/* Renderizar los campos para cada producto seleccionado */}
+        {selectedProducts.map((product, index) => (
+          <div key={index}>
+            {/* Product Name */}
+            <div className="mb-4">
+              <label htmlFor={`product_id_${index}`} className="mb-2 block text-sm font-medium">
+                Choose Product
+              </label>
+              <div className="relative">
+                <select
+                  id={`product_id_${index}`}
+                  name={`product_id_${index}`}
+                  className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  value={product.product_id}
+                  onChange={(e) => handleChange(e, index)}
+                >
+                  <option value="" disabled>
+                    Select a Product
+                  </option>
+                  {products.map((product) => (
+                    <option key={product.product_id} value={product.product_id}>
+                      {product.product_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-          <div id="product-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.productId &&
-            state.errors.productId.map((error: string) => (
-              <p className="mt-2 text-sm text-red-500" key={error}>
-                {error}
-              </p>
-            ))}
-         </div>
+            {/* Category Name */}
+            <div className="mb-4">
+              <label htmlFor={`category_id_${index}`} className="mb-2 block text-sm font-medium">
+                Category
+              </label>
+              <div className="relative mt-2 rounded-md">
+                <div className="relative">
+                  {/* Input solo para mostrar el nombre de la categoría */}
+                  <input
+                    type="text"
+                    className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                    value={product.category_name}
+                    readOnly
+                  />
 
-        </div>
-        {/* Fin Sale Product */}
-      
+                  {/* Input oculto que envía solo el category_id */}
+                  <input
+                    type="hidden"
+                    name={`category_id_${index}`}
+                    value={product.category_id}
+                  />
+                </div>
+              </div>
+            </div>
 
-      {/* Sale Categorie */}
-      <div className="mb-4">
-          <label htmlFor="category" className="mb-2 block text-sm font-medium">
-            Choose category
-          </label>
+            {/* Image URL */}
+            <div className="mb-4">
+              <label htmlFor={`image_url_${index}`} className="mb-2 block text-sm font-medium">
+                Image
+              </label>
+              <div className="relative mt-2 rounded-md">
+                <div className="relative">
+                  {/* Solo para mostrar la imagen */}
+                  <img
+                    src={product.image_url}
+                    alt="Product"
+                    className="block w-full rounded-md border border-gray-200 w-40 h-40"
+                  />
 
-          <div className="relative">
-            <select
-              id="category"
-              name="categoryId"
-              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue=""
-              aria-describedby="category-error"
-            >
-              <option value="" disabled>
-                Select a category
-              </option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-              
-            </select>
-            <Icon icon="solar:user-circle-bold" className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500"  />
-          </div>
+                  {/* Input oculto para enviar la URL de la imagen */}
+                  <input
+                    type="hidden"
+                    name={`image_url_${index}`}
+                    value={product.image_url}
+                  />
+                </div>
+              </div>
+            </div>
 
-          <div id="product-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.categoryId &&
-            state.errors.categoryId.map((error: string) => (
-              <p className="mt-2 text-sm text-red-500" key={error}>
-                {error}
-              </p>
-            ))}
-         </div>
+            {/* Price */}
+            <div className="mb-4">
+              <label htmlFor={`price_${index}`} className="mb-2 block text-sm font-medium">
+                Price
+              </label>
+              <div className="relative mt-2 rounded-md">
+                <div className="relative">
+                  {/* Input solo para mostrar */}
+                  <input
+                    type="number"
+                    className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                    value={product.price}
+                    readOnly
+                  />
 
-        </div>
-        {/* Fin Sale Product */}
-
-        {/* Sale Amount */}
-        <div className="mb-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium"
-                 aria-describedby="amount-error">
-            Choose an amount
-          </label>
-          <div className="relative mt-2 rounded-md">
-            <div className="relative">
-              <input
-                id="amount"
-                name="amount"
-                type="number"
-                step="0.01"
-                placeholder="Enter USD amount"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                
-              />
-              <Icon icon="formkit:currency" className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-              
+                  {/* Input oculto que envía */}
+                  <input
+                    type="hidden"
+                    name={`price_${index}`}
+                    value={product.price}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* Validation */}
-          <div id="amount-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.amount &&
-            state.errors.amount.map((error: string) => (
-              <p className="mt-2 text-sm text-red-500" key={error}>
-                {error}
-              </p>
-            ))}
-         </div>
-
-        </div>
-
-        {/* Sale Method */}
-        <fieldset>
-          <legend className="mb-2 block text-sm font-medium"
-                  aria-describedby="method-error">
-            Set the sale method
-          </legend>
-          <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
-            <div className="flex gap-4">
-
-              <div className="flex items-center">
-                <input
-                  id="cash"
-                  name="method"
-                  type="radio"
-                  value= "cash"
-                  className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
-                  onChange={() => handlePaymentMethodChange('cash')}
-              
-                  checked={paymentMethod === 'cash'}
-                />
-                <label
-                  htmlFor="cash"
-                  className={clsx(
-                    "ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-green-600 hover:text-white",
-                    paymentMethod === 'cash' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600'
-                  )}
-                >
-                    Cash
-                    <Icon icon="mdi:cash-multiple" className="h-4 w-4" />
-                </label>
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  id="card"
-                  name="method"
-                  type="radio"
-                  value="card"
-                  className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
-                  checked={paymentMethod === 'card'}
-                  onChange={() => handlePaymentMethodChange('card')}
-                 
-                />
-                <label
-                  htmlFor="card"
-                  className={clsx(
-                    "ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-green-600 hover:text-white",
-                    paymentMethod === 'card' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600'
-                  )}
-                >
-                  Card 
-                  <Icon icon="ion:card" className="h-4 w-4"/>
-                </label>
-              </div>
-
-            </div>
-          </div>
-
-           {/* Validation */}
-           <div id="method-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.method &&
-            state.errors.method.map((error: string) => (
-              <p className="mt-2 text-sm text-red-500" key={error}>
-                {error}
-              </p>
-            ))}
-         </div>
-        </fieldset>
+        ))}
       </div>
+
       <div className="mt-6 flex justify-end gap-4">
-        <Link
-          href="/dashboard/sales"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-        >
+        <Link href="/dashboard/categories" className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200">
           Cancel
         </Link>
-        <Button type="submit">Create Sale</Button>
+        <Button type="submit">Create Product</Button>
       </div>
     </form>
   );

@@ -7,24 +7,6 @@ import { signIn } from '@/auth';
 import { AuthError } from "next-auth";
 import bcrypt from 'bcrypt';
 
-
-const FormSchema = z.object({
-  id: z.string(),
-  productId: z.string({
-    invalid_type_error: 'Please select a product.',
-  }),
-  categoryId: z.string({
-    invalid_type_error: 'Please select a category.',
-  }),
-  amount: z.coerce
-    .number()
-    .gt(0, { message: 'Please enter an amount greater than $0.' }),
-  method: z.enum(['cash', 'card'], {
-    invalid_type_error: 'Please select an sale method.',
-  }),
-  date: z.string(),
-});
-
 const FormSchemaUser = z.object({
   // Campos de la tabla 'role'
   role_id: z.string({
@@ -43,7 +25,6 @@ const FormSchemaRole = z.object({
   role_name: z.string().min(1, 'role name is required'),
 });
 
-
 const FormSchemaCategory = z.object({
   category_name: z.string().min(1, 'category name is required'),
 });
@@ -58,20 +39,18 @@ const FormSchemaProduct = z.object({
 });
 
 const FormSchemaStock = z.object({
-  quantity: z.coerce.number().gt(0, { message: 'Please enter an number'}),
-  product_id: z.string({invalid_type_error: 'Please select a product.'}),
+  quantity: z.coerce.number().gt(0, { message: 'Please enter an number' }),
+  product_id: z.string({ invalid_type_error: 'Please select a product.' }),
 });
 
-
-export type State = {
-  errors?: {
-    productId?: string[];
-    categoryId?: string[];
-    amount?: string[];
-    method?: string[];
-  };
-  message?: string | null;
-};
+const FormSchemaSale = z.object({
+  method: z.enum(["cash", "card"]),
+  user_id: z.string(),
+  products: z.array(z.object({
+    product_id: z.string(),
+    quantity: z.number().min(1),
+  })),
+});
 
 export type StateUser = {
   errors?: {
@@ -112,11 +91,18 @@ export type StateProduct = {
 export type StateStock = {
   errors?: {
     quantity?: string[];
-    product_id?: string[]; 
+    product_id?: string[];
   };
   message?: string | null;
 };
 
+export type StateSale = {
+  errors?: { 
+    method?: string[]; 
+    user_id?: string[]; 
+    products?: string[] };
+  message?: string | null;
+}
 
 export async function createUser(prevState: StateUser, formData: FormData) {
   const validatedFields = FormSchemaUser.safeParse({
@@ -230,7 +216,7 @@ export async function createProduct(prevState: StateProduct, formData: FormData)
   const validatedFields = FormSchemaProduct.safeParse({
     product_name: formData.get('product_name'),
     category_id: formData.get('category_id'),
-    image_url: formData.get('image_url'), 
+    image_url: formData.get('image_url'),
     price: formData.get('price'),
   });
 
@@ -266,7 +252,7 @@ export async function createProduct(prevState: StateProduct, formData: FormData)
     };
   }
   revalidatePath('/dashboard/products');
-   redirect('/dashboard/products');
+  redirect('/dashboard/products');
 }
 
 export async function createStock(prevState: StateStock, formData: FormData) {
@@ -302,43 +288,92 @@ export async function createStock(prevState: StateStock, formData: FormData) {
   redirect('/dashboard/stock');
 }
 
-const UpdateSale = FormSchema.omit({ id: true, date: true });
+export async function createSale(prevState: StateSale, formData: FormData) {
+  // Convertir los productos en un array de objetos
+  const products = [];
+  for (let i = 0; formData.has(`product_id_${i}`); i++) {
+    products.push({
+      product_id: formData.get(`product_id_${i}`) as string,
+      quantity: Number(formData.get(`quantity_${i}`)),
+    });
+  }
 
-export async function updateSale(
-  id: string,
-  prevState: State,
-  formData: FormData,
-) {
-  const validatedFields = UpdateSale.safeParse({
-    productId: formData.get('productId'),
-    categoryId: formData.get('categoryId'),
-    amount: formData.get('amount'),
-    method: formData.get('method'),
+  const validatedFields = FormSchemaSale.safeParse({
+    user_id: formData.get("user_id"),
+    method: formData.get("method"),
+    products,
   });
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Update Sale.',
+      message: "Error en los datos. No se pudo crear la venta.",
     };
   }
 
-  const { productId, categoryId, amount, method } = validatedFields.data;
-  const amountInCents = amount * 100;
+  const { user_id, method } = validatedFields.data;
 
   try {
-    await sql`
-      UPDATE sales
-      SET product_id = ${productId},category_id = ${categoryId}, amount = ${amountInCents}, method = ${method}
-      WHERE id = ${id}
+    const date_register = new Date();
+
+    // Iniciar transacción
+    await sql`BEGIN;`;
+
+    // Insertar la venta y obtener el ID generado
+    const saleResult = await sql`
+      INSERT INTO sales (user_id, method, date_register, total)
+      VALUES (${user_id}, ${method}, ${date_register.toISOString()}, 0)
+      RETURNING id;
     `;
-  } catch {
-    return { message: 'Database Error: Failed to Update Sale.' };
+    const sale_id = saleResult.rows[0].id;
 
+    let totalSale = 0;
 
+    // Insertar productos y calcular total
+    for (const { product_id, quantity } of products) {
+      // Obtener el precio del producto desde la base de datos
+      const productPriceResult = await sql`
+        SELECT price FROM products WHERE id = ${product_id};
+      `;
+      const price = productPriceResult.rows[0]?.price || 0;
+
+      // Calcular el subtotal para este producto y sumarlo al total de la venta
+      const subtotal = price * quantity;
+      totalSale += subtotal;
+
+      // Insertar el producto en la venta
+      await sql`
+        INSERT INTO detail_sale_products (sale_id, product_id, quantity)
+        VALUES (${sale_id}, ${product_id}, ${quantity});
+      `;
+
+      // Actualizar stock
+      await sql`
+        UPDATE stock
+        SET quantity = quantity - ${quantity}
+        WHERE product_id = ${product_id};
+      `;
+    }
+
+    // Actualizar total de la venta
+    await sql`
+      UPDATE sales SET total = ${totalSale} WHERE id = ${sale_id};
+    `;
+
+    // Confirmar transacción
+    await sql`COMMIT;`;
+
+  } catch (error) {
+    console.error("❌ Error al crear la venta:", error);
+    await sql`ROLLBACK;`;
+    return {
+      message: "Error en la base de datos. No se pudo crear la venta.",
+      error,
+    };
   }
-  revalidatePath('/dashboard/sales');
-  redirect('/dashboard/sales');
+
+  revalidatePath("/dashboard/sale");
+  redirect("/dashboard/sale");
 }
 
 export async function updateRole(
@@ -426,7 +461,7 @@ export async function updateProduct(
   try {
     // eslint-disable-next-line
     let date_register = new Date();
-    
+
     if (!product_name || !category_id || !image_url || !price) {
       throw new Error("Missing required fields");
     }
@@ -450,7 +485,7 @@ export async function updateStock(
 ) {
   const validatedFields = FormSchemaStock.safeParse({
     quantity: formData.get('quantity'),
-    product_id:formData.get('product_id')
+    product_id: formData.get('product_id')
   });
 
   if (!validatedFields.success) {
@@ -460,7 +495,7 @@ export async function updateStock(
     };
   }
 
-  const { quantity,product_id } = validatedFields.data;
+  const { quantity, product_id } = validatedFields.data;
 
   try {
     await sql`
@@ -473,11 +508,6 @@ export async function updateStock(
   }
   revalidatePath('/dashboard/stock');
   redirect('/dashboard/stock');
-}
-
-export async function deleteSale(id: string) {
-  await sql`DELETE FROM sales WHERE id = ${id}`;
-  revalidatePath('/dashboard/sales');
 }
 
 export async function deleteRole(id: string) {

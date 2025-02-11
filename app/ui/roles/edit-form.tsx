@@ -1,12 +1,12 @@
 'use client';
 import { updateRole, StateRole } from '@/app/lib/actions';
 import { useActionState } from 'react';
-import { RoleForm } from '@/app/lib/definitions';
+import { RoleById } from '@/app/lib/definitions';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
-export default function EditRoleForm({roleById,}: {roleById: RoleForm;}) {
+export default function EditRoleForm({roleById,}: {roleById: RoleById;}) {
   const initialState: StateRole = { message: null, errors: {} };
   const updateRoleWithId = updateRole.bind(null, roleById.role_id);
   const [state, formAction] = useActionState(updateRoleWithId, initialState);

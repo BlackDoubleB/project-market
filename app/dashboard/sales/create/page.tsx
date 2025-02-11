@@ -1,10 +1,9 @@
 import Form from '@/app/ui/sales/create-form';
-import Breadcrumbs from '@/app/ui/sales/breadcrumbs';
+import Breadcrumbs from '@/app/ui/breadcrumbs';
 import { fetchProducts } from '@/app/lib/data';
  
 export default async function Page() {
-  const products = await fetchProducts();
- 
+   const products = await fetchProducts();
   return (
     <main>
       <Breadcrumbs
@@ -17,7 +16,7 @@ export default async function Page() {
           },
         ]}
       />
-      <Form products={products} />
+      <Form products = {products} />
     </main>
   );
 }

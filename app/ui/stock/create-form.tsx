@@ -4,9 +4,9 @@ import { useActionState } from 'react';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Button } from '@/app/ui/button';
-import { ProductField } from '@/app/lib/definitions';
+import { ProductFetch } from '@/app/lib/definitions';
 
-export default function Form({ products }: { products: ProductField[] }) {
+export default function Form({ products }: { products: ProductFetch[] }) {
     const initialState: StateStock = { message: null, errors: {} };
     const [state, formAction] = useActionState(createStock, initialState);
 

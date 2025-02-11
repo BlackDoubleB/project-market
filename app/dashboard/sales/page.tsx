@@ -8,8 +8,9 @@ import { Suspense } from 'react';
 import { fetchSalesPages } from '@/app/lib/data';
 import { Metadata } from 'next';
 
+
 export const metadata: Metadata = {
-  title: 'Invoices',
+  title: 'Sales',
 };
 
 export default async function Page(props: {
@@ -33,11 +34,11 @@ return (
     </div>
 
     <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-      <Search placeholder="Search sales..." />
+      <Search placeholder="Search Sale..." />
       <CreateSale />
     </div>
 
-    <Suspense key={query + currentPage} fallback={<SalesTableSkeleton />}>
+    <Suspense key={query + currentPage} fallback={<SalesTableSkeleton/>}>
       <Table query={query} currentPage={currentPage} />
     </Suspense>
 

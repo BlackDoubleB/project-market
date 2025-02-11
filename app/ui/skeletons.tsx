@@ -2,6 +2,7 @@
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
+//Rehuse  
 export function CardSkeleton() {
   return (
     <div
@@ -29,6 +30,7 @@ export function CardsSkeleton() {
   );
 }
 
+//Dashboard
 export function RevenueChartSkeleton() {
   return (
     <div className={`${shimmer} relative w-full overflow-hidden md:col-span-4`}>
@@ -102,6 +104,7 @@ export default function DashboardSkeleton() {
   );
 }
 
+//Tables Row
 export function SaleTableRowSkeleton() {
   return (
     <tr className="w-full border-b border-gray-100 last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
@@ -223,8 +226,7 @@ export function SalesTableSkeleton() {
             <MobileSkeleton />
             <MobileSkeleton />
             <MobileSkeleton />
-            <MobileSkeleton />
-            <MobileSkeleton />
+
           </div>
           <table className="hidden min-w-full text-gray-900 md:table">
             <thead className="rounded-lg text-left text-sm font-normal">

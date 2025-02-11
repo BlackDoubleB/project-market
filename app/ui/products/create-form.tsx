@@ -4,10 +4,10 @@ import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Button } from '@/app/ui/button';
-import { ProductField } from '@/app/lib/definitions';
+import { ProductFetch } from '@/app/lib/definitions';
 import { startTransition } from "react";
 
-export default function Form({ products }: { products: ProductField[] }) {
+export default function Form({ products }: { products: ProductFetch[] }) {
     const [file, setFile] = useState<File | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 

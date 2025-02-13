@@ -71,7 +71,7 @@ export type NavTableProducts = {
 //FETCH FILTERED
 export type RoleFiltered = {
   role_id: string;
-  role_name:string;
+  role_name: string;
 };
 
 export type CategoryFiltered = {
@@ -81,11 +81,11 @@ export type CategoryFiltered = {
 
 export type ProductFiltered = {
   product_id: string;
-  category_name:string;
+  category_name: string;
   product_name: string;
-  image_url:string;
-  price:number;
-  date_register:string;
+  image_url: string;
+  price: number;
+  date_register: string;
 };
 
 export type StockFiltered = {
@@ -100,9 +100,9 @@ export type SaleFiltered = {
   user_name: string;
   sale_id: string;
   product_name: string;
-  method:string;
-  date_register: string;  
-  total:string
+  method: string;
+  date_register: string;
+  total: string
   quantity: number;
 };
 //FETCH BY ID
@@ -116,7 +116,7 @@ export type SaleById = {
 
 export type RoleById = {
   role_id: string;
-  role_name:string;
+  role_name: string;
 };
 
 export type CategoryById = {
@@ -127,11 +127,11 @@ export type CategoryById = {
 export type ProductById = {
   product_id: string;
   category_id: string;
-  category_name:string;
+  category_name: string;
   product_name: string;
-  image_url:string;
-  price:number;
-  date_register:string;
+  image_url: string;
+  price: number;
+  date_register: string;
 };
 
 export type StockById = {
@@ -145,7 +145,7 @@ export type StockById = {
 // FETCH ALL
 export type RoleFetch = {
   role_id: string;
-  role_name:string;
+  role_name: string;
 };
 
 export type CategoryFetch = {
@@ -156,10 +156,15 @@ export type CategoryFetch = {
 export type ProductFetch = {
   product_id: string;
   category_id: string;
-  category_name:string;
+  category_name: string;
   product_name: string;
-  image_url:string;
-  price:number;
-  date_register:string;
+  image_url: string;
+  price: number;
+  date_register: string;
 };
 
+export type SaleTable = {
+  id: string;
+  product_id: string;
+  quantity: number;
+}

@@ -8,14 +8,11 @@ import { AuthError } from "next-auth";
 import bcrypt from 'bcrypt';
 
 const FormSchemaUser = z.object({
-  // Campos de la tabla 'role'
   role_id: z.string({
     invalid_type_error: 'Please select a role.',
   }),
-  //campos de la tabla user
   user_name: z.string().min(1, 'Username is required'),
   password: z.string().min(1, 'Password is required'),
-  // Campos de la tabla 'people'
   person_name: z.string().min(1, 'Name is required'),
   dni: z.string().min(1, 'DNI is required'),
   lastname: z.string().min(1, 'Last Name is required'),
@@ -44,13 +41,16 @@ const FormSchemaStock = z.object({
 });
 
 const FormSchemaSale = z.object({
+  products: z.array(
+    z.object({
+      product_id: z.string(),
+      quantity: z.coerce.number(),
+    })
+  ),
   method: z.enum(["cash", "card"]),
-  user_id: z.string(),
-  products: z.array(z.object({
-    product_id: z.string(),
-    quantity: z.number().min(1),
-  })),
 });
+
+
 
 export type StateUser = {
   errors?: {
@@ -96,13 +96,14 @@ export type StateStock = {
   message?: string | null;
 };
 
+
 export type StateSale = {
-  errors?: { 
-    method?: string[]; 
-    user_id?: string[]; 
-    products?: string[] };
+  errors?: {
+    products?: string[];
+    method?: string[];
+  };
   message?: string | null;
-}
+};
 
 export async function createUser(prevState: StateUser, formData: FormData) {
   const validatedFields = FormSchemaUser.safeParse({
@@ -289,80 +290,70 @@ export async function createStock(prevState: StateStock, formData: FormData) {
 }
 
 export async function createSale(prevState: StateSale, formData: FormData) {
-  // Convertir los productos en un array de objetos
-  const products = [];
-  for (let i = 0; formData.has(`product_id_${i}`); i++) {
-    products.push({
-      product_id: formData.get(`product_id_${i}`) as string,
-      quantity: Number(formData.get(`quantity_${i}`)),
-    });
-  }
+  const productsJson = formData.get('selectedDetailSaleProduct') as string;
+  const methodJson = formData.get('method') as string;
+
+  // Convertimos los valores JSON en objetos
+  const parsedProducts = productsJson ? JSON.parse(productsJson).products : [];
+  const parsedMethod = methodJson ? JSON.parse(methodJson).method : '';
 
   const validatedFields = FormSchemaSale.safeParse({
-    user_id: formData.get("user_id"),
-    method: formData.get("method"),
-    products,
+    products: parsedProducts,
+    method: parsedMethod,
   });
-
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Error en los datos. No se pudo crear la venta.",
+      message: 'Missing Field. Failed to Create Sale.',
     };
   }
 
-  const { user_id, method } = validatedFields.data;
+  const { products, method } = validatedFields.data;
 
   try {
-    const date_register = new Date();
+    let total: number = 0;
+    let quantity: number = 0;
+    let price: number = 0
 
-    // Iniciar transacción
+    for (const product of products) {
+      quantity = product.quantity;
+      const productResult = await sql`SELECT price FROM products WHERE product_id = ${product.product_id}`;
+      price = productResult.rows[0]?.price || 0;
+      total += quantity * price;
+    }
+    const date_register = new Date();
+    const userResult = await sql`SELECT user_id FROM users WHERE user_name = ${'User'}`;
+    const user_id = userResult.rows[0]?.user_id;
+
+
     await sql`BEGIN;`;
 
-    // Insertar la venta y obtener el ID generado
+
     const saleResult = await sql`
       INSERT INTO sales (user_id, method, date_register, total)
-      VALUES (${user_id}, ${method}, ${date_register.toISOString()}, 0)
-      RETURNING id;
+      VALUES (${user_id}, ${method}, ${date_register.toISOString()}, ${total})
+      RETURNING sale_id;
     `;
-    const sale_id = saleResult.rows[0].id;
+    const sale_id = saleResult.rows[0].sale_id;
 
-    let totalSale = 0;
 
-    // Insertar productos y calcular total
-    for (const { product_id, quantity } of products) {
-      // Obtener el precio del producto desde la base de datos
-      const productPriceResult = await sql`
-        SELECT price FROM products WHERE id = ${product_id};
-      `;
-      const price = productPriceResult.rows[0]?.price || 0;
+    for (const product of products) {
 
-      // Calcular el subtotal para este producto y sumarlo al total de la venta
-      const subtotal = price * quantity;
-      totalSale += subtotal;
-
-      // Insertar el producto en la venta
       await sql`
         INSERT INTO detail_sale_products (sale_id, product_id, quantity)
-        VALUES (${sale_id}, ${product_id}, ${quantity});
+        VALUES (${sale_id}, ${product.product_id}, ${product.quantity});
       `;
 
-      // Actualizar stock
+
       await sql`
         UPDATE stock
-        SET quantity = quantity - ${quantity}
-        WHERE product_id = ${product_id};
+        SET quantity = quantity - ${product.quantity}
+        WHERE product_id = ${product.product_id};
       `;
     }
 
-    // Actualizar total de la venta
-    await sql`
-      UPDATE sales SET total = ${totalSale} WHERE id = ${sale_id};
-    `;
-
     // Confirmar transacción
     await sql`COMMIT;`;
-
   } catch (error) {
     console.error("❌ Error al crear la venta:", error);
     await sql`ROLLBACK;`;
@@ -372,8 +363,8 @@ export async function createSale(prevState: StateSale, formData: FormData) {
     };
   }
 
-  revalidatePath("/dashboard/sale");
-  redirect("/dashboard/sale");
+  revalidatePath("/dashboard/sales");
+  redirect("/dashboard/sales");
 }
 
 export async function updateRole(

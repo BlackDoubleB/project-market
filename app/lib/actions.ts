@@ -43,8 +43,8 @@ const FormSchemaStock = z.object({
 const FormSchemaSale = z.object({
   products: z.array(
     z.object({
-      product_id: z.string(),
-      quantity: z.coerce.number(),
+      product_id: z.string({ invalid_type_error: 'Please select a product.' }),
+      quantity: z.coerce.number().gt(0, { message: 'Please enter an number' }),
     })
   ),
   method: z.enum(["cash", "card"]),
@@ -99,8 +99,8 @@ export type StateStock = {
 
 export type StateSale = {
   errors?: {
-    products?: string[];
-    method?: string[];
+    products?: { [key: number]: string[] }; // Errores por índice de producto
+    method?: string[]; // Errores del método de pago
   };
   message?: string | null;
 };
@@ -293,7 +293,7 @@ export async function createSale(prevState: StateSale, formData: FormData) {
   const productsJson = formData.get('selectedDetailSaleProduct') as string;
   const methodJson = formData.get('method') as string;
 
-  // Convertimos los valores JSON en objetos
+  
   const parsedProducts = productsJson ? JSON.parse(productsJson).products : [];
   const parsedMethod = methodJson ? JSON.parse(methodJson).method : '';
 
@@ -302,21 +302,43 @@ export async function createSale(prevState: StateSale, formData: FormData) {
     method: parsedMethod,
   });
   if (!validatedFields.success) {
+    const errors = validatedFields.error.flatten().fieldErrors;
+    const productErrors: { [key: number]: string[] } = {};
+  
+    // Mapear errores a un objeto con índices de productos
+    if (errors.products) {
+      errors.products.forEach((error, index) => {
+        if (!productErrors[index]) {
+          productErrors[index] = [];
+        }
+        productErrors[index].push(error);
+      });
+    }
+  
     return {
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: {
+        products: productErrors, // Errores por índice de producto
+        method: errors.method || [], // Errores del método de pago
+      },
       message: 'Missing Field. Failed to Create Sale.',
     };
   }
-
   const { products, method } = validatedFields.data;
 
   try {
     let total: number = 0;
     let quantity: number = 0;
     let price: number = 0
-
+    ;
     for (const product of products) {
+      const stock = await sql`SELECT quantity FROM stock WHERE product_id = ${product.product_id}`;
       quantity = product.quantity;
+      const stockQuantity = stock.rows[0]?.quantity || 0;
+      if(stockQuantity < quantity ){
+        return {
+          message: 'The quantity must be greater than 0.',
+        };
+      }
       const productResult = await sql`SELECT price FROM products WHERE product_id = ${product.product_id}`;
       price = productResult.rows[0]?.price || 0;
       total += quantity * price;

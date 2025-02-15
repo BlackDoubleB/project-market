@@ -24,7 +24,7 @@ export default function Form({ products }: { products: ProductFetch[] }) {
       quantity: 1,
     }]);
   }
-  
+
 
   // Función para actualizar el product_id de un producto específico
   function updateProductId(index: number, productId: string) {
@@ -40,7 +40,7 @@ export default function Form({ products }: { products: ProductFetch[] }) {
     updatedProducts[index].quantity = quantity;
     setSelectedDetailSaleProduct(updatedProducts);
   }
-  
+
 
   // Calcular el total cuando cambia selectedDetailSaleProduct
   useEffect(() => {
@@ -79,6 +79,8 @@ export default function Form({ products }: { products: ProductFetch[] }) {
               </option>
             </select>
           </div>
+
+
         </div>
 
         <div className="flex justify-end items-center">
@@ -101,12 +103,12 @@ export default function Form({ products }: { products: ProductFetch[] }) {
         </div>
       </div>
 
-      <div className="rounded-md pt-7">
+      <div className="rounded-md pt-2">
         <div>
           {/* Renderizar los campos para cada producto seleccionado */}
           {selectedDetailSaleProduct.map((dsp, index) => (
-            <div className='pb-8' key={dsp.id}>
-              <div className='bg-gray-300 p-4 rounded-md border border-slate-300 shadow-lg shadow-black-500/50'>
+            <div className='pb-2' key={dsp.id}>
+              <div className='bg-neutral-400 p-4 rounded-md border border-slate-300 shadow-lg shadow-black-500/50'>
                 {/* Product Name */}
                 <div className="mb-4">
                   <label htmlFor="product_id" className="mb-2 block text-sm font-medium">
@@ -116,8 +118,10 @@ export default function Form({ products }: { products: ProductFetch[] }) {
                     <select
                       id="product_id"
                       className="bg-white block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 outline-none h-10"
+                      aria-describedby={`product_id-error-${index}`}
                       defaultValue=""
-                      onChange={(e) => updateProductId(index, e.target.value)}>
+                      onChange={(e) => updateProductId(index, e.target.value)}
+                    >
                       <option value="" disabled>
                         Select a Product
                       </option>
@@ -128,8 +132,17 @@ export default function Form({ products }: { products: ProductFetch[] }) {
                       ))}
                     </select>
                   </div>
-                </div>
 
+                  {/* Mostrar errores específicos para este producto */}
+                  <div id={`product_id-error-${index}`} aria-live="polite" aria-atomic="true">
+                    {state.errors?.products?.[index] &&
+                      state.errors.products[index].map((error: string, errorIndex: number) => (
+                        <p className="mt-2 text-sm text-red-500 relative h-44" key={errorIndex}>
+                          {error}
+                        </p>
+                      ))}
+                  </div>
+                </div>
                 {/* Category Name */}
                 <div className="mb-4 pointer-events-none">
                   <p className="mb-2 block text-sm font-medium">
@@ -183,7 +196,7 @@ export default function Form({ products }: { products: ProductFetch[] }) {
                       <button
                         type="button"
                         onClick={() => updateQuantity(index, dsp.quantity - 1)}
-                        className="bg-gray-200 px-3 py-1 rounded-l-lg hover:bg-gray-400 h-10"
+                        className="bg-gray-200 px-3 py-1 rounded-l-lg hover:bg-neutral-500 h-10"
                       >
                         -
                       </button>
@@ -198,7 +211,7 @@ export default function Form({ products }: { products: ProductFetch[] }) {
                       <button
                         type="button"
                         onClick={() => updateQuantity(index, dsp.quantity + 1)}
-                        className="bg-gray-200 px-3 py-1 rounded-r-lg hover:bg-gray-400 h-10"
+                        className="bg-gray-200 px-3 py-1 rounded-r-lg hover:bg-neutral-500  h-10"
                       >
                         +
                       </button>
@@ -208,17 +221,6 @@ export default function Form({ products }: { products: ProductFetch[] }) {
               </div>
             </div>
           ))}
-        </div>
-
-        <div>
-          <div className='flex items-end justify-end py-7 '>
-            <div className='bg-yellow-400 flex items-center gap-2 py-1 px-3 rounded-lg hover:cursor-pointer' onClick={addDetailSaleProduct}>
-              <Icon icon="gridicons:add" />
-              <button type="button" id="add_product">
-                Add Product
-              </button>
-            </div>
-          </div>
         </div>
 
 
@@ -237,6 +239,24 @@ export default function Form({ products }: { products: ProductFetch[] }) {
           value={JSON.stringify({ method: paymentMethod })} />
 
       </div>
+
+      <div>
+        <div className='flex items-start  '>
+          <div className='bg-yellow-400 flex items-center gap-2 py-1 px-3 rounded-lg hover:cursor-pointer' onClick={addDetailSaleProduct}>
+            <Icon icon="gridicons:add" />
+            <button type="button" id="add_product">
+              Add Product
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mostrar el mensaje de error si existe */}
+      {state.message && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+          {state.message}
+        </div>
+      )}
 
       <div className="mt-6 flex justify-end gap-4">
         <Link href="/dashboard/sales" className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200">

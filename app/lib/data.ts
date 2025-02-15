@@ -194,35 +194,33 @@ export async function fetchFilteredStock(
 
 export async function fetchFilteredSales(
   query: string,
-  currentPage: number,
+  currentPage: number
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const sales = await sql<SaleFiltered>`
-      SELECT
-           sales.sale_id,
-           users.user_name,
-           sales.method,
-           sales.date_register,
-           sales.total,
-           detail_sale_products.quantity,
-           products.product_name
+    const sales = await sql<SaleFiltered>`  
+      SELECT 
+          s.sale_id, 
+          s.method, 
+          s.total, 
+          s.date_register, 
+          u.user_name, 
+          COALESCE(SUM(dsp.quantity), 0) AS quantity 
+      FROM sales s
 
-      FROM sales
-      JOIN users ON sales.user_id = users.user_id
-      JOIN detail_sale_products ON detail_sale_products.sale_id = sales.sale_id
-      JOIN products ON detail_sale_products.product_id = products.product_id
-      WHERE
-        products.product_name::text ILIKE ${`%${query}%`}
-      ORDER BY products.product_name DESC
-      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+      JOIN users u ON s.user_id = u.user_id  
+      LEFT JOIN detail_sale_products dsp ON s.sale_id = dsp.sale_id  
+      WHERE s.method::text ILIKE ${`%${query}%`}  
+      GROUP BY s.sale_id, s.method, s.total, s.date_register, u.user_name  
+      ORDER BY s.date_register DESC  
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset};
     `;
 
     return sales.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch sales.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch sales.");
   }
 }
 

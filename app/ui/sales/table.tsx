@@ -39,10 +39,7 @@ export default async function SalesTable({
                 <div className=" flex flex-col items-start justify-between border-b pb-4">
                   <p>{sale.quantity}</p>
                 </div>
-                <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{sale.product_name}</p>
-                </div>
-                
+            
                 <div className="flex w-full items-center justify-between pt-4">
                   <div className="flex justify-end gap-2">
                     <UpdateSale id={sale.sale_id} />
@@ -74,9 +71,7 @@ export default async function SalesTable({
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                   Quantity
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Product Name
-                </th>
+               
                 <th scope="col" className="relative py-3 pl-6 pr-3">
                   <span className="sr-only">Edit</span>
                 </th>
@@ -107,10 +102,6 @@ export default async function SalesTable({
                   <td className="whitespace-nowrap px-3 py-3">
                     {sale.quantity}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {sale.product_name}
-                  </td>
-
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
                       <UpdateSale id={sale.sale_id} />

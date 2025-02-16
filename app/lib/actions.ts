@@ -40,17 +40,16 @@ const FormSchemaStock = z.object({
   product_id: z.string({ invalid_type_error: 'Please select a product.' }),
 });
 
-const FormSchemaSale = z.object({
-  products: z.array(
-    z.object({
-      product_id: z.string({ invalid_type_error: 'Please select a product.' }),
-      quantity: z.coerce.number().gt(0, { message: 'Please enter an number' }),
-    })
-  ),
-  method: z.enum(["cash", "card"]),
+
+const productSchema = z.object({
+  product_id: z.string().min(1, "Debes seleccionar un producto"), // Asegúrate de que product_id no esté vacío
+  quantity: z.number().min(1, "La cantidad debe ser mayor a 0"),
 });
 
-
+const FormSchemaSale = z.object({
+  products: z.array(productSchema),
+  method: z.string().min(1, "Debes seleccionar un methodo"),
+})
 
 export type StateUser = {
   errors?: {
@@ -96,14 +95,14 @@ export type StateStock = {
   message?: string | null;
 };
 
-
 export type StateSale = {
   errors?: {
-    products?: { [key: number]: string[] }; // Errores por índice de producto
-    method?: string[]; // Errores del método de pago
+    products?: string[];
+    method? : string[];
   };
   message?: string | null;
 };
+
 
 export async function createUser(prevState: StateUser, formData: FormData) {
   const validatedFields = FormSchemaUser.safeParse({
@@ -289,38 +288,28 @@ export async function createStock(prevState: StateStock, formData: FormData) {
   redirect('/dashboard/stock');
 }
 
-export async function createSale(prevState: StateSale, formData: FormData) {
+export async function createSale(prevState: StateSale, formData: FormData): Promise<StateSale>  {
   const productsJson = formData.get('selectedDetailSaleProduct') as string;
   const methodJson = formData.get('method') as string;
 
-  
+
   const parsedProducts = productsJson ? JSON.parse(productsJson).products : [];
   const parsedMethod = methodJson ? JSON.parse(methodJson).method : '';
 
-  const validatedFields = FormSchemaSale.safeParse({
+  const validatedFields  = FormSchemaSale.safeParse({
     products: parsedProducts,
-    method: parsedMethod,
-  });
+    method: parsedMethod
+  })
+
+  console.log("Validated fields:", validatedFields); // Agrega esto para depurar
   if (!validatedFields.success) {
-    const errors = validatedFields.error.flatten().fieldErrors;
-    const productErrors: { [key: number]: string[] } = {};
-  
-    // Mapear errores a un objeto con índices de productos
-    if (errors.products) {
-      errors.products.forEach((error, index) => {
-        if (!productErrors[index]) {
-          productErrors[index] = [];
-        }
-        productErrors[index].push(error);
-      });
-    }
-  
+    console.log("Validation errors:", validatedFields.error.flatten().fieldErrors);
     return {
       errors: {
-        products: productErrors, // Errores por índice de producto
-        method: errors.method || [], // Errores del método de pago
+        products: validatedFields.error.flatten().fieldErrors.products || [],
+        method: validatedFields.error.flatten().fieldErrors.method || [],
       },
-      message: 'Missing Field. Failed to Create Sale.',
+      message: 'Missing Fields. Failed to Create Sale.',
     };
   }
   const { products, method } = validatedFields.data;
@@ -328,13 +317,12 @@ export async function createSale(prevState: StateSale, formData: FormData) {
   try {
     let total: number = 0;
     let quantity: number = 0;
-    let price: number = 0
-    ;
+    let price: number = 0;
     for (const product of products) {
       const stock = await sql`SELECT quantity FROM stock WHERE product_id = ${product.product_id}`;
       quantity = product.quantity;
       const stockQuantity = stock.rows[0]?.quantity || 0;
-      if(stockQuantity < quantity ){
+      if (stockQuantity < quantity) {
         return {
           message: 'The quantity must be greater than 0.',
         };
@@ -380,8 +368,7 @@ export async function createSale(prevState: StateSale, formData: FormData) {
     console.error("❌ Error al crear la venta:", error);
     await sql`ROLLBACK;`;
     return {
-      message: "Error en la base de datos. No se pudo crear la venta.",
-      error,
+      message: "Error en la base de datos. No se pudo crear la venta."
     };
   }
 

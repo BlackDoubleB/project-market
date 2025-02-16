@@ -79,7 +79,14 @@ export default function Form({ products }: { products: ProductFetch[] }) {
               </option>
             </select>
           </div>
-
+          <div id="product-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.method &&
+                state.errors.method.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                ))}
+          </div>
 
         </div>
 
@@ -133,15 +140,13 @@ export default function Form({ products }: { products: ProductFetch[] }) {
                     </select>
                   </div>
 
-                  {/* Mostrar errores específicos para este producto */}
-                  <div id={`product_id-error-${index}`} aria-live="polite" aria-atomic="true">
-                    {state.errors?.products?.[index] &&
-                      state.errors.products[index].map((error: string, errorIndex: number) => (
-                        <p className="mt-2 text-sm text-red-500 relative h-44" key={errorIndex}>
-                          {error}
-                        </p>
-                      ))}
-                  </div>
+                  {/* Mostrar el error de validación si existe */}
+                  {state.errors?.products && state.errors.products[index] && (
+                      <p className="mt-2 text-sm text-red-500" id={`product_id-error-${index}`}>
+                        {state.errors.products[index]}
+                      </p>
+                  )}
+
                 </div>
                 {/* Category Name */}
                 <div className="mb-4 pointer-events-none">

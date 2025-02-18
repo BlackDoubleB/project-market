@@ -95,14 +95,18 @@ export type StateStock = {
   message?: string | null;
 };
 
+export type BasicErrorWithIndex = {
+  index: number;
+  message: string;
+}
+
 export type StateSale = {
   errors?: {
-    products?: string[];
+    products?: BasicErrorWithIndex[];
     method? : string[];
   };
   message?: string | null;
 };
-
 
 export async function createUser(prevState: StateUser, formData: FormData) {
   const validatedFields = FormSchemaUser.safeParse({
@@ -296,22 +300,38 @@ export async function createSale(prevState: StateSale, formData: FormData): Prom
   const parsedProducts = productsJson ? JSON.parse(productsJson).products : [];
   const parsedMethod = methodJson ? JSON.parse(methodJson).method : '';
 
-  const validatedFields  = FormSchemaSale.safeParse({
-    products: parsedProducts,
-    method: parsedMethod
-  })
+  const validatedFields = FormSchemaSale.safeParse({
+    products: parsedProducts.map((product: { product_id: string; quantity: number }) => ({
+      product_id: product.product_id,
+      quantity: product.quantity,
+    })),
+    method: parsedMethod,
+  });
 
   console.log("Validated fields:", validatedFields); // Agrega esto para depurar
+
   if (!validatedFields.success) {
-    console.log("Validation errors:", validatedFields.error.flatten().fieldErrors);
+    // console.log("Validation errors:", validatedFields.error.flatten().fieldErrors);
+    // console.log(validatedFields.error.errors.map(x => {
+    //   return {
+    //     index: x.path[1],
+    //     message: x.message,
+    //   }
+    // }));
     return {
       errors: {
-        products: validatedFields.error.flatten().fieldErrors.products || [],
+        products: validatedFields.error?.errors.map(x => {
+          return {
+            index: Number(x.path[1]),
+            message: x.message,
+          }
+        }) || [],
         method: validatedFields.error.flatten().fieldErrors.method || [],
       },
       message: 'Missing Fields. Failed to Create Sale.',
     };
   }
+
   const { products, method } = validatedFields.data;
 
   try {
@@ -319,7 +339,7 @@ export async function createSale(prevState: StateSale, formData: FormData): Prom
     let quantity: number = 0;
     let price: number = 0;
     for (const product of products) {
-      const stock = await sql`SELECT quantity FROM stock WHERE product_id = ${product.product_id}`;
+      const stock = await sql`SELECT quantity  FROM stock WHERE product_id = ${product.product_id}`;
       quantity = product.quantity;
       const stockQuantity = stock.rows[0]?.quantity || 0;
       if (stockQuantity < quantity) {

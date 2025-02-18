@@ -14,8 +14,9 @@ export default function Form({ products }: { products: ProductFetch[] }) {
   const [selectedDetailSaleProduct, setSelectedDetailSaleProduct] = useState<Array<SaleTable>>([]);
   const initialState: StateSale = { message: null, errors: {} };
   const [state, formAction] = useActionState(createSale, initialState);
-  console.log(state);
+  const [stateSelect, setStateSelect] = useState<Array<string>>([]);
 
+  console.log(state);
   // Función para añadir un nuevo conjunto de campos
   function addDetailSaleProduct() {
     setSelectedDetailSaleProduct([...selectedDetailSaleProduct, {
@@ -23,6 +24,9 @@ export default function Form({ products }: { products: ProductFetch[] }) {
       product_id: "",
       quantity: 1,
     }]);
+
+    setStateSelect((prevItems) => [...prevItems, ""]);
+
   }
 
 
@@ -31,6 +35,14 @@ export default function Form({ products }: { products: ProductFetch[] }) {
     const updatedProducts = [...selectedDetailSaleProduct];
     updatedProducts[index].product_id = productId;
     setSelectedDetailSaleProduct(updatedProducts);
+
+    //Hacemos una copia del array
+    const updateItems = [...stateSelect];
+    // Cambiamos el valor en el índice correspondiente
+    updateItems[index] = productId;
+    // Actualizamos el estado con la copia modificada
+    setStateSelect(updateItems);
+
   }
 
   // Función para actualizar la cantidad de un producto específico
@@ -39,8 +51,8 @@ export default function Form({ products }: { products: ProductFetch[] }) {
     const updatedProducts = [...selectedDetailSaleProduct];
     updatedProducts[index].quantity = quantity;
     setSelectedDetailSaleProduct(updatedProducts);
-  }
 
+  }
 
   // Calcular el total cuando cambia selectedDetailSaleProduct
   useEffect(() => {
@@ -51,8 +63,11 @@ export default function Form({ products }: { products: ProductFetch[] }) {
       const quantity = dsp.quantity > 0 ? dsp.quantity : 0; // Evitar valores inválidos
       newTotal += price * quantity;
     });
+    console.log("holaaaa",selectedDetailSaleProduct)
+
     setTotal(newTotal);
   }, [selectedDetailSaleProduct, products]);
+
 
   return (
     <form action={formAction}>
@@ -79,13 +94,14 @@ export default function Form({ products }: { products: ProductFetch[] }) {
               </option>
             </select>
           </div>
+
           <div id="product-error" aria-live="polite" aria-atomic="true">
             {state.errors?.method &&
-                state.errors.method.map((error: string) => (
-                    <p className="mt-2 text-sm text-red-500" key={error}>
-                      {error}
-                    </p>
-                ))}
+              state.errors.method.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
           </div>
 
         </div>
@@ -121,6 +137,7 @@ export default function Form({ products }: { products: ProductFetch[] }) {
                   <label htmlFor="product_id" className="mb-2 block text-sm font-medium">
                     Choose Product
                   </label>
+
                   <div className="relative">
                     <select
                       id="product_id"
@@ -140,12 +157,17 @@ export default function Form({ products }: { products: ProductFetch[] }) {
                     </select>
                   </div>
 
-                  {/* Mostrar el error de validación si existe */}
-                  {state.errors?.products && state.errors.products[index] && (
-                      <p className="mt-2 text-sm text-red-500" id={`product_id-error-${index}`}>
-                        {state.errors.products[index]}
-                      </p>
-                  )}
+                  {stateSelect[index] === "" ?  state.errors?.products && state.errors?.products.length > 0 &&
+                        state.errors.products.find(x => x.index == index) && (
+                            <p className="mt-2 text-sm text-red-500" id={`product_id-error-${index}`}>
+                              {state.errors.products.find(x => x.index == index)?.message}
+                            </p>
+                        ): ""}
+
+                 
+
+
+                  {/*{JSON.stringify(state.errors?.products)}*/}
 
                 </div>
                 {/* Category Name */}
@@ -256,18 +278,13 @@ export default function Form({ products }: { products: ProductFetch[] }) {
         </div>
       </div>
 
-      {/* Mostrar el mensaje de error si existe */}
-      {state.message && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
-          {state.message}
-        </div>
-      )}
+
 
       <div className="mt-6 flex justify-end gap-4">
         <Link href="/dashboard/sales" className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200">
           Cancel
         </Link>
-        <Button type="submit">Create Sale</Button>
+        <Button type="submit" >Create Sale</Button>
       </div>
     </form>
   );

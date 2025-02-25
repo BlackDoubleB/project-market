@@ -7,66 +7,66 @@ export type LatestSale = {
 };
 
 export type role = {
-  role_id: string,
-  role_name: string
-}
+  role_id: string;
+  role_name: string;
+};
 
 export type people = {
-  people_id: string,
-  dni: string,
-  person_name: string,
-  lastname: string
-}
+  people_id: string;
+  dni: string;
+  person_name: string;
+  lastname: string;
+};
 
 export type User = {
-  user_id: string,
-  role_id: string,
-  people_id: string,
-  user_name: string,
-  password: string,
-  date_register: string
+  user_id: string;
+  role_id: string;
+  people_id: string;
+  user_name: string;
+  password: string;
+  date_register: string;
 };
 
 export type Category = {
-  category_id: string,
-  category_name: string
+  category_id: string;
+  category_name: string;
 };
 
 export type Product = {
-  product_id: string,
-  category_id: string,
-  product_name: string,
-  image_url: string,
-  price: number,
-  date_register: string
+  product_id: string;
+  category_id: string;
+  product_name: string;
+  image_url: string;
+  price: number;
+  date_register: string;
 };
 
 export type Stock = {
-  stock_id: string,
-  product_id: string,
-  quantity: number,
-  date_register: string
+  stock_id: string;
+  product_id: string;
+  quantity: number;
+  date_register: string;
 };
 
 export type Sale = {
-  sale_id: string,
-  user_id: string,
-  method: string,
-  date_register: string,
-  total: number,
+  sale_id: string;
+  user_id: string;
+  method: string;
+  date_register: string;
+  total: number;
 };
 
 export type detail_sale_products = {
-  sale_id: string,
-  product_id: string,
-  quantity: number
+  sale_id: string;
+  product_id: string;
+  quantity: number;
 };
 //NAV TABLE
 export type NavTableProducts = {
   product_id: string;
   product_name: string;
   image_url: string;
-}
+};
 
 //FETCH FILTERED
 export type RoleFiltered = {
@@ -93,7 +93,7 @@ export type StockFiltered = {
   product_id: string;
   product_name: string;
   quantity: number;
-  date_register: string
+  date_register: string;
 };
 
 export type SaleFiltered = {
@@ -102,16 +102,18 @@ export type SaleFiltered = {
   product_name: string;
   method: string;
   date_register: string;
-  total: string
+  total: string;
   quantity: number;
 };
 //FETCH BY ID
 export type SaleById = {
   sale_id: string;
+  date_register: string;
+  total: number;
+  method: "card" | "cash";
   product_id: string;
   category_id: string;
-  amount: number;
-  method: 'card' | 'cash';
+  quantity: number;
 };
 
 export type RoleById = {
@@ -139,7 +141,7 @@ export type StockById = {
   product_id: string;
   product_name: string;
   quantity: number;
-  date_register: string
+  date_register: string;
 };
 
 // FETCH ALL
@@ -167,4 +169,4 @@ export type SaleTable = {
   id: string;
   product_id: string;
   quantity: number;
-}
+};

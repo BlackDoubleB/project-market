@@ -93,12 +93,12 @@ export default function Form({ products }: { products: ProductFetch[] }) {
 
   useEffect(() => {
     console.log("Estado actual del mensaje:", state.message);
-    console.log("Estado del product stock", state.product_stock);
-    console.log("Estado del number stock", state.number_stock);
+    console.log("Estado del product stock", state.errors_stock);
+    console.log("Datos enviados", sales);
     if (state.message == "Sale created successfully.") {
       console.log("Mostrando modal...");
       setShowSuccessModal(true);
-      setSales([]);
+
       setPaymentMethod("");
     } else {
       setShowSuccessModal(false);
@@ -106,7 +106,7 @@ export default function Form({ products }: { products: ProductFetch[] }) {
         setStock(false);
       }
     }
-  }, [state.message]);
+  }, [state]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -253,8 +253,9 @@ export default function Form({ products }: { products: ProductFetch[] }) {
                 className="text-blue-800 bg-transparent border border-blue-800 hover:bg-blue-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-blue-600 dark:border-blue-600 dark:text-blue-400 dark:hover:text-white dark:focus:ring-blue-800"
                 data-dismiss-target="#alert-additional-content-1"
                 onClick={() => {
-                  setShowSuccessModal(false);
                   state.message = "";
+                  setShowSuccessModal(false);
+                  setSales([]);
                 }}
               >
                 Create Another Sale

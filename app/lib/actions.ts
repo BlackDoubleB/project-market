@@ -107,8 +107,11 @@ export type StateSale = {
     method?: string[];
   };
   message?: string | null;
-  product_stock?: string[];
-  number_stock?: number[];
+  errors_stock?: {
+    product_stock?: string;
+    number_stock?: number;
+    index_stock?: number;
+  }[];
 };
 
 export async function createUser(prevState: StateUser, formData: FormData) {
@@ -342,23 +345,46 @@ export async function createSale(
     let total: number = 0;
     let quantity: number = 0;
     let price: number = 0;
+
+    // errors_stock?: [
+    //   { product_stock?: string; number_stock?: number; index_stock?: number },
+    // ];
+    let errors_stock_var: {
+      product_stock?: string;
+      number_stock?: number;
+      index_stock?: number;
+    }[] = [];
+    let hasOutOfStock = false;
+
     for (const product of products) {
       const stock =
         await sql`SELECT quantity  FROM stock WHERE product_id = ${product.product_id}`;
+
       quantity = product.quantity;
       const stockQuantity = stock.rows[0]?.quantity || 0;
+
       if (stockQuantity < quantity) {
-        return {
-          product_stock: Array.from(new Set<string>().add(product.product_id)),
-          number_stock: Array.from(new Set<number>().add(stockQuantity)),
-          message: "Out of stock",
-        };
+        errors_stock_var.push({
+          index_stock: products.indexOf(product),
+          product_stock: product.product_id as string,
+          number_stock: stockQuantity as number,
+        });
+        hasOutOfStock = true;
       }
       const productResult =
         await sql`SELECT price FROM products WHERE product_id = ${product.product_id}`;
       price = productResult.rows[0]?.price || 0;
       total += quantity * price;
     }
+
+    if (hasOutOfStock) {
+      hasOutOfStock = false;
+      return {
+        errors_stock: errors_stock_var,
+        message: "Out of stock",
+      };
+    }
+
     const date_register = new Date();
     const userResult =
       await sql`SELECT user_id FROM users WHERE user_name = ${"User"}`;

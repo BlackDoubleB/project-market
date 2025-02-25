@@ -3,6 +3,7 @@ import { Icon } from "@iconify/react";
 import { ProductFetch, SaleTable } from "@/app/lib/definitions";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { StateSale } from "@/app/lib/actions";
+import clsx from "clsx";
 
 interface Props {
   products: ProductFetch[];
@@ -27,10 +28,16 @@ export default function CardProduct({
 }: Props) {
   const [productId, setProductId] = useState("");
   const [quantity, setQuantity] = useState<number>(1);
-
   const updateProductId = (productId: string) => {
     updateItemProductId(index, productId);
     setProductId(productId);
+
+    // Limpiar los errores de stock al cambiar de producto
+    if (messageError.errors_stock) {
+      messageError.errors_stock = messageError.errors_stock.filter(
+        (error) => error.index_stock !== index,
+      );
+    }
   };
 
   const updateMinusQuantity = () => {
@@ -48,6 +55,11 @@ export default function CardProduct({
 
   const deleteProductCard = () => {
     deleteProduct(index);
+    if (messageError.errors_stock) {
+      messageError.errors_stock = messageError.errors_stock.filter(
+        (error) => error.index_stock !== index,
+      );
+    }
   };
 
   useEffect(() => {
@@ -126,6 +138,19 @@ export default function CardProduct({
                     }{" "}
                   </p>
                 )}
+
+            {messageError?.errors_stock?.map((error) =>
+              error.index_stock == index ? (
+                <p
+                  key={error.index_stock}
+                  className="mt-2 text-sm text-red-500"
+                >
+                  Stock Disponible {error.number_stock}
+                </p>
+              ) : (
+                ""
+              ),
+            )}
           </div>
 
           {/* Category Name */}
@@ -196,15 +221,6 @@ export default function CardProduct({
                 </button>
               </div>
             </div>
-
-            {/*<div id="product-error" aria-live="polite" aria-atomic="true">*/}
-            {/*  {messageError.errors?.method &&*/}
-            {/*    messageError.errors.method.map((error: string) => (*/}
-            {/*      <p className="mt-2 text-sm text-red-500" key={error}>*/}
-            {/*        {error}*/}
-            {/*      </p>*/}
-            {/*    ))}*/}
-            {/*</div>*/}
           </div>
         </div>
       </div>

@@ -1,5 +1,4 @@
-
-import { sql } from '@vercel/postgres';
+import { sql } from "@vercel/postgres";
 import {
   NavTableProducts,
   LatestSale,
@@ -14,11 +13,10 @@ import {
   StockById,
   RoleFetch,
   CategoryFetch,
-  ProductFetch
-
-} from './definitions';
-import { formatCurrency } from './utils';
-
+  ProductFetch,
+  SaleById,
+} from "./definitions";
+import { formatCurrency } from "./utils";
 
 export async function fetchLatestSales() {
   try {
@@ -37,13 +35,13 @@ export async function fetchLatestSales() {
       return {
         ...sale,
         amount: formatCurrency(Number(sale.amount)),
-      }
+      };
     });
 
     return g;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch the latest sales.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch the latest sales.");
   }
 }
 
@@ -62,10 +60,10 @@ export async function fetchCardData() {
       saleMethodPromise,
     ]);
 
-    const numberOfSales = Number(data[0].rows[0].count ?? '0');
-    const numberOfProducts = Number(data[1].rows[0].count ?? '0');
-    const totalCardSales = formatCurrency(data[2].rows[0].card ?? '0');
-    const totalCashSales = formatCurrency(data[2].rows[0].cash ?? '0');
+    const numberOfSales = Number(data[0].rows[0].count ?? "0");
+    const numberOfProducts = Number(data[1].rows[0].count ?? "0");
+    const totalCardSales = formatCurrency(data[2].rows[0].card ?? "0");
+    const totalCashSales = formatCurrency(data[2].rows[0].cash ?? "0");
 
     return {
       numberOfSales,
@@ -74,18 +72,15 @@ export async function fetchCardData() {
       totalCashSales,
     };
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch card data.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch card data.");
   }
 }
 
 const ITEMS_PER_PAGE = 6;
 
 //FECTH FILTERED
-export async function fetchFilteredRoles(
-  query: string,
-  currentPage: number,
-) {
+export async function fetchFilteredRoles(query: string, currentPage: number) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -102,8 +97,8 @@ export async function fetchFilteredRoles(
 
     return roles.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch roles.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch roles.");
   }
 }
 
@@ -127,8 +122,8 @@ export async function fetchFilteredCategories(
 
     return categories.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch categories.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch categories.");
   }
 }
 
@@ -158,15 +153,12 @@ export async function fetchFilteredProducts(
 
     return products.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch products.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch products.");
   }
 }
 
-export async function fetchFilteredStock(
-  query: string,
-  currentPage: number,
-) {
+export async function fetchFilteredStock(query: string, currentPage: number) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -187,15 +179,12 @@ export async function fetchFilteredStock(
 
     return stock.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch stock.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch stock.");
   }
 }
 
-export async function fetchFilteredSales(
-  query: string,
-  currentPage: number
-) {
+export async function fetchFilteredSales(query: string, currentPage: number) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -236,8 +225,8 @@ export async function fetchRolesPages(query: string) {
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of roles.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of roles.");
   }
 }
 
@@ -252,8 +241,8 @@ export async function fetchCategoriesPages(query: string) {
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of roles.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of roles.");
   }
 }
 
@@ -268,8 +257,8 @@ export async function fetchProductsPages(query: string) {
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of Products.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of Products.");
   }
 }
 
@@ -285,8 +274,8 @@ export async function fetchStockPages(query: string) {
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of Stocks.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of Stocks.");
   }
 }
 
@@ -304,8 +293,8 @@ export async function fetchSalesPages(query: string) {
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of sales.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of sales.");
   }
 }
 
@@ -327,8 +316,8 @@ export async function fetchCategoryById(id: string) {
     console.log(categories);
     return categories[0];
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch category.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch category.");
   }
 }
 
@@ -349,8 +338,8 @@ export async function fetchRoleById(id: string) {
     console.log(roles);
     return roles[0];
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch role.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch role.");
   }
 }
 
@@ -377,8 +366,8 @@ export async function fetchProductById(id: string) {
     console.log(products);
     return products[0];
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch product.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch product.");
   }
 }
 
@@ -403,8 +392,37 @@ export async function fetchStockById(id: string) {
     console.log(stock);
     return stock[0];
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch stock.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch stock.");
+  }
+}
+
+export async function fetchSaleById(id: string) {
+  try {
+    const data = await sql<SaleById>`
+      SELECT
+        sales.date_register,
+        sales.total,
+        sales.method,
+        detail_sale_products.product_id,
+        detail_sale_products.quantity,
+        products.category_id
+        
+      FROM sales
+      JOIN detail_sale_products ON detail_sale_products.sale_id = sales.sale_id
+      JOIN products ON products.product_id = detail_sale_products.product_id
+      WHERE sales.sale_id = ${id};
+    `;
+
+    const sales = data.rows.map((sale) => ({
+      ...sale,
+    }));
+
+    console.log(sales);
+    return sales;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch sale.");
   }
 }
 
@@ -429,8 +447,8 @@ export async function fetchFilteredProductsNav(
 
     return products.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch products.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch products.");
   }
 }
 
@@ -448,8 +466,8 @@ export async function fetchRoles() {
     const roles = data.rows;
     return roles;
   } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch all roles.');
+    console.error("Database Error:", err);
+    throw new Error("Failed to fetch all roles.");
   }
 }
 
@@ -466,8 +484,8 @@ export async function fetchCategories() {
     const categories = data.rows;
     return categories;
   } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch all categories.');
+    console.error("Database Error:", err);
+    throw new Error("Failed to fetch all categories.");
   }
 }
 
@@ -490,7 +508,7 @@ export async function fetchProducts() {
     const products = data.rows;
     return products;
   } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch all products.' + err);
+    console.error("Database Error:", err);
+    throw new Error("Failed to fetch all products." + err);
   }
 }

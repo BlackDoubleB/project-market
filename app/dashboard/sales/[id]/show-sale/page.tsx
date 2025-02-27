@@ -1,5 +1,4 @@
-import ShowForm from "@/app/ui/sales/show-form";
-import Breadcrumbs from "@/app/ui/breadcrumbs";
+import ShowForm from "@/app/ui/sales/MainShowForm";
 import { fetchSaleById, fetchCategories, fetchProducts } from "@/app/lib/data";
 import { notFound } from "next/navigation";
 
@@ -15,16 +14,6 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   }
   return (
     <main>
-      {/*<Breadcrumbs*/}
-      {/*  breadcrumbs={[*/}
-      {/*    { label: "Sales", href: "/dashboard/sales" },*/}
-      {/*    {*/}
-      {/*      label: "Show Sale",*/}
-      {/*      href: `/dashboard/sales/${id}/show-sale`,*/}
-      {/*      active: true,*/}
-      {/*    },*/}
-      {/*  ]}*/}
-      {/*/>*/}
       <ShowForm
         saleById={saleById}
         categories={categories}

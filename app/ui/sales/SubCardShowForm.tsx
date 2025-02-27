@@ -1,6 +1,7 @@
+"use client";
 import { Category, Product, SaleById } from "@/app/lib/definitions";
 
-export default function CardShowForm({
+export default function SubCardShowForm({
   sale,
   categories,
   products,

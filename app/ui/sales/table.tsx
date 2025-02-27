@@ -1,6 +1,6 @@
-import { ShowSale } from "@/app/ui/sales/buttons";
 import { fetchFilteredSales } from "@/app/lib/data";
 import { format } from "date-fns";
+import Intermedial from "@/app/ui/sales/Intermedial";
 
 export default async function SalesTable({
   query,
@@ -10,7 +10,6 @@ export default async function SalesTable({
   currentPage: number;
 }) {
   const sales = await fetchFilteredSales(query, currentPage);
-
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
@@ -45,7 +44,7 @@ export default async function SalesTable({
 
                 <div className="flex w-full items-center justify-between pt-4">
                   <div className="flex justify-end gap-2">
-                    <ShowSale id={sale.sale_id} />
+                    {/*<ShowSale id={sale.sale_id} />*/}
                   </div>
                 </div>
               </div>
@@ -106,7 +105,7 @@ export default async function SalesTable({
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <ShowSale id={sale.sale_id} />
+                      <Intermedial id={sale.sale_id} />
                     </div>
                   </td>
                 </tr>

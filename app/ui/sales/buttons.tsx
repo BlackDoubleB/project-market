@@ -1,6 +1,11 @@
 "use client";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
+import { useCallback, useState } from "react";
+import clsx from "clsx";
+import MainShowForm from "@/app/ui/sales/MainShowForm";
+import { Category, Product, SaleById } from "@/app/lib/definitions";
+
 export function CreateSale() {
   return (
     <Link
@@ -13,13 +18,39 @@ export function CreateSale() {
   );
 }
 
-export function ShowSale({ id }: { id: string }) {
+export function ShowDetailsWrapper({
+  saleById,
+  categories,
+  products,
+}: {
+  saleById: SaleById[]; // Correctly types as the return type of fetchSaleById
+  categories: Category[];
+  products: Product[];
+}) {
+  const [actived, setActived] = useState(false);
+
+  const setShowExternal = (show: boolean) => {
+    setActived(show);
+  };
+
+  const ModalDetalle = useCallback(() => {
+    return (
+      <MainShowForm
+        saleById={saleById}
+        categories={categories}
+        products={products}
+        setShowExternal={setShowExternal}
+      />
+    );
+  }, [saleById, categories, products]);
+
   return (
-    <Link
-      href={`/dashboard/sales/${id}/show-sale`}
-      className="rounded-md border p-2 hover:bg-gray-100"
-    >
-      <Icon icon="bx:show" className="w-5" />
-    </Link>
+    <>
+      <button onClick={() => setActived(true)} type="button">
+        <Icon icon="bx:show" className="w-5" />
+      </button>
+
+      {actived && ModalDetalle()}
+    </>
   );
 }

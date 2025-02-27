@@ -12,7 +12,7 @@ import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import { Icon } from "@iconify/react";
 import { v4 as uuidv4 } from "uuid";
-import CardProduct from "@/app/ui/sales/cardProduct";
+import CardProduct from "@/app/ui/sales/CardProduct";
 
 export default function Form({ products }: { products: ProductFetch[] }) {
   const [total, setTotal] = useState(0);

@@ -1,0 +1,37 @@
+.sale-hide {
+    transform: scale(0);
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    position: absolute;
+    left: 40%;
+    top:0;
+    transform-origin: center top;
+}
+
+.sale-show {
+    transform: scale(1);
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 40%;
+    width: 28rem;
+    z-index: 100;
+    height: 600px;
+    padding-right: 10px; /* Espacio para la barra de desplazamiento */
+    border-radius: 16px; /* Asegúrate de que el contenedor tenga bordes redondeados */
+    background: white; /* Fondo para que la barra de desplazamiento no se vea fuera */
+}
+.scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    border-radius: 0 16px 16px 0; /* Bordes redondeados solo en el lado derecho */
+}
+.scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

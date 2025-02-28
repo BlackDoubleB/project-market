@@ -2,27 +2,35 @@
 import SubCardShowForm from "@/app/ui/sales/SubCardShowForm";
 import { Category, Product, SaleById } from "@/app/lib/definitions";
 import { format } from "date-fns";
-
+import clsx from "clsx";
+import "./stylesSales.css";
 export default function MainShowForm({
   saleById,
   categories,
   products,
-  setShowExternal,
+  setActived,
+  className = "",
 }: {
   saleById: SaleById[]; // Correctly types as the return type of fetchSaleById
   categories: Category[];
   products: Product[];
-  setShowExternal: (show: boolean) => void;
+  setActived: React.Dispatch<React.SetStateAction<boolean>>;
+  className?: string;
 }) {
   return (
-    <div className="absolute left-0 right-0 z-20 top-0 mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-      <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+    <div
+      className={clsx(
+        "flex flex-col items-center justify-center rounded-2xl border border-solid border-gray-500",
+        className,
+      )}
+    >
+      <div className="scrollbar overflow-y-auto h-[580px] w-full  rounded-2xl bg- my-2  pl-7 pr-5 py-8 ">
         <div>
-          <div className="text-center">
-            <h1>Detalle de Venta</h1>
+          <div className="text-center mb-5">
+            <h1>DETALLE DE VENTA</h1>
           </div>
 
-          <div>
+          <div className="mb-5">
             <p className="block text-sm font-medium leading-5  text-gray-700">
               Fecha de Registro
             </p>
@@ -55,12 +63,12 @@ export default function MainShowForm({
               />
             </div>
           ))}
-          <div>
+          <div className="mt-5">
             <p className="block text-sm font-medium leading-5  text-gray-700">
               Total
             </p>
             <div className="mt-1 relative rounded-md shadow-sm">
-              <p>{saleById[0].total}</p>
+              <p>S/. {saleById[0].total}</p>
             </div>
           </div>
         </div>
@@ -68,8 +76,8 @@ export default function MainShowForm({
           <span className="block w-full rounded-md shadow-sm">
             <button
               type="button"
-              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out"
-              onClick={() => setShowExternal(false)}
+              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700"
+              onClick={() => setActived(false)}
             >
               Cerrrar
             </button>

@@ -1,9 +1,10 @@
+import Decimal from "decimal.js";
+
 export type LatestSale = {
-  id: string;
-  name_product: string;
-  name_category: string;
+  product_name: string;
+  category_name: string;
   image_url: string;
-  amount: string | number;
+  total: number;
 };
 
 export type role = {
@@ -48,19 +49,19 @@ export type Stock = {
   date_register: string;
 };
 
-export type Sale = {
-  sale_id: string;
-  user_id: string;
-  method: string;
-  date_register: string;
-  total: number;
-};
-
-export type detail_sale_products = {
-  sale_id: string;
-  product_id: string;
-  quantity: number;
-};
+// export type Sale = {
+//   sale_id: string;
+//   user_id: string;
+//   method: string;
+//   date_register: string;
+//   total: number;
+// };
+//
+// export type detail_sale_products = {
+//   sale_id: string;
+//   product_id: string;
+//   quantity: number;
+// };
 //NAV TABLE
 export type NavTableProducts = {
   product_id: string;
@@ -163,6 +164,20 @@ export type ProductFetch = {
   image_url: string;
   price: number;
   date_register: string;
+};
+
+export type SaleFetch = {
+  total: number;
+  date_register: string;
+};
+
+export type UserFetch = {
+  role_name: string;
+  person_name: string;
+  lastname: string;
+  dni: string;
+  user_name: string;
+  password: string;
 };
 
 export type SaleTable = {

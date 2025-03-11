@@ -4,30 +4,51 @@ import { Category, Product, SaleById } from "@/app/lib/definitions";
 import { format } from "date-fns";
 import clsx from "clsx";
 import "./stylesSales.css";
+import { useEffect, useRef } from "react";
+import { lusitana } from "@/app/ui/fonts";
 export default function MainShowForm({
   saleById,
   categories,
   products,
   setActived,
   className = "",
+  actived,
 }: {
   saleById: SaleById[]; // Correctly types as the return type of fetchSaleById
   categories: Category[];
   products: Product[];
   setActived: React.Dispatch<React.SetStateAction<boolean>>;
   className?: string;
+  actived: boolean;
 }) {
+  // Ref para la modal
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (actived && modalRef.current) {
+      modalRef.current.scrollTop = 0;
+    }
+  }, [actived]);
+
   return (
     <div
       className={clsx(
-        "flex flex-col items-center justify-center rounded-2xl border border-solid border-gray-500",
+        "drop-shadow-2xl flex flex-col items-center justify-center rounded-2xl border border-solid border-gray-500",
         className,
       )}
     >
-      <div className="scrollbar overflow-y-auto h-[580px] w-full  rounded-2xl bg- my-2  pl-7 pr-5 py-8 ">
+      <div
+        ref={modalRef}
+        className="scrollbar scroll-top overflow-y-auto h-[580px] w-full  rounded-2xl my-2  pl-7 pr-5 py-8 "
+      >
         <div>
           <div className="text-center mb-5">
-            <h1>DETALLE DE VENTA</h1>
+            <h1
+              className={`${lusitana.className} text-base`}
+              style={{ fontWeight: 700 }}
+            >
+              DETALLE DE VENTA
+            </h1>
           </div>
 
           <div className="mb-5">

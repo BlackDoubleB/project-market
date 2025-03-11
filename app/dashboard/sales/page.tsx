@@ -24,7 +24,7 @@ export default async function Page(props: {
   const totalPages = await fetchSalesPages(query);
 
   return (
-    <div className=" relative w-full">
+    <div className="w-full">
       <div className="flex w-full items-center justify-between">
         <h1 className={`${lusitana.className} text-2xl`}>Sales</h1>
       </div>

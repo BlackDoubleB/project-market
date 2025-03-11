@@ -1,7 +1,16 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { db } from "@vercel/postgres";
 
-import {roles, people, users, sales, categories, products, stock, detail_sale_products} from '../lib/placeholder-data';
+import {
+  roles,
+  people,
+  users,
+  sales,
+  categories,
+  products,
+  stock,
+  detail_sale_products,
+} from "../lib/placeholder-data";
 
 const client = await db.connect();
 
@@ -22,7 +31,6 @@ async function seedRoles() {
         VALUES (${role.role_id}, ${role.role_name})
         ON CONFLICT (role_id) DO NOTHING;
       `;
-
     }),
   );
 
@@ -47,7 +55,6 @@ async function seedPeople() {
         VALUES (${person.person_id}, ${person.dni}, ${person.person_name},${person.lastname})
         ON CONFLICT (person_id) DO NOTHING;
       `;
-
     }),
   );
 
@@ -59,12 +66,15 @@ async function seedUsers() {
 
   await client.sql`
     CREATE TABLE IF NOT EXISTS users (
-      user_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       role_id UUID NOT NULL, 
       person_id UUID NOT NULL, 
       user_name VARCHAR(255) NOT NULL,
       password TEXT NOT NULL,
       date_register TIMESTAMP NOT NULL,
+      email VARCHAR(255),
+      "emailVerified" TIMESTAMPTZ,
+      image TEXT,
       CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(role_id),
       CONSTRAINT fk_people FOREIGN KEY (person_id) REFERENCES people(person_id)
     );
@@ -74,16 +84,58 @@ async function seedUsers() {
     users.map(async (user) => {
       const hashedPassword = await bcrypt.hash(user.password, 10);
       return client.sql`
-        INSERT INTO users (user_id, role_id, person_id, user_name, password, date_register)
+        INSERT INTO users (id, role_id, person_id, user_name, password, date_register)
         VALUES (${user.user_id}, ${user.role_id}, ${user.person_id}, ${user.user_name}, ${hashedPassword}, ${user.date_register.toISOString()})
-        ON CONFLICT (user_id) DO NOTHING;
+        ON CONFLICT (id) DO NOTHING;
       `;
     }),
   );
 
   return insertedUsers;
 }
+// START AUTH
+async function verification_token() {
+  await client.sql`
+    CREATE TABLE IF NOT EXISTS verification_token (
+        identifier TEXT NOT NULL,
+        expires TIMESTAMPTZ NOT NULL,
+        token TEXT NOT NULL);
+  `;
+}
 
+async function accounts() {
+  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+  await client.sql`
+    CREATE TABLE IF NOT EXISTS accounts (
+      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      "userId" UUID NOT NULL,
+      type VARCHAR(255) NOT NULL,
+      provider VARCHAR(255) NOT NULL,
+      "providerAccountId" VARCHAR(255) NOT NULL,
+      refresh_token TEXT,
+      access_token TEXT,
+      expires_at BIGINT,
+      id_token TEXT,
+      scope TEXT,
+      session_state TEXT,
+      token_type TEXT,
+      CONSTRAINT fk_user_accounts FOREIGN KEY ("userId") REFERENCES users(id));`;
+}
+
+async function sessions() {
+  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+  await client.sql`
+    CREATE TABLE IF NOT EXISTS sessions (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+       "userId" UUID NOT NULL,
+       expires TIMESTAMPTZ NOT NULL,
+       "sessionToken" VARCHAR(255) NOT NULL,
+      CONSTRAINT fk_user_sessions FOREIGN KEY ("userId") REFERENCES users(id));`;
+}
+
+// END ATUH
 async function seedSales() {
   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
@@ -94,7 +146,7 @@ async function seedSales() {
       method VARCHAR(50)  NOT NULL,
       date_register TIMESTAMP NOT NULL,
       total NUMERIC(10,2) NOT NULL,
-      CONSTRAINT fk_users FOREIGN KEY (user_id) REFERENCES users(user_id)
+      CONSTRAINT fk_users FOREIGN KEY (user_id) REFERENCES users(id)
     );
   `;
 
@@ -127,10 +179,10 @@ async function seedCategories() {
       INSERT INTO categories (category_id, category_name)
       VALUES (${category.category_id}, ${category.category_name})
       ON CONFLICT (category_id) DO NOTHING
-      `
-    )
+      `,
+    ),
   );
-  return insertedCategories
+  return insertedCategories;
 }
 
 async function seedProducts() {
@@ -175,14 +227,15 @@ async function seedStock() {
   `;
 
   const insertedStock = await Promise.all(
-    stock.map((st) => client.sql`
+    stock.map(
+      (st) => client.sql`
       INSERT INTO stock (stock_id,product_id,quantity,date_register)
       VALUES (${st.stock_id}, ${st.product_id}, ${st.quantity},${st.date_register.toISOString()} )
       ON CONFLICT (stock_id) DO NOTHING
-      `
-    )
+      `,
+    ),
   );
-  return insertedStock
+  return insertedStock;
 }
 
 async function seedDetail_Sale_Products() {
@@ -199,17 +252,17 @@ async function seedDetail_Sale_Products() {
   `;
 
   const inserteDetail_Sale_Products = await Promise.all(
-    detail_sale_products.map((dsp) => client.sql`
+    detail_sale_products.map(
+      (dsp) => client.sql`
       INSERT INTO detail_sale_products (sale_id, product_id, quantity)
       VALUES (${dsp.sale_id}, ${dsp.product_id}, ${dsp.quantity} )
-      `
-    )
+      `,
+    ),
   );
-  return inserteDetail_Sale_Products
+  return inserteDetail_Sale_Products;
 }
 
 export async function GET() {
-
   try {
     await client.sql`BEGIN`;
     await seedRoles();
@@ -220,16 +273,21 @@ export async function GET() {
     await seedSales();
     await seedDetail_Sale_Products();
     await seedStock();
+    await verification_token();
+    await accounts();
+    await sessions();
     await client.sql`COMMIT`;
 
-    return Response.json({ message: 'Database seeded successfully' });
+    return Response.json({ message: "Database seeded successfully" });
   } catch (error) {
     await client.sql`ROLLBACK`;
-    console.error('Error during database seeding:', error);
+    console.error("Error during database seeding:", error);
     const errorMessage = (error as Error).message;
-    return Response.json({ message: 'Error during database seeding', error: errorMessage }, { status: 500 });
-   
+    return Response.json(
+      { message: "Error during database seeding", error: errorMessage },
+      { status: 500 },
+    );
   } finally {
-    client.release(); 
+    client.release();
   }
 }

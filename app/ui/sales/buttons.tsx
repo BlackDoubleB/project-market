@@ -1,7 +1,7 @@
 "use client";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import clsx from "clsx";
 import MainShowForm from "@/app/ui/sales/MainShowForm";
 import { Category, Product, SaleById } from "@/app/lib/definitions";
@@ -42,7 +42,11 @@ export function ShowDetailsWrapper({
         categories={categories}
         products={products}
         setActived={setActived}
+        actived={actived}
       />
+      {actived && (
+        <div className="inset-0 bg-black bg-opacity-50 h-full overflow-visible z-20 absolute"></div>
+      )}
     </>
   );
 }

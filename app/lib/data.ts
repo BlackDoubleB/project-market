@@ -1,3 +1,4 @@
+"use server";
 import { sql } from "@vercel/postgres";
 import {
   NavTableProducts,
@@ -14,27 +15,35 @@ import {
   RoleFetch,
   CategoryFetch,
   ProductFetch,
+  SaleFetch,
+  UserFetch,
   SaleById,
 } from "./definitions";
-import { formatCurrency } from "./utils";
+
+//
+
+import { auth } from "@/auth";
+import { type Session } from "next-auth";
+type SafeSession = Session & { user?: { user_name?: string } };
 
 export async function fetchLatestSales() {
   try {
     const data = await sql<LatestSale>`
       SELECT 
-      sales.amount, 
-      products.id, products.name AS name_product, products.image_url, 
-      categories.id, categories.name AS name_category
+      products.product_name AS product_name,
+      categories.category_name AS category_name,
+      products.image_url AS image_url,
+      sales.total
       FROM sales
-      JOIN products ON sales.product_id = products.id
-      JOIN categories ON sales.category_id = categories.id
-      ORDER BY sales.date DESC
+      JOIN detail_sale_products ON detail_sale_products.sale_id = sales.sale_id
+      JOIN products ON products.product_id = detail_sale_products.product_id 
+      JOIN categories ON categories.category_id = products.category_id
+      ORDER BY sales.date_register DESC
       LIMIT 5`;
 
     const g: Array<LatestSale> = data.rows.map((sale) => {
       return {
         ...sale,
-        amount: formatCurrency(Number(sale.amount)),
       };
     });
 
@@ -50,8 +59,8 @@ export async function fetchCardData() {
     const saleCountPromise = sql`SELECT COUNT(*) FROM sales`;
     const productCountPromise = sql`SELECT COUNT(*) FROM products`;
     const saleMethodPromise = sql`SELECT
-         SUM(CASE WHEN method = 'cash' THEN amount ELSE 0 END) AS "cash",
-         SUM(CASE WHEN method = 'card' THEN amount ELSE 0 END) AS "card"
+                                    COUNT(CASE WHEN method = 'cash' THEN 1 END) AS "cash",
+                                    COUNT(CASE WHEN method = 'card' THEN 1 END) AS "card"
          FROM sales`;
 
     const data = await Promise.all([
@@ -62,8 +71,8 @@ export async function fetchCardData() {
 
     const numberOfSales = Number(data[0].rows[0].count ?? "0");
     const numberOfProducts = Number(data[1].rows[0].count ?? "0");
-    const totalCardSales = formatCurrency(data[2].rows[0].card ?? "0");
-    const totalCashSales = formatCurrency(data[2].rows[0].cash ?? "0");
+    const totalCardSales = Number(data[2].rows[0].card ?? "0");
+    const totalCashSales = Number(data[2].rows[0].cash ?? "0");
 
     return {
       numberOfSales,
@@ -510,5 +519,49 @@ export async function fetchProducts() {
   } catch (err) {
     console.error("Database Error:", err);
     throw new Error("Failed to fetch all products." + err);
+  }
+}
+
+export async function fetchSales() {
+  try {
+    const data = await sql<SaleFetch>`
+      SELECT
+        sales.total,
+        sales.date_register
+      FROM sales
+    `;
+
+    const salesData = data.rows;
+    return salesData;
+  } catch (err) {
+    console.error("Database Error:", err);
+    throw new Error("Failed to fetch sales." + err);
+  }
+}
+
+export async function fetchUser() {
+  const session = await auth();
+
+  if (!session?.user || !("user_name" in session.user)) {
+    throw new Error("User not authenticated or username not found.");
+  }
+
+  try {
+    const data = await sql<UserFetch>`SELECT 
+      roles.role_name,
+      people.person_name,
+      people.lastname,
+      people.dni,
+      u.user_name,
+      u.password
+      FROM users AS u
+      JOIN roles ON roles.role_id = u.role_id
+      JOIN people ON people.person_id = u.person_id
+      WHERE u.user_name = ${session.user.user_name as string}`;
+
+    return data.rows[0];
+  } catch (err) {
+    console.error("Database Error:", err);
+    throw new Error("Failed to fetch user." + err);
   }
 }

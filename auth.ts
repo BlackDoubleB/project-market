@@ -1,41 +1,69 @@
-import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-import { authConfig } from './auth.config';
-import { z } from 'zod';
-import { sql } from '@vercel/postgres';
-import type { User } from '@/app/lib/definitions';
-import bcrypt from 'bcrypt';
- 
-async function getUser(user_name: string): Promise<User | undefined> {
-  try {
-    const user = await sql<User>`SELECT * FROM users WHERE user_name=${user_name}`;
-    return user.rows[0];
-  } catch (error) {
-    console.error('Failed to fetch user:', error);
-    throw new Error('Failed to fetch user.');
-  }
-}
- 
-export const { auth, signIn, signOut } = NextAuth({
-  ...authConfig,
-  providers: [
-    Credentials({
-      async authorize(credentials) {
-        const parsedCredentials = z
-          .object({ user_name: z.string(), password: z.string() })
-          .safeParse(credentials);
- 
-        if (parsedCredentials.success) {
-          const { user_name, password } = parsedCredentials.data;
-          const user = await getUser(user_name);
-          if (!user) return null;
-          const passwordsMatch = await bcrypt.compare(password, user.password);
-          if (passwordsMatch) return user;
-        }
-        
-        console.log('Invalid credentials');
-        return null;
+import NextAuth from "next-auth";
+import PostgresAdapter from "@auth/pg-adapter";
+import { Pool } from "@neondatabase/serverless";
+import Credentials from "next-auth/providers/credentials";
+import saltAndHashPassword from "@/app/utils/password";
+import { ZodError } from "zod";
+import { signInSchema } from "./lib/zod";
+import { getUserFromDb } from "@/app/utils/db";
+
+// *DO NOT* create a `Pool` here, outside the request handler.
+// Neon's Postgres cannot keep a pool alive between requests.
+
+export const { handlers, auth, signIn, signOut } = NextAuth(() => {
+  // Create a `Pool` inside the request handler.
+  const pool = new Pool({ connectionString: process.env.POSTGRES_URL });
+  return {
+    adapter: PostgresAdapter(pool),
+    providers: [
+      Credentials({
+        // You can specify which fields should be submitted, by adding keys to the `credentials` object.
+        // e.g. domain, username, password, 2FA token, etc.
+        credentials: {
+          email: {},
+          password: {},
+        },
+        authorize: async (credentials) => {
+          try {
+            let user = null;
+
+            const { email, password } =
+              await signInSchema.parseAsync(credentials);
+
+            // // logic to salt and hash password
+            // const pwHash = saltAndHashPassword(password);
+
+            // logic to verify if the user exists
+            user = await getUserFromDb(email, password);
+
+            if (!user) {
+              // No user found, so this is their first attempt to loin
+              // Optionally, this is also the place you could do a user registration
+              throw new Error("Invalid credentials.");
+            }
+
+            // return JSON object with the user data
+            return user;
+          } catch (error) {
+            if (error instanceof ZodError) {
+              // Return `null` to indicate that the credentials are invalid
+              return null;
+            }
+          }
+        },
+      }),
+    ],
+    callbacks: {
+      authorized: async ({ auth }) => {
+        // Logged in users are authenticated, otherwise redirect to login page
+        return !!auth;
       },
-    }),
-  ],
+    },
+
+    session: {
+      strategy: "jwt",
+    },
+
+    secret: process.env.AUTH_SECRET,
+  };
 });

@@ -11,7 +11,7 @@ export default function SubCardShowForm({
   products: Product[];
 }) {
   return (
-    <div className="bg-gray-200 border-solid border border-gray-300 rounded-lg p-4 flex flex-col gap-5">
+    <div className="bg-gray-100 border-solid border border-gray-300 rounded-lg p-4 flex flex-col gap-5">
       <div>
         <p className="block text-sm font-medium leading-5  text-gray-700">
           Producto

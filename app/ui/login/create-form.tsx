@@ -1,26 +1,27 @@
-'use client';
-import { createUser, StateUser } from '@/app/lib/actions';
-import { useActionState } from 'react';
-import { RolesField } from '@/app/lib/definitions';
-import Link from 'next/link';
-import { Icon } from '@iconify/react';
-import { Button } from '@/app/ui/button';
+"use client";
+import { createUser, StateUser } from "@/app/lib/actions";
+import { useActionState } from "react";
+import { RoleFetch } from "@/app/lib/definitions";
+import Link from "next/link";
+import { Icon } from "@iconify/react";
+import { Button } from "@/app/ui/button";
 
-
-export default function Form({ roles }: { roles: RolesField[] }) {
+export default function Form({ roles }: { roles: RoleFetch[] }) {
   const initialState: StateUser = { message: null, errors: {} };
   const [state, formAction] = useActionState(createUser, initialState);
 
   return (
     <form action={formAction}>
-      <div className='flex justify-center'>
-        <h1 className="text-2xl py-10 text-black font-semibold">Registration</h1>
+      <div className="flex justify-center">
+        <h1 className="text-2xl py-10 text-black font-semibold">
+          Registration
+        </h1>
       </div>
       <div className="rounded-md p-4 md:p-6">
         {/* Role */}
         <div className="mb-4">
           <label htmlFor="role_id" className="mb-2 block text-sm font-medium">
-            Choose Role
+            Role
           </label>
 
           <div className="relative">
@@ -39,9 +40,11 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                   {role.role_name}
                 </option>
               ))}
-
             </select>
-            <Icon icon="solar:user-circle-bold" className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            <Icon
+              icon="solar:user-circle-bold"
+              className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500"
+            />
           </div>
 
           <div id="roles-error" aria-live="polite" aria-atomic="true">
@@ -52,15 +55,17 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 </p>
               ))}
           </div>
-
         </div>
         {/* Fin Role */}
 
         {/* People/Person_name*/}
         <div className="mb-4">
-          <label htmlFor="person_name" className="mb-2 block text-sm font-medium"
-            aria-describedby="person_name-error">
-            Enter your name
+          <label
+            htmlFor="person_name"
+            className="mb-2 block text-sm font-medium"
+            aria-describedby="person_name-error"
+          >
+            Name
           </label>
           <div className="relative mt-2 rounded-md">
             <div className="relative">
@@ -70,7 +75,6 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 type="text"
                 placeholder="name"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-
               />
             </div>
           </div>
@@ -84,15 +88,17 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 </p>
               ))}
           </div>
-
         </div>
         {/* Fin People/People_name */}
 
         {/* People/lastname */}
         <div className="mb-4">
-          <label htmlFor="lastname" className="mb-2 block text-sm font-medium"
-            aria-describedby="lastname-error">
-            Enter your Lastname
+          <label
+            htmlFor="lastname"
+            className="mb-2 block text-sm font-medium"
+            aria-describedby="lastname-error"
+          >
+            Lastname
           </label>
           <div className="relative mt-2 rounded-md">
             <div className="relative">
@@ -102,7 +108,6 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 type="text"
                 placeholder="lastname"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-
               />
             </div>
           </div>
@@ -116,15 +121,17 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 </p>
               ))}
           </div>
-
         </div>
         {/* Fin People/lastname */}
 
         {/* People/Dni */}
         <div className="mb-4">
-          <label htmlFor="dni" className="mb-2 block text-sm font-medium"
-            aria-describedby="dni-error">
-            Enter your Dni
+          <label
+            htmlFor="dni"
+            className="mb-2 block text-sm font-medium"
+            aria-describedby="dni-error"
+          >
+            Dni
           </label>
           <div className="relative mt-2 rounded-md">
             <div className="relative">
@@ -134,7 +141,6 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 type="text"
                 placeholder="dni"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-
               />
             </div>
           </div>
@@ -148,15 +154,17 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 </p>
               ))}
           </div>
-
         </div>
         {/* Fin People/Dni */}
 
         {/* User/User_name */}
         <div className="mb-4">
-          <label htmlFor="user_name" className="mb-2 block text-sm font-medium"
-            aria-describedby="user_name-error">
-            Enter your Username
+          <label
+            htmlFor="user_name"
+            className="mb-2 block text-sm font-medium"
+            aria-describedby="user_name-error"
+          >
+            Username
           </label>
           <div className="relative mt-2 rounded-md">
             <div className="relative">
@@ -166,7 +174,6 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 type="text"
                 placeholder="user_name"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-
               />
             </div>
           </div>
@@ -180,15 +187,17 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 </p>
               ))}
           </div>
-
         </div>
         {/* Fin User/user_name */}
 
         {/* User/Password */}
         <div className="mb-4">
-          <label htmlFor="password" className="mb-2 block text-sm font-medium"
-            aria-describedby="password-error">
-            Enter your Password
+          <label
+            htmlFor="password"
+            className="mb-2 block text-sm font-medium"
+            aria-describedby="password-error"
+          >
+            Password
           </label>
           <div className="relative mt-2 rounded-md">
             <div className="relative">
@@ -198,7 +207,6 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 type="text"
                 placeholder="password"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-
               />
             </div>
           </div>
@@ -212,9 +220,41 @@ export default function Form({ roles }: { roles: RolesField[] }) {
                 </p>
               ))}
           </div>
-
         </div>
-        {/* Fin User/user_name */}
+        {/* Fin User/Password */}
+
+        {/* User/Email */}
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="mb-2 block text-sm font-medium"
+            aria-describedby="email-error"
+          >
+            Email Address
+          </label>
+          <div className="relative mt-2 rounded-md">
+            <div className="relative">
+              <input
+                id="email"
+                name="email"
+                type="text"
+                placeholder="email"
+                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              />
+            </div>
+          </div>
+
+          {/* Validation */}
+          <div id="email-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.email &&
+              state.errors.email.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
+        </div>
+        {/* Fin User/Email */}
 
         <div className="mt-6 flex justify-end gap-4">
           <Link

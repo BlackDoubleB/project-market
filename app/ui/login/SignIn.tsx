@@ -1,29 +1,59 @@
-import { signIn } from "@/auth";
-
+"use client";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { signInWithCredentials } from "./serverActions";
+import Link from "next/link";
 export function SignIn() {
-  return (
-    <form
-      action={async (formData) => {
-        "use server";
+  const [formData, setFormData] = useState({ email: "", password: "" });
 
-        await signIn("credentials", {
-          email: formData.get("email"),
-          password: formData.get("password"),
-          redirect: true,
-          redirectTo: "/dashboard", // Redirige al usuario después del inicio de sesión
-          // Especifica la URL a la que redirigir
-        });
-      }}
-    >
+  // Manejar cambios en los inputs
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  // Función para iniciar sesión con credenciales
+  const handleCredentials = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Evita la recarga de la página
+    await signInWithCredentials(formData.email, formData.password);
+  };
+
+  return (
+    <form onSubmit={handleCredentials}>
       <label>
-        Email
-        <input name="email" type="email" />
+        Email:
+        <input
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
       </label>
+      <br />
       <label>
-        Password
-        <input name="password" type="password" />
+        Password:
+        <input
+          name="password"
+          type="password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
       </label>
-      <button type="submit">Sign In</button>
+      <br />
+
+      <div className="flex items-center justify-center pt-5">
+        <div className="flex flex-col gap-2">
+          <Button type="submit" variant="secondary">
+            Sign In With Credentials
+          </Button>
+          <Link href="/login/create">
+            <Button type="button" variant="secondary">
+              Create Account
+            </Button>
+          </Link>
+        </div>
+      </div>
     </form>
   );
 }

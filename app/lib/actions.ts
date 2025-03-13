@@ -1,21 +1,27 @@
 "use server";
-import { z } from "zod";
+import { string, z } from "zod";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { signIn } from "@/auth";
-import { AuthError } from "next-auth";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const FormSchemaUser = z.object({
   role_id: z.string({
     invalid_type_error: "Please select a role.",
   }),
   user_name: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(1, "Password is required")
+    .min(8, "Password must be more than 8 characters")
+    .max(32, "Password must be less than 32 characters"),
   person_name: z.string().min(1, "Name is required"),
   dni: z.string().min(1, "DNI is required"),
   lastname: z.string().min(1, "Last Name is required"),
+  email: z
+    .string({ required_error: "Email is required" })
+    .min(1, "Email is required")
+    .email("Invalid email"),
 });
 
 const FormSchemaRole = z.object({
@@ -60,6 +66,7 @@ export type StateUser = {
     lastname?: string[];
     user_name?: string[];
     password?: string[];
+    email?: string[];
   };
   message?: string | null;
 };
@@ -122,6 +129,7 @@ export async function createUser(prevState: StateUser, formData: FormData) {
     lastname: formData.get("lastname"),
     user_name: formData.get("user_name"),
     password: formData.get("password"),
+    email: formData.get("email"),
   });
 
   if (!validatedFields.success) {
@@ -131,7 +139,7 @@ export async function createUser(prevState: StateUser, formData: FormData) {
     };
   }
 
-  const { role_id, person_name, dni, lastname, user_name, password } =
+  const { role_id, person_name, dni, lastname, user_name, password, email } =
     validatedFields.data;
 
   try {
@@ -146,8 +154,8 @@ export async function createUser(prevState: StateUser, formData: FormData) {
     const date_register = new Date();
 
     await sql`
-      INSERT INTO users (role_id, person_id, user_name, password, date_register)
-      VALUES (${role_id}, ${person_id}, ${user_name}, ${hashedPassword},${date_register.toISOString()})
+      INSERT INTO users (role_id, person_id, user_name, password, date_register,email)
+      VALUES (${role_id}, ${person_id}, ${user_name}, ${hashedPassword},${date_register.toISOString()}, ${email})
     `;
   } catch (error) {
     console.error("❌ Error al crear usuario:", error);
@@ -158,7 +166,6 @@ export async function createUser(prevState: StateUser, formData: FormData) {
   }
   revalidatePath("/login/create");
   redirect("/login");
-  return prevState;
 }
 
 export async function createRole(prevState: StateRole, formData: FormData) {

@@ -7,12 +7,12 @@ export type LatestSale = {
   total: number;
 };
 
-export type role = {
+export type Role = {
   role_id: string;
   role_name: string;
 };
 
-export type people = {
+export type People = {
   people_id: string;
   dni: string;
   person_name: string;
@@ -178,6 +178,7 @@ export type UserFetch = {
   dni: string;
   user_name: string;
   password: string;
+  email: string;
 };
 
 export type SaleTable = {

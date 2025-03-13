@@ -2,13 +2,10 @@ import NextAuth from "next-auth";
 import PostgresAdapter from "@auth/pg-adapter";
 import { Pool } from "@neondatabase/serverless";
 import Credentials from "next-auth/providers/credentials";
-import saltAndHashPassword from "@/app/utils/password";
 import { ZodError } from "zod";
 import { signInSchema } from "./lib/zod";
 import { getUserFromDb } from "@/app/utils/db";
-
-// *DO NOT* create a `Pool` here, outside the request handler.
-// Neon's Postgres cannot keep a pool alive between requests.
+import Google from "next-auth/providers/google";
 
 export const { handlers, auth, signIn, signOut } = NextAuth(() => {
   // Create a `Pool` inside the request handler.
@@ -16,6 +13,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
   return {
     adapter: PostgresAdapter(pool),
     providers: [
+      Google,
       Credentials({
         // You can specify which fields should be submitted, by adding keys to the `credentials` object.
         // e.g. domain, username, password, 2FA token, etc.
@@ -43,6 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
             }
 
             // return JSON object with the user data
+            console.log("datos del user", user);
             return user;
           } catch (error) {
             if (error instanceof ZodError) {

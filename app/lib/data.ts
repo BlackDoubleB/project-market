@@ -541,8 +541,8 @@ export async function fetchSales() {
 
 export async function fetchUser() {
   const session = await auth();
-
-  if (!session?.user || !("user_name" in session.user)) {
+  console.log("Session Data:", session);
+  if (!session?.user) {
     throw new Error("User not authenticated or username not found.");
   }
 
@@ -553,12 +553,13 @@ export async function fetchUser() {
       people.lastname,
       people.dni,
       u.user_name,
-      u.password
+      u.password,
+      u.email
       FROM users AS u
       JOIN roles ON roles.role_id = u.role_id
       JOIN people ON people.person_id = u.person_id
-      WHERE u.user_name = ${session.user.user_name as string}`;
-
+      WHERE u.email = ${session.user.email as string}`;
+    console.log(data.rows[0]);
     return data.rows[0];
   } catch (err) {
     console.error("Database Error:", err);

@@ -5,7 +5,7 @@ export async function middleware(request: NextRequest) {
   const session = await auth(); // Verifica si el usuario está autenticado
 
   if (!session) {
-    return NextResponse.redirect(new URL("/home", request.url)); // Si no está autenticado, lo manda a /home
+    return NextResponse.redirect(new URL("/login", request.url)); // Si no está autenticado, lo manda a /home
   }
   console.log("aceeso corercto");
   return NextResponse.next(); // Si está autenticado, permite el acceso

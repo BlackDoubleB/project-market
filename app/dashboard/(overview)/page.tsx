@@ -7,6 +7,7 @@ import { Component } from "@/app/ui/dashboard/column-chart";
 import { fetchSales } from "@/app/lib/data";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { EmailTemplate } from "@/app/components/email-template";
 
 export default async function Page() {
   const sales = await fetchSales();

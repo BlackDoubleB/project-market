@@ -5,11 +5,41 @@ import { RoleFetch } from "@/app/lib/definitions";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
 import { Button } from "@/app/ui/button";
+import { useState } from "react";
 
 export default function Form({ roles }: { roles: RoleFetch[] }) {
   const initialState: StateUser = { message: null, errors: {} };
   const [state, formAction] = useActionState(createUser, initialState);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
+  const sendEmail = async () => {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "doubleb1326@gmail.com",
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        setMessage("Correo enviado con éxito 🎉");
+      } else {
+        setMessage(`Error: ${result.error.message}`);
+      }
+    } catch (error) {
+      setMessage("Hubo un problema al enviar el correo.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <form action={formAction}>
       <div className="flex justify-center">
@@ -265,6 +295,10 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
           </Link>
           <Button type="submit">Create User</Button>
         </div>
+        <Button type="button" onClick={sendEmail}>
+          Enviar Correo
+        </Button>
+        <p>{message}</p>
       </div>
     </form>
   );

@@ -3,13 +3,16 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST() {
+const tempCodeStorage: { [email: string]: number } = {};
+
+export async function POST(request: Request) {
   try {
+    let code: number = Math.floor(1000 + Math.random() * 9000);
     const { data, error } = await resend.emails.send({
       from: "Acme <onboarding@resend.dev>",
-      to: ["doubleb1326@gmail.com"],
-      subject: "Hello world",
-      react: EmailTemplate({ firstName: "Reyna" }),
+      to: [(await request.json()).email],
+      subject: "Esto es una prueba",
+      react: EmailTemplate({ code }),
     });
 
     if (error) {

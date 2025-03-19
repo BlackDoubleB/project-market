@@ -38,11 +38,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
         },
       }),
     ],
-    // callbacks: {
-    //   authorized: async ({ auth }) => {
-    //     return !!auth;
-    //   },
-    // },
     callbacks: {
       session: async ({ session, token }) => {
         if (token.exp && Date.now() > token.exp * 1000) {

@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   if (!session) {
     return NextResponse.redirect(new URL("/login", request.url)); // Si no está autenticado, lo manda a /home
   }
-  console.log("aceeso corercto");
+  console.log("acceso correcto");
   return NextResponse.next(); // Si está autenticado, permite el acceso
 }
 

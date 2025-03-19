@@ -7,13 +7,11 @@ import { Component } from "@/app/ui/dashboard/column-chart";
 import { fetchSales } from "@/app/lib/data";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { EmailTemplate } from "@/app/components/email-template";
-
 export default async function Page() {
   const sales = await fetchSales();
   const session = await auth();
 
-  if (!session) return redirect("/login"); // Si no hay sesión, redirige al login
+  if (!session) return redirect("/login");
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>

@@ -38,14 +38,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
         },
       }),
     ],
+    // callbacks: {
+    //   authorized: async ({ auth }) => {
+    //     return !!auth;
+    //   },
+    // },
     callbacks: {
-      authorized: async ({ auth }) => {
-        return !!auth;
+      session: async ({ session, token }) => {
+        if (token.exp && Date.now() > token.exp * 1000) {
+          return null; // Invalida la sesión cuando el token expira
+        }
+        return session;
       },
     },
-
     session: {
       strategy: "jwt",
+      maxAge: 20,
+    },
+    jwt: {
+      maxAge: 20,
     },
 
     secret: process.env.AUTH_SECRET,

@@ -6,17 +6,30 @@ import Link from "next/link";
 import { Icon } from "@iconify/react";
 import { lusitana } from "@/app/ui/fonts";
 export function SignIn() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    rememberMe: "false",
+  });
 
   // Manejar cambios en los inputs
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+    const { name, type, checked, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? (checked ? "true" : "false") : value, // Convertir a string
+    }));
   };
 
   // Función para iniciar sesión con credenciales
   const handleCredentials = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Evita la recarga de la página
-    await signInWithCredentials(formData.email, formData.password);
+
+    await signInWithCredentials(
+      formData.email,
+      formData.password,
+      formData.rememberMe, // Enviar como string
+    );
   };
 
   return (
@@ -82,8 +95,10 @@ export function SignIn() {
                     <div className="flex items-center h-5">
                       <input
                         id="remember"
-                        aria-describedby="remember"
+                        name="rememberMe"
                         type="checkbox"
+                        checked={formData.rememberMe === "true"} // Usar string para el estado
+                        onChange={handleChange}
                         className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
                       />
                     </div>

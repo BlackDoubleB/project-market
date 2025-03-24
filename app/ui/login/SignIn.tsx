@@ -1,23 +1,21 @@
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { signInWithCredentials } from "./serverActions";
 import Link from "next/link";
-import { Icon } from "@iconify/react";
 import { lusitana } from "@/app/ui/fonts";
+
 export function SignIn() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: "false",
   });
 
   // Manejar cambios en los inputs
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, type, checked, value } = event.target;
+    const { name, value } = event.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === "checkbox" ? (checked ? "true" : "false") : value, // Convertir a string
+      [name]: value,
     }));
   };
 
@@ -25,11 +23,7 @@ export function SignIn() {
   const handleCredentials = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Evita la recarga de la página
 
-    await signInWithCredentials(
-      formData.email,
-      formData.password,
-      formData.rememberMe, // Enviar como string
-    );
+    await signInWithCredentials(formData.email, formData.password);
   };
 
   return (
@@ -40,7 +34,7 @@ export function SignIn() {
             href="#"
             className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
           >
-            <img className="size-14 " src="/icon-market-dark.png" alt="logo" />
+            <img className="size-14" src="/icon-market-dark.png" alt="logo" />
             MARKET
           </a>
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -90,27 +84,8 @@ export function SignIn() {
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   />
                 </div>
+
                 <div className="flex items-center justify-between">
-                  <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="remember"
-                        name="rememberMe"
-                        type="checkbox"
-                        checked={formData.rememberMe === "true"} // Usar string para el estado
-                        onChange={handleChange}
-                        className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                      />
-                    </div>
-                    <div className="ml-3 text-sm">
-                      <label
-                        htmlFor="remember"
-                        className="text-gray-500 dark:text-gray-300"
-                      >
-                        Remember me
-                      </label>
-                    </div>
-                  </div>
                   <a
                     href="#"
                     className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
@@ -119,7 +94,7 @@ export function SignIn() {
                   </a>
                 </div>
 
-                <div className="flex gap-5 flex-col ">
+                <div className="flex gap-5 flex-col">
                   <button
                     type="submit"
                     className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
@@ -140,26 +115,6 @@ export function SignIn() {
           </div>
         </div>
       </section>
-
-      {/*<Link href="/">*/}
-      {/*  <div className="flex justify-center items-center">*/}
-      {/*    <div>*/}
-      {/*      <div className="flex hover:bg-gray-200  rounded-lg p-2 cursor-pointer gap-2 items-center  transform transition-transform duration-200 active:scale-95">*/}
-      {/*        <Icon*/}
-      {/*          icon="material-symbols:arrow-left-alt"*/}
-      {/*          className="w-5 h-6 "*/}
-      {/*        />*/}
-      {/*        <p*/}
-      {/*          className={`${lusitana.className} bg-inherit text-sm font-medium`}*/}
-      {/*        >*/}
-      {/*          Regresar*/}
-      {/*        </p>*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*</Link>*/}
     </div>
-
-    //
   );
 }

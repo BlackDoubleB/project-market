@@ -3,7 +3,7 @@ import PostgresAdapter from "@auth/pg-adapter";
 import { Pool } from "@neondatabase/serverless";
 import Credentials from "next-auth/providers/credentials";
 import { ZodError } from "zod";
-import { signInSchema } from "./lib/zod";
+import { signInSchema } from "@/app/features/users/validations";
 import { getUserFromDb } from "@/app/utils/db";
 
 export const { handlers, auth, signIn, signOut } = NextAuth(() => {
@@ -29,6 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
               throw new Error("Invalid credentials.");
             }
             console.log("datos del user", user);
+
             return user;
           } catch (error) {
             if (error instanceof ZodError) {
@@ -38,6 +39,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
         },
       }),
     ],
+
     callbacks: {
       session: async ({ session, token }) => {
         if (token.exp && Date.now() > token.exp * 1000) {
@@ -46,12 +48,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
         return session;
       },
     },
+
     session: {
       strategy: "jwt",
-      maxAge: 20,
     },
     jwt: {
-      maxAge: 20,
+      secret: process.env.AUTH_SECRET,
     },
 
     secret: process.env.AUTH_SECRET,

@@ -5,9 +5,11 @@ import { RoleFetch } from "@/app/lib/definitions";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
 import { Button } from "@/app/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import clsx from "clsx";
-import { handleAction } from "next/dist/server/app-render/action-handler";
+import { startTransition } from "react";
+import { useRouter } from "next/navigation";
+import { FormSchemaUser } from "@/lib/validations/base-schemas";
 
 export default function Form({ roles }: { roles: RoleFetch[] }) {
   const initialState: StateUser = { message: null, errors: {} };
@@ -18,7 +20,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
   const [isCodeValid, setIsCodeValid] = useState(false); // Estado para verificar si el código es válido
   const [email, setEmail] = useState(""); // Estado para almacenar el email del usuario
   const [formData, setFormData] = useState<FormData | null>(null);
-
+  const router = useRouter();
+  const [clientErrors, setClientErrors] = useState<any>(null);
   const getCombinedCode = (form: HTMLFormElement): string => {
     const code1 = form.elements.namedItem("code1") as HTMLInputElement;
     const code2 = form.elements.namedItem("code2") as HTMLInputElement;
@@ -79,9 +82,11 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
         setModalup(false); // Cerrar el modal
 
         // Enviar el formulario con los datos guardados
-        if (formData) {
-          formAction(formData);
-        }
+        startTransition(() => {
+          if (formData) {
+            formAction(formData);
+          }
+        });
       } else {
         setMessage(`Error: ${result.error.message}`);
         setIsCodeValid(false);
@@ -99,11 +104,23 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
     // Guardar los datos del formulario en el estado
     const form = e.currentTarget as HTMLFormElement;
     const data = new FormData(form);
-    setFormData(data);
 
+    const result = FormSchemaUser.safeParse(Object.fromEntries(data));
+    if (!result.success) {
+      const errors = result.error.flatten().fieldErrors;
+      setClientErrors(errors);
+      return;
+    }
+    setFormData(data);
     // Mostrar el modal para ingresar el código
     await sendEmail();
   };
+
+  useEffect(() => {
+    if (state.message === "Usuario creado con éxito") {
+      router.push("/login"); // Redirige correctamente
+    }
+  }, [state.message, router]);
 
   return (
     <div className="relative">
@@ -144,8 +161,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
             </div>
 
             <div id="roles-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.role_id &&
-                state.errors.role_id.map((error: string) => (
+              {clientErrors?.role_id &&
+                clientErrors.role_id.map((error: string) => (
                   <p className="mt-2 text-sm text-red-500" key={error}>
                     {error}
                   </p>
@@ -177,8 +194,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
             {/* Validation */}
             <div id="person_name-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.person_name &&
-                state.errors.person_name.map((error: string) => (
+              {clientErrors?.person_name &&
+                clientErrors.person_name.map((error: string) => (
                   <p className="mt-2 text-sm text-red-500" key={error}>
                     {error}
                   </p>
@@ -210,8 +227,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
             {/* Validation */}
             <div id="lastname-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.lastname &&
-                state.errors.lastname.map((error: string) => (
+              {clientErrors?.lastname &&
+                clientErrors.lastname.map((error: string) => (
                   <p className="mt-2 text-sm text-red-500" key={error}>
                     {error}
                   </p>
@@ -243,8 +260,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
             {/* Validation */}
             <div id="dni-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.dni &&
-                state.errors.dni.map((error: string) => (
+              {clientErrors?.dni &&
+                clientErrors.dni.map((error: string) => (
                   <p className="mt-2 text-sm text-red-500" key={error}>
                     {error}
                   </p>
@@ -276,8 +293,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
             {/* Validation */}
             <div id="user_name-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.user_name &&
-                state.errors.user_name.map((error: string) => (
+              {clientErrors?.user_name &&
+                clientErrors.user_name.map((error: string) => (
                   <p className="mt-2 text-sm text-red-500" key={error}>
                     {error}
                   </p>
@@ -309,8 +326,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
             {/* Validation */}
             <div id="password-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.password &&
-                state.errors.password.map((error: string) => (
+              {clientErrors?.password &&
+                clientErrors.password.map((error: string) => (
                   <p className="mt-2 text-sm text-red-500" key={error}>
                     {error}
                   </p>
@@ -344,8 +361,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
             {/* Validation */}
             <div id="email-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.email &&
-                state.errors.email.map((error: string) => (
+              {clientErrors?.email &&
+                clientErrors.email.map((error: string) => (
                   <p className="mt-2 text-sm text-red-500" key={error}>
                     {error}
                   </p>
@@ -369,12 +386,12 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
       {/*Modal*/}
       <div
-        className={clsx("absolute top-0 -z-10 opacity-0 ", {
+        className={clsx("absolute top-0 -z-10 opacity-0  w-full h-full px-0", {
           "opacity-100": modalup,
           "z-10": modalup,
         })}
       >
-        <div className="">
+        <div>
           <div className="bg-white px-6 pt-10 pb-9 shadow-xl mx-auto w-full max-w-lg rounded-2xl">
             <div className="mx-auto flex w-full max-w-md flex-col space-y-16">
               <div className="flex flex-col items-center justify-center text-center space-y-2">
@@ -457,6 +474,180 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
           </div>
         </div>
       </div>
+      {/*  Fin Modal*/}
+
+      {/* Inicio Plantilla Form */}
+
+      <form className="max-w-md mx-auto">
+        <div className="relative z-0 w-full mb-5 group">
+          <input
+            type="email"
+            name="floating_email"
+            id="floating_email"
+            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" "
+            required
+          />
+          <label
+            htmlFor="floating_email"
+            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          >
+            Email address
+          </label>
+        </div>
+
+        {/**/}
+        {/* Role */}
+        <div className="mb-4">
+          <label htmlFor="role_id" className="mb-2 block text-sm font-medium">
+            Role
+          </label>
+
+          <div className="relative">
+            <select
+              id="role_id"
+              name="role_id"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue=""
+              aria-describedby="roles-error"
+            >
+              <option value="" disabled>
+                Select a Role
+              </option>
+              {roles.map((role) => (
+                <option key={role.role_id} value={role.role_id}>
+                  {role.role_name}
+                </option>
+              ))}
+            </select>
+            <Icon
+              icon="solar:user-circle-bold"
+              className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500"
+            />
+          </div>
+
+          <div id="roles-error" aria-live="polite" aria-atomic="true">
+            {clientErrors?.role_id &&
+              clientErrors.role_id.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
+        </div>
+        {/* Fin Role */}
+        {/**/}
+
+        <div className="relative z-0 w-full mb-5 group">
+          <input
+            type="password"
+            name="floating_password"
+            id="floating_password"
+            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" "
+            required
+          />
+          <label
+            htmlFor="floating_password"
+            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          >
+            Password
+          </label>
+        </div>
+        <div className="relative z-0 w-full mb-5 group">
+          <input
+            type="password"
+            name="repeat_password"
+            id="floating_repeat_password"
+            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" "
+            required
+          />
+          <label
+            htmlFor="floating_repeat_password"
+            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          >
+            Confirm password
+          </label>
+        </div>
+        <div className="grid md:grid-cols-2 md:gap-6">
+          <div className="relative z-0 w-full mb-5 group">
+            <input
+              type="text"
+              name="floating_first_name"
+              id="floating_first_name"
+              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required
+            />
+            <label
+              htmlFor="floating_first_name"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
+              First name
+            </label>
+          </div>
+          <div className="relative z-0 w-full mb-5 group">
+            <input
+              type="text"
+              name="floating_last_name"
+              id="floating_last_name"
+              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required
+            />
+            <label
+              htmlFor="floating_last_name"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
+              Last name
+            </label>
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 md:gap-6">
+          <div className="relative z-0 w-full mb-5 group">
+            <input
+              type="tel"
+              pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+              name="floating_phone"
+              id="floating_phone"
+              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required
+            />
+            <label
+              htmlFor="floating_phone"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
+              Phone number (123-456-7890)
+            </label>
+          </div>
+          <div className="relative z-0 w-full mb-5 group">
+            <input
+              type="text"
+              name="floating_company"
+              id="floating_company"
+              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required
+            />
+            <label
+              htmlFor="floating_company"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
+              Company (Ex. Google)
+            </label>
+          </div>
+        </div>
+        <button
+          type="submit"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Submit
+        </button>
+      </form>
+
+      {/*  Fin Plantilla Form*/}
     </div>
   );
 }

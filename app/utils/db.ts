@@ -6,6 +6,7 @@ export async function getUserFromDb(email: string, password: string) {
   try {
     const data = await sql`
       SELECT 
+      users.id,
       users.password,
       users.email
       FROM users WHERE email = ${email}`;

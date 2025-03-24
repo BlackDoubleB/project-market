@@ -10,7 +10,8 @@ import { redirect } from "next/navigation";
 export default async function Page() {
   const sales = await fetchSales();
   const session = await auth();
-
+  console.log(session?.refreshToken);
+  console.log("El token de accceso desde front es", session);
   if (!session) return redirect("/login");
   return (
     <main>

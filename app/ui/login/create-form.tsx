@@ -22,6 +22,11 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
   const [formData, setFormData] = useState<FormData | null>(null);
   const router = useRouter();
   const [clientErrors, setClientErrors] = useState<any>(null);
+  const [hasValue, setHasValue] = useState(false);
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setHasValue(event.target.value !== "");
+  };
   const getCombinedCode = (form: HTMLFormElement): string => {
     const code1 = form.elements.namedItem("code1") as HTMLInputElement;
     const code2 = form.elements.namedItem("code2") as HTMLInputElement;
@@ -34,7 +39,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
   const sendEmail = async () => {
     setLoading(true);
     setMessage("");
-    setModalup(true);
+
     try {
       const response = await fetch("/api/send", {
         method: "POST",
@@ -48,6 +53,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
       const result = await response.json();
       if (response.ok) {
+        setModalup(true);
         setMessage("Correo enviado con éxito 🎉");
       } else {
         setMessage(`Error: ${result.error.message}`);
@@ -123,266 +129,240 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
   }, [state.message, router]);
 
   return (
-    <div className="relative">
-      <form id="registration-form" onSubmit={handleSubmit}>
-        <div className="flex justify-center">
-          <h1 className="text-2xl py-10 text-black font-semibold">
-            Registration
-          </h1>
-        </div>
-        <div className="rounded-md p-4 md:p-6">
-          {/* Role */}
-          <div className="mb-4">
-            <label htmlFor="role_id" className="mb-2 block text-sm font-medium">
-              Role
-            </label>
+    <>
+      <div className=" p-10 rounded-2xl border-gray-300 dark:bg-gray-800 dark:border-gray-600 shadow bg-white ">
+        <form id="registration-form" onSubmit={handleSubmit}>
+          <div className="flex justify-center">
+            <h1 className="text-2xl py-10 text-black font-semibold dark:text-white">
+              Registration
+            </h1>
+          </div>
 
-            <div className="relative">
+          {/* Role - Adaptado a la nueva plantilla */}
+          <div className="relative z-0 w-full mb-5">
+            <div className="relative group">
               <select
                 id="role_id"
                 name="role_id"
-                className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className=" block py-2.5 px-1 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer "
                 defaultValue=""
-                aria-describedby="roles-error"
+                onChange={handleSelectChange}
               >
-                <option value="" disabled>
-                  Select a Role
-                </option>
+                <option value="" disabled hidden></option>
                 {roles.map((role) => (
                   <option key={role.role_id} value={role.role_id}>
                     {role.role_name}
                   </option>
                 ))}
               </select>
-              <Icon
-                icon="solar:user-circle-bold"
-                className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500"
-              />
+              <label
+                htmlFor="role_id"
+                className={clsx(
+                  "peer-focus:font-medium absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6",
+                  {
+                    "text-blue-600 dark:text-blue-500": hasValue, // Color cuando hay valor
+                    "text-gray-500 dark:text-gray-400": !hasValue, // Color por defecto
+                  },
+                )}
+              >
+                Select a Role
+              </label>
             </div>
-
             <div id="roles-error" aria-live="polite" aria-atomic="true">
               {clientErrors?.role_id &&
                 clientErrors.role_id.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
+                  <p className="mt-1 text-sm text-red-500" key={error}>
                     {error}
                   </p>
                 ))}
             </div>
           </div>
-          {/* Fin Role */}
 
-          {/* People/Person_name*/}
-          <div className="mb-4">
-            <label
-              htmlFor="person_name"
-              className="mb-2 block text-sm font-medium"
-              aria-describedby="person_name-error"
-            >
-              Name
-            </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="person_name"
-                  name="person_name"
-                  type="text"
-                  placeholder="name"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                />
+          {/**/}
+          <div className="grid md:grid-cols-2 md:gap-6">
+            <div className="relative z-0 w-full mb-5 group">
+              <input
+                type="text"
+                name="person_name"
+                id="person_name"
+                className="block py-2.5 px-1 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=" "
+              />
+              <label
+                htmlFor="person_name"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              >
+                First name
+              </label>
+              <div id="person_name-error">
+                {clientErrors?.person_name &&
+                  clientErrors.person_name.map((error: string) => (
+                    <p className="mt-1 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
               </div>
             </div>
-
-            {/* Validation */}
-            <div id="person_name-error" aria-live="polite" aria-atomic="true">
-              {clientErrors?.person_name &&
-                clientErrors.person_name.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
-          </div>
-          {/* Fin People/People_name */}
-
-          {/* People/lastname */}
-          <div className="mb-4">
-            <label
-              htmlFor="lastname"
-              className="mb-2 block text-sm font-medium"
-              aria-describedby="lastname-error"
-            >
-              Lastname
-            </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="lastname"
-                  name="lastname"
-                  type="text"
-                  placeholder="lastname"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                />
+            <div className="relative z-0 w-full mb-5 group ">
+              <input
+                type="text"
+                name="lastname"
+                id="lastname"
+                className="block py-2.5 px-1 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 !appearance-none  dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=" "
+              />
+              <label
+                htmlFor="lastname"
+                className="peer-checked:bg-blue-600 peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              >
+                Last name
+              </label>
+              <div id="lastname-error">
+                {clientErrors?.lastname &&
+                  clientErrors.lastname.map((error: string) => (
+                    <p className="mt-1 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
               </div>
             </div>
-
-            {/* Validation */}
-            <div id="lastname-error" aria-live="polite" aria-atomic="true">
-              {clientErrors?.lastname &&
-                clientErrors.lastname.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
           </div>
-          {/* Fin People/lastname */}
 
-          {/* People/Dni */}
-          <div className="mb-4">
+          {/**/}
+
+          {/* DNI */}
+          <div className="relative z-0 w-full mb-5 group">
+            <input
+              id="dni"
+              name="dni"
+              type="text"
+              className="block py-2.5 px-1 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+            />
             <label
               htmlFor="dni"
-              className="mb-2 block text-sm font-medium"
-              aria-describedby="dni-error"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
-              Dni
+              DNI
             </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="dni"
-                  name="dni"
-                  type="text"
-                  placeholder="dni"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                />
-              </div>
-            </div>
-
-            {/* Validation */}
-            <div id="dni-error" aria-live="polite" aria-atomic="true">
+            <div id="dni-error">
               {clientErrors?.dni &&
                 clientErrors.dni.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
+                  <p className="mt-1 text-sm text-red-500" key={error}>
                     {error}
                   </p>
                 ))}
             </div>
           </div>
-          {/* Fin People/Dni */}
 
-          {/* User/User_name */}
-          <div className="mb-4">
+          {/* Username */}
+          <div className="relative z-0 w-full mb-5 group">
+            <input
+              id="user_name"
+              name="user_name"
+              type="text"
+              className="block py-2.5 px-1 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+            />
             <label
               htmlFor="user_name"
-              className="mb-2 block text-sm font-medium"
-              aria-describedby="user_name-error"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               Username
             </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="user_name"
-                  name="user_name"
-                  type="text"
-                  placeholder="user_name"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                />
-              </div>
-            </div>
-
-            {/* Validation */}
-            <div id="user_name-error" aria-live="polite" aria-atomic="true">
+            <div id="user_name-error">
               {clientErrors?.user_name &&
                 clientErrors.user_name.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
+                  <p className="mt-1 text-sm text-red-500" key={error}>
                     {error}
                   </p>
                 ))}
             </div>
           </div>
-          {/* Fin User/user_name */}
 
-          {/* User/Password */}
-          <div className="mb-4">
+          {/* Password */}
+          <div className="relative z-0 w-full mb-5 group">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              className="block py-2.5 px-1 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+            />
             <label
               htmlFor="password"
-              className="mb-2 block text-sm font-medium"
-              aria-describedby="password-error"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               Password
             </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type="text"
-                  placeholder="password"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                />
-              </div>
-            </div>
-
-            {/* Validation */}
-            <div id="password-error" aria-live="polite" aria-atomic="true">
+            <div id="password-error">
               {clientErrors?.password &&
                 clientErrors.password.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
+                  <p className="mt-1 text-sm text-red-500" key={error}>
                     {error}
                   </p>
                 ))}
             </div>
           </div>
-          {/* Fin User/Password */}
 
-          {/* User/Email */}
-          <div className="mb-4">
+          {/* Email */}
+          <div className="relative z-0 w-full mb-5 group">
+            <input
+              id="email"
+              name="email"
+              type="text"
+              className="block py-2.5 px-1 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
             <label
               htmlFor="email"
-              className="mb-2 block text-sm font-medium"
-              aria-describedby="email-error"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
-              Email Address
+              Email address
             </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="email"
-                  name="email"
-                  type="text"
-                  placeholder="email"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Validation */}
-            <div id="email-error" aria-live="polite" aria-atomic="true">
+            <div id="email-error">
               {clientErrors?.email &&
                 clientErrors.email.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
+                  <p className="mt-1 text-sm text-red-500" key={error}>
                     {error}
                   </p>
                 ))}
             </div>
           </div>
-          {/* Fin User/Email */}
 
-          <div className="mt-6 flex justify-end gap-4">
+          {/* Botones */}
+          <div className="flex justify-between mt-6">
             <Link
               href="/login"
-              className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+              className="text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             >
               Cancel
             </Link>
-            <Button type="submit">Create User</Button>
+            <button
+              type="submit"
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              disabled={loading}
+            >
+              {loading ? "" + "Processing..." : "Create User"}
+            </button>
           </div>
-          <p>{message}</p>
-        </div>
-      </form>
+
+          {/* Mensaje general */}
+          {message && (
+            <div
+              className={`mt-4 text-sm ${message.includes("Error") ? "text-red-500" : "text-green-500"}`}
+            >
+              {message}
+            </div>
+          )}
+        </form>
+      </div>
+
+      {loading ? (
+        <div className="absolute top-0 z-10 opacity-100  w-full h-full px-0"></div>
+      ) : null}
 
       {/*Modal*/}
       <div
@@ -413,7 +393,6 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                           type="text"
                           name="code1"
                           maxLength={1}
-                          required
                         />
                       </div>
                       <div className="w-16 h-16 ">
@@ -422,7 +401,6 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                           type="text"
                           name="code2"
                           maxLength={1}
-                          required
                         />
                       </div>
                       <div className="w-16 h-16 ">
@@ -431,7 +409,6 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                           type="text"
                           name="code3"
                           maxLength={1}
-                          required
                         />
                       </div>
                       <div className="w-16 h-16 ">
@@ -440,7 +417,6 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                           type="text"
                           name="code4"
                           maxLength={1}
-                          required
                         />
                       </div>
                     </div>
@@ -474,180 +450,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
           </div>
         </div>
       </div>
-      {/*  Fin Modal*/}
-
-      {/* Inicio Plantilla Form */}
-
-      <form className="max-w-md mx-auto">
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="email"
-            name="floating_email"
-            id="floating_email"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required
-          />
-          <label
-            htmlFor="floating_email"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >
-            Email address
-          </label>
-        </div>
-
-        {/**/}
-        {/* Role */}
-        <div className="mb-4">
-          <label htmlFor="role_id" className="mb-2 block text-sm font-medium">
-            Role
-          </label>
-
-          <div className="relative">
-            <select
-              id="role_id"
-              name="role_id"
-              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue=""
-              aria-describedby="roles-error"
-            >
-              <option value="" disabled>
-                Select a Role
-              </option>
-              {roles.map((role) => (
-                <option key={role.role_id} value={role.role_id}>
-                  {role.role_name}
-                </option>
-              ))}
-            </select>
-            <Icon
-              icon="solar:user-circle-bold"
-              className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500"
-            />
-          </div>
-
-          <div id="roles-error" aria-live="polite" aria-atomic="true">
-            {clientErrors?.role_id &&
-              clientErrors.role_id.map((error: string) => (
-                <p className="mt-2 text-sm text-red-500" key={error}>
-                  {error}
-                </p>
-              ))}
-          </div>
-        </div>
-        {/* Fin Role */}
-        {/**/}
-
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="password"
-            name="floating_password"
-            id="floating_password"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required
-          />
-          <label
-            htmlFor="floating_password"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >
-            Password
-          </label>
-        </div>
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="password"
-            name="repeat_password"
-            id="floating_repeat_password"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required
-          />
-          <label
-            htmlFor="floating_repeat_password"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >
-            Confirm password
-          </label>
-        </div>
-        <div className="grid md:grid-cols-2 md:gap-6">
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="text"
-              name="floating_first_name"
-              id="floating_first_name"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              htmlFor="floating_first_name"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              First name
-            </label>
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="text"
-              name="floating_last_name"
-              id="floating_last_name"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              htmlFor="floating_last_name"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Last name
-            </label>
-          </div>
-        </div>
-        <div className="grid md:grid-cols-2 md:gap-6">
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="tel"
-              pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-              name="floating_phone"
-              id="floating_phone"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              htmlFor="floating_phone"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Phone number (123-456-7890)
-            </label>
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="text"
-              name="floating_company"
-              id="floating_company"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              htmlFor="floating_company"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Company (Ex. Google)
-            </label>
-          </div>
-        </div>
-        <button
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Submit
-        </button>
-      </form>
-
-      {/*  Fin Plantilla Form*/}
-    </div>
+      {/*Fin Modal*/}
+    </>
   );
 }

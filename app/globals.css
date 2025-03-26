@@ -69,3 +69,26 @@
     @apply bg-background text-foreground;
     }
 }
+
+
+/* styles/globals.css o tu archivo CSS principal */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    -webkit-text-fill-color: #111827 !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    transition: background-color 9999s ease-in-out 0s;
+
+}
+
+/* Forzar que los labels se mantengan arriba cuando hay contenido */
+input:-webkit-autofill ~ label,
+input:not(:placeholder-shown) ~ label,
+input:focus ~ label {
+    transform: translateY(-1.5rem) scale(0.75) !important;
+    color: #3b82f6 !important; /* text-blue-500 */
+}
+

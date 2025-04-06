@@ -207,7 +207,7 @@ export async function fetchFilteredSales(query: string, currentPage: number) {
           COALESCE(SUM(dsp.quantity), 0) AS quantity 
       FROM sales s
 
-      JOIN users u ON s.user_id = u.user_id  
+      JOIN users u ON s.user_id = u.id  
       LEFT JOIN detail_sale_products dsp ON s.sale_id = dsp.sale_id  
       WHERE s.method::text ILIKE ${`%${query}%`}  
       GROUP BY s.sale_id, s.method, s.total, s.date_register, u.user_name  
@@ -292,7 +292,7 @@ export async function fetchSalesPages(query: string) {
   try {
     const count = await sql`SELECT COUNT(*)
     FROM sales
-    JOIN users ON users.user_id = sales.user_id
+    JOIN users ON users.id = sales.user_id
     JOIN detail_sale_products ON detail_sale_products.sale_id = sales.sale_id
     JOIN products ON products.product_id = detail_sale_products.product_id
     WHERE

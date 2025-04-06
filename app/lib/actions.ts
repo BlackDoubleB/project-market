@@ -4,12 +4,15 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import {
+  FormSchemaUserRoute,
   FormSchemaUser,
   FormSchemaRole,
   FormSchemaCategory,
   FormSchemaProduct,
   FormSchemaStock,
+  FormSchemaPassword,
   FormSchemaSale,
+  FormSchemaUserAction,
 } from "@/lib/validations/base-schemas";
 
 export type StateUser = {
@@ -57,6 +60,14 @@ export type StateStock = {
   message?: string | null;
 };
 
+export type StatePassword = {
+  errors?: {
+    password?: string[];
+    email?: string[];
+  };
+  message?: string | null;
+};
+
 export type BasicErrorWithIndex = {
   index: number;
   message: string;
@@ -75,55 +86,123 @@ export type StateSale = {
   }[];
 };
 
+// export async function createUser(prevState: StateUser, formData: FormData) {
+//   const validatedFields = FormSchemaUserAction.safeParse({
+//     role_id: formData.get("role_id"),
+//     person_name: formData.get("person_name"),
+//     dni: formData.get("dni"),
+//     lastname: formData.get("lastname"),
+//     user_name: formData.get("user_name"),
+//     password: formData.get("password"),
+//     email: formData.get("email"),
+//   });
+//
+//   if (!validatedFields.success) {
+//     console.log(
+//       "Errores de validación:",
+//       validatedFields.error.flatten().fieldErrors,
+//     );
+//
+//     return {
+//       errors: validatedFields.error.flatten().fieldErrors,
+//       message: "Missing Fields. Failed to Create User.",
+//     };
+//   }
+//
+//   const { role_id, person_name, dni, lastname, user_name, password, email } =
+//     validatedFields.data;
+//
+//   try {
+//     console.log("Intentando insertar en people...");
+//
+//     const resultPeople = await sql`
+//       INSERT INTO people (dni, person_name, lastname)
+//       VALUES (${dni}, ${person_name}, ${lastname})
+//       RETURNING person_id
+//       `;
+//     console.log("Resultado de people:", resultPeople);
+//     if (!resultPeople.rows.length)
+//       throw new Error("No se pudo obtener person_id");
+//     const person_id = resultPeople.rows[0]?.person_id;
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     const date_register = new Date();
+//     console.log("Insertando usuario en la base de datos...");
+//
+//     await sql`
+//       INSERT INTO users (role_id, person_id, user_name, password, date_register,email)
+//       VALUES (${role_id}, ${person_id}, ${user_name}, ${hashedPassword},${date_register.toISOString()}, ${email})
+//     `;
+//     revalidatePath("/login/create");
+//     console.log("usuario creado");
+//     return {
+//       message: "Usuario creado con éxito",
+//     };
+//   } catch (error) {
+//     console.error("❌ Error al crear usuario:", error);
+//     return {
+//       message: "Database Error: Failed to Create User.",
+//       error: error instanceof Error ? error.message : "Unknown error",
+//     };
+//   }
+// }
 export async function createUser(prevState: StateUser, formData: FormData) {
-  const validatedFields = FormSchemaUser.safeParse({
-    role_id: formData.get("role_id"),
-    person_name: formData.get("person_name"),
-    dni: formData.get("dni"),
-    lastname: formData.get("lastname"),
-    user_name: formData.get("user_name"),
-    password: formData.get("password"),
-    email: formData.get("email"),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Create User.",
-    };
-  }
-
-  const { role_id, person_name, dni, lastname, user_name, password, email } =
-    validatedFields.data;
-
   try {
+    // 1. Validación asíncrona
+    const validatedFields = await FormSchemaUserRoute.safeParseAsync({
+      role_id: formData.get("role_id"),
+      person_name: formData.get("person_name"),
+      dni: formData.get("dni"),
+      lastname: formData.get("lastname"),
+      user_name: formData.get("user_name"),
+      password: formData.get("password"),
+      email: formData.get("email"),
+    });
+
+    if (!validatedFields.success) {
+      console.log(
+        "Errores de validación:",
+        validatedFields.error.flatten().fieldErrors,
+      );
+      return {
+        errors: validatedFields.error.flatten().fieldErrors,
+        message: "Missing Fields. Failed to Create User.",
+      };
+    }
+
+    // 2. Procesamiento de datos
+    const { role_id, person_name, dni, lastname, user_name, password, email } =
+      validatedFields.data;
+
+    console.log("Intentando insertar en people...");
     const resultPeople = await sql`
       INSERT INTO people (dni, person_name, lastname)
       VALUES (${dni}, ${person_name}, ${lastname})
       RETURNING person_id
-      `;
+    `;
 
-    const person_id = resultPeople.rows[0]?.person_id;
+    if (!resultPeople.rows.length)
+      throw new Error("No se pudo obtener person_id");
+
+    const person_id = resultPeople.rows[0].person_id;
     const hashedPassword = await bcrypt.hash(password, 10);
     const date_register = new Date();
 
+    console.log("Insertando usuario en la base de datos...");
     await sql`
-      INSERT INTO users (role_id, person_id, user_name, password, date_register,email)
-      VALUES (${role_id}, ${person_id}, ${user_name}, ${hashedPassword},${date_register.toISOString()}, ${email})
+      INSERT INTO users (role_id, person_id, user_name, password, date_register, email)
+      VALUES (${role_id}, ${person_id}, ${user_name}, ${hashedPassword}, ${date_register.toISOString()}, ${email})
     `;
-    return {
-      message: "Usuario creado con éxito",
-    };
+
+    revalidatePath("/login/create");
+    return { message: "Usuario creado con éxito" };
   } catch (error) {
     console.error("❌ Error al crear usuario:", error);
     return {
       message: "Database Error: Failed to Create User.",
-      error: error,
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
-  revalidatePath("/login/create");
 }
-
 export async function createRole(prevState: StateRole, formData: FormData) {
   const validatedFields = FormSchemaRole.safeParse({
     role_name: formData.get("role_name"),
@@ -350,8 +429,8 @@ export async function createSale(
 
     const date_register = new Date();
     const userResult =
-      await sql`SELECT user_id FROM users WHERE user_name = ${"User"}`;
-    const user_id = userResult.rows[0]?.user_id;
+      await sql`SELECT id FROM users WHERE user_name = ${"User"}`;
+    const user_id = userResult.rows[0]?.id;
 
     await sql`BEGIN;`;
 
@@ -525,9 +604,84 @@ export async function updateStock(
   redirect("/dashboard/stock");
 }
 
-export async function deleteRole(id: string) {
-  await sql`DELETE FROM roles WHERE role_id = ${id}`;
-  revalidatePath("/dashboard/roles");
+export async function updatePassword(
+  id: string,
+  prevState: StatePassword,
+  formData: FormData,
+) {
+  const validatedFields = FormSchemaPassword.safeParse({
+    password: formData.get("password"),
+    email: formData.get("email"),
+  });
+
+  console.log("Datos recibidos:", validatedFields);
+
+  if (!validatedFields.success) {
+    console.log("[updatePassword] Validación fallida:", validatedFields.error);
+
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Update Password.",
+    };
+  }
+
+  const { password, email } = validatedFields.data;
+
+  try {
+    console.log("[updatePassword] Verificando código para email:");
+    const currentPassword =
+      await sql`SELECT password FROM users WHERE id = ${id} `;
+
+    if (currentPassword.rows.length === 0)
+      return {
+        message: "The user does not exist",
+      };
+
+    const expireCode =
+      await sql`SELECT expires_at FROM verification_codes_rs WHERE email = ${email} `;
+
+    const dbExpireTime = expireCode.rows[0]?.expires_at;
+
+    if (!dbExpireTime) {
+      return { message: "El código caducó" };
+    }
+
+    // Convertir a timestamp Unix en segundos
+    const expireTime = Math.floor(new Date(dbExpireTime).getTime() / 1000);
+    const currentTime = Math.floor(Date.now() / 1000);
+    console.log("expiracion del sistema", expireTime);
+    console.log("tiempo actual", currentTime);
+
+    if (expireTime < currentTime) {
+      console.log("caduco");
+      return { message: "El código caducó" };
+    }
+
+    const compareHash = await bcrypt.compare(
+      password,
+      currentPassword.rows[0].password,
+    );
+
+    if (compareHash)
+      return {
+        message: "The password must be different from the previous one.",
+      };
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const result = await sql`
+      UPDATE users
+      SET password = ${hashedPassword}
+      WHERE id = ${id}
+      RETURNING id
+    `;
+
+    revalidatePath("/login");
+    return { message: "Password updated successfully" };
+  } catch (error) {
+    console.error("[updatePassword] Error:", error);
+    return { message: "Failed to update password" };
+  }
 }
 
 export async function deleteCategory(id: string): Promise<boolean> {
@@ -536,7 +690,6 @@ export async function deleteCategory(id: string): Promise<boolean> {
     revalidatePath("/dashboard/categories");
     return true; // Indica que la eliminación fue exitosa
   } catch (error) {
-    console.error("Error deleting category:", error);
     return false; // Indica que hubo un error
   }
 }

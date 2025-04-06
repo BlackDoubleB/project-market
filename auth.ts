@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthError } from "next-auth";
 import PostgresAdapter from "@auth/pg-adapter";
 import { Pool } from "@neondatabase/serverless";
 import Credentials from "next-auth/providers/credentials";
@@ -13,28 +13,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
     providers: [
       Credentials({
         credentials: {
-          email: {},
-          password: {},
+          email: { label: "Email", type: "text" },
+          password: { label: "Password", type: "password" },
         },
+
         authorize: async (credentials) => {
           try {
-            let user = null;
-
             const { email, password } =
               await signInSchema.parseAsync(credentials);
 
-            user = await getUserFromDb(email, password);
+            const dbUser = await getUserFromDb(email, password);
 
-            if (!user) {
-              throw new Error("Invalid credentials.");
+            if (!dbUser || !dbUser.id || !dbUser.email) {
+              console.log("Ocurrio un errror", dbUser.message);
+              throw new AuthError();
             }
-            console.log("datos del user", user);
 
-            return user;
+            return {
+              id: dbUser.id,
+              email: dbUser.email,
+            };
           } catch (error) {
-            if (error instanceof ZodError) {
-              return null;
+            if (error instanceof AuthError || error instanceof ZodError) {
+              throw error;
             }
+
+            return null;
           }
         },
       }),

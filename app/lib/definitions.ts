@@ -20,7 +20,7 @@ export type People = {
 };
 
 export type User = {
-  user_id: string;
+  id: string;
   role_id: string;
   people_id: string;
   user_name: string;
@@ -51,7 +51,7 @@ export type Stock = {
 
 // export type Sale = {
 //   sale_id: string;
-//   user_id: string;
+//   id: string;
 //   method: string;
 //   date_register: string;
 //   total: number;
@@ -143,6 +143,10 @@ export type StockById = {
   product_name: string;
   quantity: number;
   date_register: string;
+};
+
+export type PasswordById = {
+  password: string;
 };
 
 // FETCH ALL

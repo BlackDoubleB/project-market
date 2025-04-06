@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { sql } from "@vercel/postgres";
 
 export const FormSchemaUser = z.object({
   role_id: z
@@ -88,15 +89,88 @@ export const FormSchemaUser = z.object({
       required_error: "Email is required.",
       invalid_type_error: "Email must be a string.",
     })
+    .trim()
     .min(1, "Email is required")
-    .superRefine((val, ctx) => {
-      if (val === "") return; // Si está vacío, ya se mostró el error en .min(1)
+    .refine((val) => val === "" || z.string().email().safeParse(val).success, {
+      message: "Invalid email",
+    })
+    .superRefine(async (val, ctx) => {
+      if (!val) return; // Si está vacío, ya se mostró el error
 
-      // Validación personalizada del email
-      if (!/^\S+@\S+\.\S+$/.test(val)) {
+      try {
+        const response = await fetch("/api/queries", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: val }),
+        });
+
+        console.log(response);
+        const data = await response.json();
+        if (data.exists) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Email already registered",
+          });
+        }
+      } catch (error) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Invalid email", // Solo se muestra si el anterior pasó
+          message: "Error checking email availability from ZOD",
+        });
+      }
+    }),
+});
+
+export const FormSchemaUserAction = FormSchemaUser.extend({
+  email: z
+    .string({
+      required_error: "Email is required.",
+      invalid_type_error: "Email must be a string.",
+    })
+    .trim()
+    .min(1, "Email is required")
+    .refine((val) => val === "" || z.string().email().safeParse(val).success, {
+      message: "Invalid email",
+    }),
+});
+
+export const FormSchemaUserRoute = FormSchemaUser.extend({
+  email: z
+    .string({
+      required_error: "Email is required.",
+      invalid_type_error: "Email must be a string.",
+    })
+    .trim()
+    .min(1, "Email is required")
+    .refine((val) => val === "" || z.string().email().safeParse(val).success, {
+      message: "Invalid email",
+    })
+    .superRefine(async (val, ctx) => {
+      if (!val) return; // Si está vacío, ya se mostró el error
+
+      try {
+        const response = await fetch("http://localhost:3000/api/queries", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: val }),
+        });
+
+        console.log(response);
+        const data = await response.json();
+        if (data.exists) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Email already registered",
+          });
+        }
+      } catch (error) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Error checking email availability",
         });
       }
     }),
@@ -145,16 +219,7 @@ export const FormSchemaProduct = z.object({
       invalid_type_error: "Product be a string.",
     })
     .trim()
-    .min(1, "Product is required")
-    .superRefine((val, ctx) => {
-      if (val.length > 0 && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(val)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "It should only contain letters",
-        });
-      }
-    }),
-
+    .min(1, "Product is required"),
   category_id: z.string({
     required_error: "Category is required.",
     invalid_type_error: "Category be a string.",
@@ -180,6 +245,50 @@ export const FormSchemaStock = z.object({
           code: z.ZodIssueCode.custom,
           message: "It should only contain letters",
         });
+      }
+    }),
+});
+export const FormSchemaPassword = z.object({
+  email: z
+    .string({
+      required_error: "Email is required.",
+      invalid_type_error: "Email must be a string.",
+    })
+    .trim()
+    .min(1, "Email is required"),
+  password: z
+    .string()
+    .transform((value) => value.replace(/\s/g, ""))
+    .refine(
+      (value) => value.trim().length > 0, // Verifica que no sea solo espacios
+      { message: "Password cannot be just whitespace" },
+    )
+    .superRefine((val, ctx) => {
+      // 1. Si está vacío o es undefined
+      if (!val || val.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Password is required", // Solo este mensaje
+        });
+        return; // Detiene la validación aquí
+      }
+
+      // 2. Si es menor a 8 caracteres
+      if (val.length < 8) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Password must be at least 8 characters",
+        });
+        return;
+      }
+
+      // 3. Si excede 32 caracteres
+      if (val.length > 32) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Password must be less than 32 characters",
+        });
+        return;
       }
     }),
 });

@@ -11,14 +11,17 @@ export async function getUserFromDb(email: string, password: string) {
       users.email
       FROM users WHERE email = ${email}`;
 
+    console.log("data", data);
+
     const ps = data.rows[0].password;
     const isMatch = await bcrypt.compare(password, ps);
     if (!isMatch) {
-      throw new Error("Credenciales inválidas.");
+      console.log("Invalid credentials from auth");
+      return { message: "Invalid credentials from auth" };
     }
     return data.rows[0];
   } catch (error) {
     console.error("Database Error:", error);
-    throw new Error("Failed to fetch the latest sales.");
+    return { message: "Failed to fetch User" };
   }
 }

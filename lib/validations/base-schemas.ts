@@ -238,15 +238,7 @@ export const FormSchemaStock = z.object({
       invalid_type_error: "Product must be a string.",
     })
     .trim()
-    .min(1, "Product is required")
-    .superRefine((val, ctx) => {
-      if (val.length > 0 && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(val)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "It should only contain letters",
-        });
-      }
-    }),
+    .min(1, "Product is required"),
 });
 export const FormSchemaPassword = z.object({
   email: z

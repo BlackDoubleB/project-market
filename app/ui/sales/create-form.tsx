@@ -6,7 +6,7 @@ import {
   useEffect,
   useCallback,
   startTransition,
-} from "react"; // Importa useEffect
+} from "react";
 import { ProductFetch, SaleTable } from "@/app/lib/definitions";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";

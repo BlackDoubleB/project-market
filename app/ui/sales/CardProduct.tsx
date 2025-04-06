@@ -72,7 +72,7 @@ export default function CardProduct({
     )?.image_url;
 
     return url ? (
-      <img src={url} alt="Product" className="block w-full rounded-lg" />
+      <img src={url} alt="Product" className=" w-32 h-36" />
     ) : (
       <Icon icon="lets-icons:img-box" className="w-16 h-16 text-gray-400" />
     );
@@ -166,11 +166,13 @@ export default function CardProduct({
           </div>
 
           {/* Image URL */}
-          <div className="mb-4 pointer-events-none">
+          <div className="mb-4 pointer-events-none ">
             <p className="mb-2 block text-sm font-medium">Image</p>
-            <div className="relative mt-2">
-              <div className="relative w-32 h-32 bg-white rounded-lg flex items-center justify-center">
-                {ImageProduct()}
+            <div>
+              <div className="mt-2  w-52 flex items-center ">
+                <div className="w-52 h-40 bg-white rounded-lg flex items-center justify-center">
+                  {ImageProduct()}
+                </div>
               </div>
             </div>
           </div>

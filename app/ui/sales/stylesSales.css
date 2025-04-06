@@ -17,8 +17,6 @@
     width: 28rem;
     z-index: 100;
     height: 600px;
-
-    border-radius: 16px; /* Asegúrate de que el contenedor tenga bordes redondeados */
     background: white; /* Fondo para que la barra de desplazamiento no se vea fuera */
 }
 .scrollbar::-webkit-scrollbar {

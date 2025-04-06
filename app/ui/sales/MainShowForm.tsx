@@ -33,24 +33,24 @@ export default function MainShowForm({
   return (
     <div
       className={clsx(
-        "drop-shadow-2xl flex flex-col items-center justify-center rounded-2xl border border-solid border-gray-500",
+        "flex flex-col items-center justify-center drop-shadow",
         className,
       )}
     >
+      <div className="flex items-center justify-center text-center bg-black w-full h-20  ">
+        <h1
+          className={`${lusitana.className} text-base text-white`}
+          style={{ fontWeight: 700 }}
+        >
+          DETALLE DE VENTA
+        </h1>
+      </div>
+
       <div
         ref={modalRef}
-        className="scrollbar scroll-top overflow-y-auto h-[580px] w-full  rounded-2xl my-2  pl-7 pr-5 py-8 "
+        className="scrollbar scroll-top overflow-y-auto h-[580px] w-full  my-2  pl-7 pr-5 py-8 "
       >
         <div>
-          <div className="text-center mb-5">
-            <h1
-              className={`${lusitana.className} text-base`}
-              style={{ fontWeight: 700 }}
-            >
-              DETALLE DE VENTA
-            </h1>
-          </div>
-
           <div className="mb-5">
             <p className="block text-sm font-medium leading-5  text-gray-700">
               Fecha de Registro
@@ -75,7 +75,7 @@ export default function MainShowForm({
           </div>
 
           {saleById.map((sale, index) => (
-            <div key={index} className="mt-6">
+            <div key={index} className="mt-6 bg-gray-200 rounded-2xl p-4">
               <SubCardShowForm
                 key={index}
                 sale={sale}
@@ -93,11 +93,11 @@ export default function MainShowForm({
             </div>
           </div>
         </div>
-        <div className="mt-6">
+        <div className="mt-6 ">
           <span className="block w-full rounded-md shadow-sm">
             <button
               type="button"
-              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700"
+              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-black hover:bg-gray-800"
               onClick={() => setActived(false)}
             >
               Cerrrar

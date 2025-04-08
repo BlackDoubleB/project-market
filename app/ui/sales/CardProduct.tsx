@@ -111,7 +111,7 @@ export default function CardProduct({
 
             <div className="relative">
               <select
-                className="bg-white block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 outline-none h-10"
+                className="bg-white block w-full hover:cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 outline-hidden h-10"
                 value={productId}
                 onChange={(e) => updateProductId(e.target.value)}
               >

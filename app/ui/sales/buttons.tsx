@@ -33,7 +33,7 @@ export function ShowDetailsWrapper({
   return (
     <>
       <button onClick={() => setActived(true)} type="button">
-        <Icon icon="bx:show" className="w-5" />
+        <Icon icon="bx:show" className="w-5 hover:cursor-pointer" />
       </button>
 
       <MainShowForm
@@ -45,7 +45,7 @@ export function ShowDetailsWrapper({
         actived={actived}
       />
       {actived && (
-        <div className="inset-0 bg-black bg-opacity-50 h-full overflow-visible z-20 absolute"></div>
+        <div className="bg-gray-700 opacity-75 bg h-screen w-full overflow-visible z-20 absolute top-0 left-0 right-0 bottom-0"></div>
       )}
     </>
   );

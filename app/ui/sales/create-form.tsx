@@ -137,7 +137,7 @@ export default function Form({ products }: { products: ProductFetch[] }) {
           <div className="relative ">
             <select
               id="method"
-              className="block cursor-pointer rounded-md border border-gray-200 text-sm outline-2 placeholder:text-gray-500 text-center outline-none h-9 w-36"
+              className="block cursor-pointer rounded-md border border-gray-200 text-sm outline-2 placeholder:text-gray-500 text-center outline-hidden h-9 w-36"
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
             >
@@ -243,14 +243,14 @@ export default function Form({ products }: { products: ProductFetch[] }) {
               <Link href="/dashboard/sales">
                 <button
                   type="button"
-                  className="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 me-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-hidden focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 me-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   Return to Sales History
                 </button>
               </Link>
               <button
                 type="button"
-                className="text-blue-800 bg-transparent border border-blue-800 hover:bg-blue-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-blue-600 dark:border-blue-600 dark:text-blue-400 dark:hover:text-white dark:focus:ring-blue-800"
+                className="text-blue-800 bg-transparent border border-blue-800 hover:bg-blue-900 hover:text-white focus:ring-4 focus:outline-hidden focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-blue-600 dark:border-blue-600 dark:text-blue-400 dark:hover:text-white dark:focus:ring-blue-800"
                 data-dismiss-target="#alert-additional-content-1"
                 onClick={() => {
                   state.message = "";

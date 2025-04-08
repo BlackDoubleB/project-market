@@ -101,7 +101,7 @@ export function ResetPassword({
           <img className="size-14" src="/icon-market-dark.png" alt="logo" />
           MARKET
         </div>
-        <div className="w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
+        <div className="w-full p-6 bg-white rounded-lg shadow-sm dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
           <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
             Change Password
           </h2>
@@ -129,7 +129,7 @@ export function ResetPassword({
               />
             </div>
             {clientErrors.password && (
-              <p className="bg-red-100 text-red-700 font-semibold rounded-xl p-3 text-sm text-center border border-red-400 shadow-sm">
+              <p className="bg-red-100 text-red-700 font-semibold rounded-xl p-3 text-sm text-center border border-red-400 shadow-xs">
                 <span className="inline-block mr-1">⚠️</span>{" "}
                 {clientErrors.password}
               </p>
@@ -153,7 +153,7 @@ export function ResetPassword({
               />
             </div>
             {clientErrors.confirmPassword && (
-              <p className="bg-red-100 text-red-700 font-semibold rounded-xl p-3 text-sm text-center border border-red-400 shadow-sm">
+              <p className="bg-red-100 text-red-700 font-semibold rounded-xl p-3 text-sm text-center border border-red-400 shadow-xs">
                 <span className="inline-block mr-1">⚠️</span>{" "}
                 {clientErrors.confirmPassword}
               </p>
@@ -173,7 +173,7 @@ export function ResetPassword({
               )}
             </button>
             {state.message && (
-              <p className="bg-red-100 text-red-700 font-semibold rounded-xl p-3 text-sm text-center border border-red-400 shadow-sm">
+              <p className="bg-red-100 text-red-700 font-semibold rounded-xl p-3 text-sm text-center border border-red-400 shadow-xs">
                 <span className="inline-block mr-1">⚠️</span> {state.message}
               </p>
             )}

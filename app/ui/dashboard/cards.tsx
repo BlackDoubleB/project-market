@@ -26,7 +26,7 @@ export function Card({title,value,type,}: {title: string; value: number | string
 }) {
   const Icon: ReactNode= iconMap[type];
   return (
-    <div className="rounded-xl bg-gray-50 p-2 shadow-sm">
+    <div className="rounded-xl bg-gray-50 p-2 shadow-xs">
       <div className="flex p-4">
         {Icon}
         <h3 className="ml-2 text-sm font-medium">{title}</h3>

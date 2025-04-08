@@ -2,8 +2,6 @@
     transform: scale(0);
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
     position: absolute;
-    left: 40%;
-    top:16%;
     transform-origin: center center;
     z-index: 100;
 }
@@ -11,16 +9,16 @@
 .sale-show {
     transform: scale(1);
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    position: absolute;
-    top: 16%;
-    left: 40%;
-    width: 28rem;
     z-index: 100;
-    height: 600px;
-    background: white; /* Fondo para que la barra de desplazamiento no se vea fuera */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
 }
 .scrollbar::-webkit-scrollbar {
-    width: 3px;
+    width: 2px;
     padding: 0;
     margin: 0;
 }

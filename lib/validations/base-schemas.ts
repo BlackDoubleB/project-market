@@ -234,8 +234,8 @@ export const FormSchemaStock = z.object({
   quantity: z.coerce.number().gt(0, { message: "Please enter an number" }),
   product_id: z
     .string({
-      required_error: "Product is required.",
-      invalid_type_error: "Product must be a string.",
+      required_error: "Stock is required.",
+      invalid_type_error: "Stock must be a string.",
     })
     .trim()
     .min(1, "Product is required"),
@@ -286,12 +286,18 @@ export const FormSchemaPassword = z.object({
 });
 
 export const productSchema = z.object({
-  product_id: z.string().min(1, "Debes seleccionar un producto"), // Asegúrate de que product_id no esté vacío
+  product_id: z
+    .string({
+      required_error: "Product is required.",
+      invalid_type_error: "Product must be a string.",
+    })
+    .trim()
+    .min(1, "Debes seleccionar un producto"), // Asegúrate de que product_id no esté vacío
   quantity: z.number().min(1, "La cantidad debe ser mayor a 0"),
 });
 
 export const FormSchemaSale = z.object({
-  products: z.array(productSchema),
+  products: z.array(productSchema).min(1, "Debes agregar al menos un producto"),
   method: z
     .string({
       required_error: "Method is required.",

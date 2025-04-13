@@ -11,13 +11,13 @@ export default function SubCardShowForm({
   products: Product[];
 }) {
   return (
-    <div className=" flex flex-col gap-5">
+    <div className=" flex flex-col gap-5 ">
       <div>
         <p className="block text-sm font-bold leading-5  text-gray-500">
           Producto
         </p>
         <div className="mt-1 relative rounded-md shadow-xs">
-          <p className="text-wrap">
+          <p className="text-wrap ">
             {products.find(
               (product: Product) => product.product_id === sale.product_id,
             )?.product_name || ""}
@@ -38,7 +38,7 @@ export default function SubCardShowForm({
 
       <div>
         <p className="font-bold text-gray-500">Imagen</p>
-        <div className="mt-1 w-42 h-42 bg-white rounded-md flex items-center justify-center">
+        <div className="mt-1 w-42 h-42 bg-white rounded-md flex items-center justify-center border">
           <img
             src={
               products.find(

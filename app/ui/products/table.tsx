@@ -1,7 +1,6 @@
-import { UpdateProduct, DeleteProduct } from '@/app/ui/products/buttons';
-import { fetchFilteredProducts } from '@/app/lib/data';
-import { format } from 'date-fns';
-
+import { UpdateProduct, DeleteProduct } from "@/app/ui/products/buttons";
+import { fetchFilteredProducts } from "@/app/lib/data";
+import { format } from "date-fns";
 
 export default async function ProductsTable({
   query,
@@ -10,98 +9,81 @@ export default async function ProductsTable({
   query: string;
   currentPage: number;
 }) {
-
   const products = await fetchFilteredProducts(query, currentPage);
 
   return (
-    <div className="mt-6 flow-root">
+    <div className="flow-root  border-gray-300">
       <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-
-          {/* md> */}
-          <div className="md:hidden">
-            {products?.map((product) => (
-              <div key={product.product_id} className="mb-2 rounded-md bg-white p-4">
-                <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{product.category_name}</p>
-                </div>
-                <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{product.product_name}</p>
-                </div>
-                <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{product.image_url}</p>
-                </div>
-                <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{product.price}</p>
-                </div>
-                
-                <div className="flex w-full items-center justify-between pt-4">
-                  <div className="flex justify-end gap-2">
-                    <UpdateProduct id={product.product_id} />
-                    <DeleteProduct id={product.product_id} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Fin primer sub div */}
-
+        <div className="rounded-2xl bg-gray-50 ">
           {/* Inicio Table*/}
-          <table className="hidden min-w-full text-gray-900 md:table">
-
+          <table className=" w-full text-gray-900  border-collapse border-spacing-x-4">
             {/* Inicio Thead*/}
-            <thead className="rounded-lg text-left text-sm font-normal">
+            <thead className=" text-left text-sm font-normal border-b-2 border-gray-200 ">
               <tr>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th
+                  scope="col"
+                  className="whitespace-nowrap py-5 font-medium pl-6 pr-10"
+                >
                   Category Name
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className=" py-5 font-medium pr-6">
                   Product Name
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Image
+                <th scope="col" className=" py-5 font-medium pr-6 ">
+                  <div className="flex items-center justify-center">Image</div>
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className=" py-5 font-medium pr-6">
                   Price
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className=" py-5 font-medium ">
                   Date Register
                 </th>
-                <th scope="col" className="relative py-3 pl-6 pr-3">
-                  <span className="sr-only">Edit</span>
+                <th scope="col" className=" py-5 font-medium px-6">
+                  <div className="flex items-center justify-center">Action</div>
                 </th>
               </tr>
             </thead>
             {/* Fin Thead*/}
 
             {/* Inicio Tbody*/}
-            <tbody className="bg-white">
+            <tbody className="bg-white rounded-2xl border-gray-300">
               {products?.map((product) => (
-                <tr key={product.product_id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-
-                  <td className="whitespace-nowrap px-3 py-3">
+                <tr
+                  key={product.product_id}
+                  className="w-full border-b py-3 text-sm last-of-type:border-none "
+                >
+                  <td className="whitespace-nowrap py-3 px-6">
                     {product.category_name}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap py-3 pr-6">
                     {product.product_name}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    <img src={product.image_url} alt={product.product_name} className="w-20 h-20" />
+                  <td className="whitespace-nowrap py-3 pr-6">
+                    <div className="flex items-center justify-center">
+                      <div className="bg-white p-1 border-1 border-gray-300 rounded-lg">
+                        <img
+                          src={product.image_url}
+                          alt={product.product_name}
+                          className="w-20 min-w-[80px] h-20"
+                        />
+                      </div>
+                    </div>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap py-3 pr-6">
                     {product.price}
                   </td>
 
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap py-3 ">
                     {product.date_register
-                      ? format(new Date(product.date_register), 'yyyy-MM-dd HH:mm:ss')
-                      : 'N/A'}
+                      ? format(
+                          new Date(product.date_register),
+                          "yyyy-MM-dd HH:mm:ss",
+                        )
+                      : "N/A"}
                   </td>
-                  
 
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex justify-end gap-3">
+                  <td className="whitespace-nowrap py-3 pr-6 ">
+                    <div className="flex justify-center gap-2">
                       <UpdateProduct id={product.product_id} />
                       <DeleteProduct id={product.product_id} />
                     </div>
@@ -110,7 +92,6 @@ export default async function ProductsTable({
               ))}
             </tbody>
             {/* Fin Tbody*/}
-
           </table>
           {/* Fin Table*/}
         </div>

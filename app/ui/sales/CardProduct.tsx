@@ -88,9 +88,9 @@ export default function CardProduct({
   }, [products, productId]);
 
   return (
-    <div>
-      <div className="pb-2">
-        <div className="relative bg-neutral-400 p-4 rounded-md border border-slate-300 shadow-lg shadow-black-500/50">
+    <div className="overflow-x-auto border border-gray-400 rounded-md mb-2">
+      <div className="">
+        <div className="min-w-60 relative bg-gray-300 p-4">
           <div className="flex items-end justify-end ">
             <button
               type="button"
@@ -101,7 +101,7 @@ export default function CardProduct({
             </button>
           </div>
           {/* Product Name */}
-          <div className="mb-4">
+          <div className="mb-4 ">
             <label
               htmlFor="product_id"
               className="mb-2 block text-sm font-medium"
@@ -111,17 +111,25 @@ export default function CardProduct({
 
             <div className="relative">
               <select
-                className="bg-white block w-full hover:cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 outline-hidden h-10"
+                className="bg-white hover:cursor-pointer peer block w-full rounded-md  py-2 pl-10 text-sm placeholder:text-gray-500
+                 border-1 border-gray-300 focus:border-blue-200  focus:ring-blue-200 focus:ring-1
+                 focus:shadow-md focus:shadow-blue-200/50 "
                 value={productId}
                 onChange={(e) => updateProductId(e.target.value)}
               >
-                <option value="">Select a Product</option>
+                <option className="hover:cursor-pointer" value="">
+                  Select a Product
+                </option>
                 {products.map((product) => (
                   <option key={product.product_id} value={product.product_id}>
                     {product.product_name}
                   </option>
                 ))}
               </select>
+              <Icon
+                icon="gridicons:nametag"
+                className="absolute top-3 left-3 text-gray-400"
+              />
             </div>
             {sales[index]?.product_id
               ? ""
@@ -155,10 +163,17 @@ export default function CardProduct({
 
           {/* Category Name */}
           <div className="mb-4 pointer-events-none">
-            <p className="mb-2 block text-sm font-medium">Category</p>
-            <div className="relative mt-2 rounded-md">
+            <p className="mb-2 block text-sm font-medium ">Category</p>
+            <div className="relative mt-2 rounded-md ">
               <div className="relative">
-                <p className=" block w-full rounded-md border border-gray-200 bg-white py-2 pl-10 text-sm outline-2 h-10">
+                <Icon
+                  icon="ant-design:product-filled"
+                  className="absolute top-3 left-3 text-gray-400"
+                />
+                <p
+                  className="h-9  peer block w-full rounded-md  py-2 pl-10 text-sm placeholder:text-gray-500
+                border-1 border-gray-300 bg-gray-100"
+                >
                   {Category}
                 </p>
               </div>
@@ -169,8 +184,8 @@ export default function CardProduct({
           <div className="mb-4 pointer-events-none ">
             <p className="mb-2 block text-sm font-medium">Image</p>
             <div>
-              <div className="mt-2  w-52 flex items-center ">
-                <div className="w-52 h-40 bg-white rounded-lg flex items-center justify-center">
+              <div className="mt-2  w-52 flex items-center">
+                <div className="w-52 h-40 bg-gray-100 rounded-lg flex items-center justify-center border-1 border-gray-300">
                   {ImageProduct()}
                 </div>
               </div>
@@ -182,7 +197,14 @@ export default function CardProduct({
             <p className="mb-2 block text-sm font-medium">Price</p>
             <div className="relative mt-2 rounded-md">
               <div className="relative">
-                <p className="block w-full rounded-md border bg-white border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500 h-10">
+                <Icon
+                  icon="material-symbols:price-change"
+                  className="absolute top-3 left-3 text-gray-400"
+                />
+                <p
+                  className=" h-9 peer block w-full rounded-md  py-2 pl-10 text-sm placeholder:text-gray-500
+                border-1 border-gray-300 bg-gray-100"
+                >
                   {Price}
                 </p>
               </div>
@@ -197,12 +219,12 @@ export default function CardProduct({
             >
               Quantity
             </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative flex items-center">
+            <div className="relative mt-2 rounded-md ">
+              <div className="relative flex items-center ">
                 <button
                   type="button"
                   onClick={() => updateMinusQuantity()}
-                  className="bg-gray-200 px-3 py-1 rounded-l-lg hover:bg-neutral-500 h-10"
+                  className="bg-gray-200 px-3 py-1 rounded-l-lg hover:bg-gray-300 h-10 shadow-md cursor-pointer active:scale-105"
                 >
                   -
                 </button>
@@ -217,7 +239,7 @@ export default function CardProduct({
                 <button
                   type="button"
                   onClick={() => updatePlusQuantity()}
-                  className="bg-gray-200 px-3 py-1 rounded-r-lg hover:bg-neutral-500  h-10"
+                  className="bg-gray-200 px-3 py-1 rounded-r-lg hover:bg-gray-300  h-10 shadow-md cursor-pointer active:scale-105"
                 >
                   +
                 </button>

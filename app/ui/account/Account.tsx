@@ -17,10 +17,14 @@ import { Icon } from "@iconify/react";
 export default async function Account() {
   const user: UserFetch = await fetchUser();
   return (
-    <div className="w-full flex gap-7 mt-6 lg:flex-row flex-col">
-      <Card className="w-[350px]">
-        <div className="relative">
-          <img src="/background-profile.png" alt="Profile Background" />
+    <div className="w-full flex gap-7 mt-6  lg:flex-row  flex-col items-center lg:items-stretch">
+      <Card className="w-full max-w-[700px] overflow-hidden ">
+        <div className=" relative">
+          <img
+            src="/background-profile.png"
+            alt="Profile Background"
+            className="w-full max-h-[300px] "
+          />
         </div>
         <CardHeader className="relative flex items-center justify-center ">
           <div className="top-[-64px] absolute size-32">
@@ -38,13 +42,16 @@ export default async function Account() {
         </CardHeader>
       </Card>
 
-      <Tabs defaultValue="account" className="w-[700px]">
+      <Tabs
+        defaultValue="account"
+        className="w-full  max-w-[700px]  flex flex-col"
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="account">Profile</TabsTrigger>
           <TabsTrigger value="password">Password</TabsTrigger>
         </TabsList>
         <TabsContent value="account">
-          <Card>
+          <Card className="overflow-x-auto ">
             <CardHeader>
               <CardTitle>Profile</CardTitle>
             </CardHeader>
@@ -53,33 +60,47 @@ export default async function Account() {
                 <Label htmlFor="name">Role</Label>
                 <p
                   id="name"
-                  className="cursor-default lg:w-full px-3 py-2 border rounded-md shadow-xs text-gray-700 bg-gray-50 focus:ring-2 focus:ring-blue-500"
+                  className="cursor-default lg:w-full px-3 py-2 border rounded-md shadow-xs text-gray-700
+                  bg-gray-50 focus:ring-2 focus:ring-blue-500 min-w-[250px] w-full"
                 >
                   {user.role_name}
                 </p>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="name">Name</Label>
-                <p className="cursor-default lg:w-full  px-3 py-2 border rounded-md shadow-xs text-gray-700 bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                <p
+                  className="cursor-default lg:w-full  px-3 py-2 border rounded-md shadow-xs text-gray-700
+                bg-gray-50 focus:ring-2 focus:ring-blue-500 min-w-[250px] w-full"
+                >
                   {`${user.person_name} ${user.lastname}`}
                 </p>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="username">Username</Label>
-                <p className="cursor-default lg:w-full  px-3 py-2 border rounded-md shadow-xs text-gray-700 bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                <p
+                  className="cursor-default lg:w-full  px-3 py-2 border rounded-md shadow-xs text-gray-700
+                bg-gray-50 focus:ring-2 focus:ring-blue-500 min-w-[250px] w-full"
+                >
                   {user.user_name}
                 </p>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="dni">DNI</Label>
-                <p className="cursor-default lg:w-full  px-3 py-2 border rounded-md shadow-xs text-gray-700 bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                <p
+                  className="cursor-default lg:w-full  px-3 py-2 border rounded-md shadow-xs text-gray-700
+                bg-gray-50 focus:ring-2 focus:ring-blue-500 min-w-[250px] w-full"
+                >
                   {user.dni}
                 </p>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative flex items-center group">
-                  <p className="cursor-default lg:w-full px-3 py-2 border rounded-md shadow-xs text-gray-700 bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                  <p
+                    className="cursor-default lg:w-full px-3 py-2 border rounded-md shadow-xs text-gray-700
+                  bg-gray-50 focus:ring-2 focus:ring-blue-500 min-w-[250px] w-full
+"
+                  >
                     {user.email}
                   </p>
                   <Icon

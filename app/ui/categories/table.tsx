@@ -1,5 +1,5 @@
-import { UpdateCategory, DeleteCategory } from '@/app/ui/categories/buttons';
-import { fetchFilteredCategories } from '@/app/lib/data';
+import { UpdateCategory, DeleteCategory } from "@/app/ui/categories/buttons";
+import { fetchFilteredCategories } from "@/app/lib/data";
 
 export default async function CategoriesTable({
   query,
@@ -8,52 +8,23 @@ export default async function CategoriesTable({
   query: string;
   currentPage: number;
 }) {
- 
   const categories = await fetchFilteredCategories(query, currentPage);
 
   return (
-    <div className="mt-6 flow-root">
-      <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-          
-          {/* Table para md > */}
-          <div className="md:hidden">
-            {categories?.map((category) => (
-              <div key={category.category_id} className="mb-2 rounded-md bg-white p-4">
-
-                <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{category.category_id}</p>
-                </div>
-
-                <div className=" flex flex-col items-start justify-between border-b pb-4">
-                  <p>{category.category_name}</p>
-                </div>
-
-                <div className="flex w-full items-center justify-between pt-4">
-                  <div className="flex justify-end gap-2">
-                    <UpdateCategory id={category.category_id} />
-                    <DeleteCategory id={category.category_id} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Fin Table para md  */}
-
-
+    <div className="flow-root ">
+      <div className="bg-gray-50 inline-block min-w-full align-middle">
+        <div className="overflow-hidden">
           {/* Table para md<*/}
-          <table className="hidden min-w-full text-gray-900 md:table">
-
+          <table className=" min-w-full text-gray-900 ">
             {/* Inicio Thead*/}
-            <thead className="rounded-lg text-left text-sm font-normal">
+            <thead className=" text-left text-sm font-normal border-b-2 border-gray-200">
               <tr>
-                <th scope="col" className="py-5 font-medium pl-3">
-                <span className="sr-only">Name Category</span>
+                <th scope="col" className="py-5 font-medium pl-6">
+                  <span className="sr-only">Name Category</span>
                   Name
                 </th>
-                <th scope="col" className="text-right pr-8 py-5 font-medium sm:pl-6">
-                  <span className="sr-only">Edit</span>
-                  Action
+                <th scope="col" className=" py-5 font-medium px-12">
+                  <div className="flex items-end justify-end">Action</div>
                 </th>
               </tr>
             </thead>
@@ -64,12 +35,12 @@ export default async function CategoriesTable({
               {categories?.map((category) => (
                 <tr
                   key={category.category_id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                  className="w-full border-b py-3 text-sm last-of-type:border-none"
                 >
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap pl-6 py-3">
                     {category.category_name}
                   </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
+                  <td className="whitespace-nowrap py-3 px-6">
                     <div className="flex justify-end gap-3">
                       <UpdateCategory id={category.category_id} />
                       <DeleteCategory id={category.category_id} />
@@ -79,7 +50,6 @@ export default async function CategoriesTable({
               ))}
             </tbody>
             {/* Fin Tbody*/}
-
           </table>
           {/* Fin Table para md<*/}
         </div>

@@ -117,7 +117,7 @@ export function SignIn() {
               <div className="flex gap-5 flex-col">
                 <button
                   type="submit"
-                  className="w-full text-white bg-primary-600 hover:bg-primary-700 rounded-lg text-sm px-5 py-2.5 text-center "
+                  className="w-full text-white bg-primary-600 hover:bg-primary-700 rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer"
                 >
                   Sign In
                 </button>

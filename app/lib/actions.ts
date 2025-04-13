@@ -707,6 +707,17 @@ export async function deleteProduct(id: string): Promise<boolean> {
 
 export async function deleteStock(id: string): Promise<boolean> {
   try {
+    const product =
+      await sql`SELECT product_id FROM stock WHERE stock_id = ${id}`;
+    const productId = product.rows[0].product_id;
+    const existSale =
+      await sql`SELECT product_id FROM detail_sale_product WHERE product_id =${productId}`;
+
+    if (existSale.rows.length > 0) {
+      console.log("hay una venta con stock");
+      return false;
+    }
+
     await sql`DELETE FROM stock WHERE stock_id = ${id}`;
     revalidatePath("/dashboard/stock");
     return true;

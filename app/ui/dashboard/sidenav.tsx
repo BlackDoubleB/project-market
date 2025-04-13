@@ -8,7 +8,7 @@ import clsx from "clsx";
 
 export default function SideNav() {
   return (
-    <>
+    <div>
       <div className="bg-white h-16 flex items-center ">
         <div
           className={`${playwrite.className} flex items-center  gap-2 rounded-md p-2  text-lg`}
@@ -17,12 +17,13 @@ export default function SideNav() {
           <p className="">Market</p>
         </div>
       </div>
-      <div className="flex flex-col px-3 py-6 ">
-        <div className=" relative h-full  w-full flex flex-col gap-4 ">
-          <NavLinks />
+      <div className="flex flex-col px-3 py-6 h-[calc(100vh-4rem)] ">
+        <div className="relative  w-full flex flex-col justify-between h-full overflow-y-auto">
+          <div className="flex flex-col gap-4 mb-4">
+            <NavLinks />
+          </div>
 
           <form
-            className="fixed bottom-5 w-full pr-6"
             action={() => {
               signOut({
                 redirect: true,
@@ -32,7 +33,7 @@ export default function SideNav() {
           >
             <button
               className={clsx(
-                "cursor-pointer w-full flex h-[48px] items-center p-2 rounded-md text-white  text-sm font-medium hover:bg-neutral-700 hover:font-bold  ",
+                "w-full cursor-pointer flex  h-[48px] items-center p-5  rounded-md text-white  text-xs md:text-sm font-medium hover:bg-neutral-700 hover:font-bold  ",
               )}
             >
               <Icon icon="lets-icons:sign-out-circle-light" className="w-6" />
@@ -41,6 +42,6 @@ export default function SideNav() {
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -23,12 +23,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="relative w-full">
-      <div className="w-full bg-neutral-900 h-16 sticky">
+    <div className="relative w-full ">
+      <div className="sticky top-0 z-20 w-full bg-neutral-900 h-16">
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="fixed top-4 ml-6 z-10 bg-gray-100 p-2 rounded-md shadow hover:scale-105 transition cursor-pointer"
+            className="fixed top-4 ml-6  bg-gray-100 p-2 rounded-md shadow hover:scale-105 transition cursor-pointer"
           >
             <Icon icon="material-symbols:menu" />
           </button>
@@ -43,7 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       )}
 
       <div
-        className={`fixed top-0 left-0 z-20 h-full w-64 bg-gra-50 transition-transform duration-500 bg-neutral-900    ${
+        className={`fixed top-0 left-0 z-20 h-full w-44 md:w-64 transition-transform duration-500 bg-neutral-900    ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -58,7 +58,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Icon icon="material-symbols:close" />
         </button>
 
-        <SideNav />
+        <div>
+          <SideNav />
+        </div>
       </div>
       {/* Contenido principal */}
       <div className="h-full  p-6 transition-all duration-500 overflow-y-auto ">

@@ -126,67 +126,80 @@ export default function Form({ products }: { products: ProductFetch[] }) {
 
   return (
     <form onSubmit={handleSubmit} className="relative">
-      <div className="bg-black py-2 px-6 flex space-between items-center justify-between rounded-md">
-        <div className="flex items-center">
+      <div className="bg-neutral-900 rounded-md flex flex-col md:flex-row p-3 gap-4 ">
+        {/*Metodo de pago*/}
+
+        <div className="flex items-center  md:w-full justify-end md:justify-start  ">
           <label
-            htmlFor="method"
-            className="block text-sm font-medium pr-3 text-cyan-50"
+            className="text-white text-sm px-4 whitespace-nowrap"
+            htmlFor="method "
           >
-            Metodo de Pago
+            Payment method
           </label>
-          <div className="relative ">
+          <div>
             <select
               id="method"
-              className="block cursor-pointer rounded-md border border-gray-200 text-sm outline-2 placeholder:text-gray-500 text-center outline-hidden h-9 w-36"
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
+              className="rounded-2xl text-sm md:w-44 border-0 focus:outline-none focus:ring-2 focus:ring-primary-300 text-center"
             >
-              <option value="">Select a Method</option>
+              <option value="">Method</option>
               <option value="cash">cash</option>
               <option value="card">card</option>
             </select>
           </div>
 
-          <div id="product-error" aria-live="polite" aria-atomic="true">
-            {state.errors?.method &&
+          <div
+            id="product-error"
+            aria-live="polite"
+            aria-atomic="true"
+            className="hidden lg:flex justify-center items-center  ml-2 "
+          >
+            {paymentMethod === "" &&
+              state.errors?.method &&
               state.errors.method.map((error: string) => (
-                <p className="mt-2 text-sm text-red-500" key={error}>
-                  {error}
-                </p>
+                <div key={error} className="relative group">
+                  <Icon
+                    icon="tabler:alert-circle-filled"
+                    className="size-5 text-red-500 cursor-pointer"
+                  />
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 hidden group-hover:block z-50 cursor-default">
+                    <div className="relative bg-red-600  text-white text-xs rounded-md px-2 py-1 whitespace-nowrap shadow-md">
+                      {error}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full w-0 h-0 border-x-8 border-x-transparent border-b-8 border-b-red-600"></div>
+                    </div>
+                  </div>
+                </div>
               ))}
           </div>
         </div>
 
-        <div className="flex justify-end items-center">
-          <label
-            htmlFor={`total`}
-            className="text-sm font-medium pr-3 text-cyan-50"
-          >
-            Total :
+        {/*Fin*/}
+
+        {/*Total*/}
+        <div className="flex items-center gap-4 sm:w-full justify-end  ">
+          <label htmlFor={`total`} className="text-white text-sm">
+            Total
           </label>
 
           <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm">
               S/
             </span>
             <input
               id="total"
               type="number"
-              value={total}
+              value={total.toString()}
               readOnly
-              className="bg-gray-50 border pointer-events-none text-center w-44 h-9 rounded-lg pl-8"
+              className=" rounded-2xl pl-8 text-sm w-27 md:w-44 overflow-x-auto "
             />
           </div>
         </div>
+        {/*  Fin total*/}
       </div>
-
       <div className="rounded-md pt-2">
-        <div>
-          {/* Renderizar los campos para cada producto seleccionado */}
-          {sales.map((dsp, index) => ItemProduct(index))}
-        </div>
+        <div>{sales.map((dsp, index) => ItemProduct(index))}</div>
 
-        {/* Campo oculto para enviar selectedDetailSaleProduct */}
         <input
           type="hidden"
           name="selectedDetailSaleProduct"
@@ -195,42 +208,60 @@ export default function Form({ products }: { products: ProductFetch[] }) {
             method: paymentMethod,
           })}
         />
-        {/* Campo oculto para enviar method */}
+
         <input
           type="hidden"
           name="method"
           value={JSON.stringify({ method: paymentMethod })}
         />
       </div>
-
       <div>
         <div className="flex items-start  ">
-          <div
-            className="bg-yellow-400 flex items-center gap-2 py-1 px-3 rounded-lg hover:cursor-pointer"
-            onClick={addDetailSaleProduct}
-          >
-            <Icon icon="gridicons:add" />
-            <button type="button" id="add_product">
+          <div className="relative flex items-center hover:scale-105 ">
+            <Icon icon="subway:add" className="absolute text-gray-100 left-3" />
+            <Button
+              onClick={addDetailSaleProduct}
+              className="
+               pl-10 shadow-md  bg-yellow-400 hover:bg-yellow-300 hover:cursor-pointer active:bg-yellow-300"
+              type="button"
+            >
               Add Product
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
-      <div className="mt-6 flex justify-end gap-4">
+      {sales.some((sale) => sale.product_id !== "")
+        ? null
+        : state.errors?.products?.map((error) =>
+            error.message === "Debes agregar al menos un producto" ? (
+              <div
+                key={`${error.index}-${error.message}`}
+                className="text-red-500"
+              >
+                {error.message}
+              </div>
+            ) : null,
+          )}
+      <div className="mt-6 flex justify-end gap-4 ">
         <Link
           href="/dashboard/sales"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+          className="shadow-md flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           Cancel
         </Link>
-        <Button type="submit">Create Sale</Button>
+        <Button
+          className="shadow-md hover:scale-105 bg-blue-700 hover:bg-blue-600 hover:cursor-pointer"
+          type="submit"
+        >
+          Create Sale
+        </Button>
       </div>
       {showSuccessModal == true ? (
-        <div className="absolute flex items-center justify-center w-full h-full top-0 left-0 bg-black bg-opacity-50">
+        <div className="fixed z-20 flex items-center justify-center w-full h-full top-0 left-0  bg-black/60">
           <div
             id="alert-additional-content-1"
-            className="p-4 mb-4 text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800"
+            className="p-4 mb-4 text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800  dark:text-blue-400 dark:border-blue-800"
             role="alert"
           >
             <div className="flex items-center"></div>

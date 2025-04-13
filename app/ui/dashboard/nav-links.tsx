@@ -52,14 +52,15 @@ export default function NavLinks() {
             key={link.name}
             href={link.href}
             className={clsx(
-              " flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-neutral-00 text-white p-3 text-sm font-medium hover:bg-neutral-700 hover:font-bold md:flex-none md:justify-start md:p-2 md:px-3",
+              "flex items-center  h-[48px] grow  gap-2 rounded-md bg-neutral-00 text-white " +
+                "p-6 text-xs md:text-sm font-medium hover:bg-neutral-700 hover:font-bold  ",
               {
                 "bg-neutral-800 text-gray-200": pathname === link.href,
               },
             )}
           >
             {link.icon}
-            <p className=" hidden md:block ">{link.name}</p>
+            <p>{link.name}</p>
           </Link>
         );
       })}

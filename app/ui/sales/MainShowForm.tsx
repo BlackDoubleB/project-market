@@ -33,14 +33,17 @@ export default function MainShowForm({
   return (
     <div
       className={clsx(
-        "w-full h-full flex items-center justify-center ",
+        "w-full h-full flex items-center justify-center p-2 ",
         className,
       )}
     >
-      <div className="bg-white drop-shadow-xl/50 scrollbar w-[456px] h-[550px] overflow-y-auto">
+      <div
+        className="bg-white drop-shadow-xl/50 h-[550px] w-[456px] overflow-hidden overflow-x-auto rounded-md
+      "
+      >
         <div className="flex items-center justify-center text-center bg-black w-full h-20 sticky top-0 ">
           <h1
-            className={`${lusitana.className} text-base text-white`}
+            className={`${lusitana.className} text-base text-white `}
             style={{ fontWeight: 700 }}
           >
             DETALLE DE VENTA
@@ -49,7 +52,7 @@ export default function MainShowForm({
 
         <div
           ref={modalRef}
-          className="my-7 pl-7 pr-5 pt-4 rounded-2xl h-[450px]"
+          className="my-7 pl-7 pr-5  rounded-2xl h-[450px]  scrollbar overflow-y-auto"
         >
           <div className=" w-full">
             <div className="mb-5 pl-4">
@@ -76,7 +79,10 @@ export default function MainShowForm({
             </div>
 
             {saleById.map((sale, index) => (
-              <div key={index} className="mt-6 bg-gray-300 rounded-2xl p-4">
+              <div
+                key={index}
+                className="mt-6 bg-gray-100 rounded-2xl p-4 border overflow-x-auto "
+              >
                 <SubCardShowForm
                   key={index}
                   sale={sale}
@@ -85,7 +91,7 @@ export default function MainShowForm({
                 />
               </div>
             ))}
-            <div className="mt-5 pl-4">
+            <div className="mt-5 pl-4 pb-3">
               <p className="block text-sm font-bold leading-5  text-gray-500">
                 Total
               </p>

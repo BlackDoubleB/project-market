@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { sql } from "@vercel/postgres";
 
 export const FormSchemaUser = z.object({
   role_id: z

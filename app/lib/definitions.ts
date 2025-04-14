@@ -1,5 +1,3 @@
-import Decimal from "decimal.js";
-
 export type LatestSale = {
   product_name: string;
   category_name: string;
@@ -49,19 +47,6 @@ export type Stock = {
   date_register: string;
 };
 
-// export type Sale = {
-//   sale_id: string;
-//   id: string;
-//   method: string;
-//   date_register: string;
-//   total: number;
-// };
-//
-// export type detail_sale_products = {
-//   sale_id: string;
-//   product_id: string;
-//   quantity: number;
-// };
 //NAV TABLE
 export type NavTableProducts = {
   product_id: string;

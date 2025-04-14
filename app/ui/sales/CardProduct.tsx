@@ -3,7 +3,6 @@ import { Icon } from "@iconify/react";
 import { ProductFetch, SaleTable } from "@/app/lib/definitions";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { StateSale } from "@/app/lib/actions";
-import clsx from "clsx";
 
 interface Props {
   products: ProductFetch[];
@@ -24,7 +23,6 @@ export default function CardProduct({
   updateItemQuantity,
   sales,
   deleteProduct,
-  stock,
 }: Props) {
   const [productId, setProductId] = useState("");
   const [quantity, setQuantity] = useState<number>(1);

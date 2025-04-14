@@ -4,7 +4,6 @@ import { useActionState } from "react";
 import { RoleFetch } from "@/app/lib/definitions";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
-import { Button } from "@/app/ui/button";
 import { useState, useEffect } from "react";
 import clsx from "clsx";
 import { startTransition } from "react";
@@ -26,6 +25,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
   const [hasResend, setHasResend] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60); // 3 minutos en segundos
 
+  console.log(isCodeValid);
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setHasValue(event.target.value !== "");
   };
@@ -512,7 +512,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                       </div>
 
                       <div className="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
-                        <p>Didn't recieve code?</p>{" "}
+                        <p>Didn`&apos;`t recieve code?</p>{" "}
                         <button
                           type="button"
                           onClick={sendEmail}

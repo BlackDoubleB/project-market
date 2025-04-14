@@ -3,7 +3,6 @@ import { Icon } from "@iconify/react";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import Link from "next/link";
-import { playwrite } from "@/app/ui/fonts";
 const links = [
   {
     name: "Home",

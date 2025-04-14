@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { lusitana, noto } from "@/app/ui/fonts";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
@@ -19,6 +18,7 @@ export default function Home() {
             <img
               src="/icon-market-dark.png"
               className="h-6 w-6  rounded-full"
+              alt="Market icon"
             />
           </div>
         </div>
@@ -34,12 +34,13 @@ export default function Home() {
             style={{ fontWeight: "200" }}
             className={`text-base text-justify ${noto.className} `}
           >
-            At Market, we've created a platform specifically designed to help
-            you manage your business's sales quickly, easily, and efficiently.
-            Our goal is to provide you with all the tools you need to keep track
-            of your products and sales in one place. Whether you have a physical
-            store or sell online, Market adapts to your business and helps you
-            grow by automating processes and simplifying your daily operations.
+            At Market, we`&apos;`ve created a platform specifically designed to
+            help you manage your business`&apos;`s sales quickly, easily, and
+            efficiently. Our goal is to provide you with all the tools you need
+            to keep track of your products and sales in one place. Whether you
+            have a physical store or sell online, Market adapts to your business
+            and helps you grow by automating processes and simplifying your
+            daily operations.
           </p>
         </section>
         <div className="flex gap-4 items-center flex-col sm:flex-row">
@@ -78,7 +79,7 @@ export default function Home() {
           <div className="flex gap-6 flex-wrap  ">
             <Link
               className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              href="https://www.instagram.com/blanca_blacido/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -86,7 +87,7 @@ export default function Home() {
             </Link>
             <Link
               className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              href="https://x.com/BBlacido"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -94,7 +95,7 @@ export default function Home() {
             </Link>
             <Link
               className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-              href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              href="https://www.facebook.com/blanca.blacidoaparicio/"
               target="_blank"
               rel="noopener noreferrer"
             >

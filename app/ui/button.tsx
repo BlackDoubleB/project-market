@@ -1,6 +1,4 @@
 import clsx from "clsx";
-import Link from "next/link";
-import { Icon } from "@iconify/react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;

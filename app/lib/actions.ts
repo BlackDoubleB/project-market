@@ -5,14 +5,12 @@ import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import {
   FormSchemaUserRoute,
-  FormSchemaUser,
   FormSchemaRole,
   FormSchemaCategory,
   FormSchemaProduct,
   FormSchemaStock,
   FormSchemaPassword,
   FormSchemaSale,
-  FormSchemaUserAction,
 } from "@/lib/validations/base-schemas";
 
 export type StateUser = {
@@ -388,10 +386,7 @@ export async function createSale(
     let quantity: number = 0;
     let price: number = 0;
 
-    // errors_stock?: [
-    //   { product_stock?: string; number_stock?: number; index_stock?: number },
-    // ];
-    let errors_stock_var: {
+    const errors_stock_var: {
       product_stock?: string;
       number_stock?: number;
       index_stock?: number;
@@ -669,7 +664,7 @@ export async function updatePassword(
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await sql`
+    await sql`
       UPDATE users
       SET password = ${hashedPassword}
       WHERE id = ${id}
@@ -714,7 +709,7 @@ export async function deleteStock(id: string): Promise<boolean> {
       await sql`SELECT product_id FROM detail_sale_product WHERE product_id =${productId}`;
 
     if (existSale.rows.length > 0) {
-      console.log("hay una venta con stock");
+      console.log("There is a sale with stock");
       return false;
     }
 
@@ -726,22 +721,3 @@ export async function deleteStock(id: string): Promise<boolean> {
     return false;
   }
 }
-
-// export async function authenticate(
-//   prevState: string | undefined,
-//   formData: FormData,
-// ) {
-//   try {
-//     await signIn("credentials", formData);
-//   } catch (error) {
-//     if (error instanceof AuthError) {
-//       switch (error.type) {
-//         case "CredentialsSignin":
-//           return "Invalid credentials.";
-//         default:
-//           return "Something went wrong.";
-//       }
-//     }
-//     throw error;
-//   }
-// }

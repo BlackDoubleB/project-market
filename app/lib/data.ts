@@ -20,11 +20,7 @@ import {
   SaleById,
 } from "./definitions";
 
-//
-
 import { auth } from "@/auth";
-import { type Session } from "next-auth";
-type SafeSession = Session & { user?: { user_name?: string } };
 
 export async function fetchLatestSales() {
   try {

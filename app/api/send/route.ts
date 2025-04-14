@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    let code: number = Math.floor(1000 + Math.random() * 9000);
+    const code: number = Math.floor(1000 + Math.random() * 9000);
     const { email, action } = await request.json();
     const expiresAt = new Date(Date.now() + 10 * 60 * 100);
 

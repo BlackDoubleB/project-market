@@ -78,7 +78,7 @@ export default async function SalesTable({
                       : "N/A"}
                   </td>
                   <td className="whitespace-nowrap py-3 hidden md:table-cell">
-                    {sale.total}
+                    S/. {sale.total}
                   </td>
                   <td className="whitespace-nowrap py-3 hidden md:table-cell  ">
                     <div className="flex items-center justify-center">

@@ -14,7 +14,7 @@ export default async function Page() {
   return (
     <main>
       <div>
-        <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl pl-10`}>
+        <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl `}>
           Dashboard
         </h1>
       </div>
@@ -27,6 +27,7 @@ export default async function Page() {
 
       <div className="mt-6 grid grid-cols-1 gap-6 2xl:grid-cols-2">
         <Component sales={sales} />
+
         <div>
           <Suspense fallback={<LatestSalesSkeleton />}>
             <LatestSales />

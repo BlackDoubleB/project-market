@@ -1,64 +1,113 @@
 import Image from "next/image";
-import { lusitana } from "@/app/ui/fonts";
+import { lusitana, noto } from "@/app/ui/fonts";
 import Link from "next/link";
-import { Icon } from '@iconify/react';
+import { Icon } from "@iconify/react";
 export default function Home() {
   return (
-    <div className={`bg-black text-cyan-50 grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 ${lusitana.className}`}>
-      <main className="flex flex-col gap-8 row-start-2 items-center">
-        <Image
-          className="dark:invert"
-          src="/market.png"
-          alt="Market logo"
-          width={180}
-          height={38}
-          priority
-        />
-        
+    <div
+      className={`bg-neutral-950 text-cyan-50 ${lusitana.className} min-h-screen flex flex-col items-center`}
+    >
+      <main className="flex flex-col gap-8  w-full max-w-[1072px] my-32 px-10">
+        <div className="relative ">
+          <h4
+            style={{ fontWeight: "700" }}
+            className={`text-base sm:text-xl md:text-2xl border-l-2 pl-2 ${noto.className} `}
+          >
+            Market
+          </h4>
+          <div className=" absolute pl-24 -top-2  z-20 ">
+            <img
+              src="/icon-market-dark.png"
+              className="h-6 w-6  rounded-full"
+            />
+          </div>
+        </div>
+        <h1
+          style={{ fontWeight: "700" }}
+          className={`text-3xl sm:text-4xl xl:text-5xl ${noto.className} `}
+        >
+          The Virtual Solution to Manage Your Sales
+        </h1>
+
+        <section>
+          <p
+            style={{ fontWeight: "200" }}
+            className={`text-base text-justify ${noto.className} `}
+          >
+            At Market, we've created a platform specifically designed to help
+            you manage your business's sales quickly, easily, and efficiently.
+            Our goal is to provide you with all the tools you need to keep track
+            of your products and sales in one place. Whether you have a physical
+            store or sell online, Market adapts to your business and helps you
+            grow by automating processes and simplifying your daily operations.
+          </p>
+        </section>
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <Link
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            className="rounded-full border-1 border-solid border-gray-50 transition-colors flex items-center justify-center gap-2 hover:bg-neutral-800 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
           >
-           Nosotros
+            About us
           </Link>
           <Link
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
+            className="rounded-full border-1 border-solid border-gray-50 transition-colors flex items-center justify-center gap-2 hover:bg-neutral-800  text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
             href="/login"
             target="_parent"
             rel="noopener noreferrer"
           >
-            Ingresar
+            Get into
           </Link>
         </div>
+        <div className="my-5 relative ">
+          <img
+            src="/dashboard-phone.png"
+            alt="Image of the phone"
+            className="rounded-lg  h-[400px] absolute z-20  -top-16 -right-1  w-full max-w-[193px] lg:block hidden drop-shadow-xl/25 drop-shadow-white"
+          />
+          <img
+            src="/dashboard-home.png"
+            alt="Image of the dashboard in computer"
+            className="rounded-lg  drop-shadow-xl/25 drop-shadow-white w-full max-w-[950px]"
+          />
+        </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <Link
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Icon icon="mdi:instagram" />
-        </Link>
-        <Link
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Icon icon="iconoir:x" />
-        </Link>
-        <Link
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Icon icon="mdi:facebook" />
-        </Link>
+      <footer className="mt-auto flex items-center justify-center h-20 w-full bg-neutral-900">
+        <div className="w-full max-w-[1072px] px-10  flex justify-between flex-wrap gap-3 ">
+          <div className="flex gap-6 flex-wrap  ">
+            <Link
+              className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon icon="mdi:instagram" />
+            </Link>
+            <Link
+              className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon icon="iconoir:x" />
+            </Link>
+            <Link
+              className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+              href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon icon="mdi:facebook" />
+            </Link>
+          </div>
+          <p
+            style={{ fontWeight: "200" }}
+            className={`text-xs text-justify ${noto.className} `}
+          >
+            Copyright © 2025 Reyna Blacido Aparicio.
+          </p>
+        </div>
       </footer>
     </div>
   );

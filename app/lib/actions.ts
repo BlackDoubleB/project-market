@@ -690,14 +690,12 @@ export async function deleteCategory(id: string): Promise<boolean> {
   }
 }
 
-export async function deleteProduct(id: string): Promise<boolean> {
+export async function deleteProduct(id: string): Promise<void> {
   try {
     await sql`DELETE FROM products WHERE product_id = ${id}`;
     revalidatePath("/dashboard/products");
-    return true;
   } catch (error) {
     console.error("Error deleting product:", error);
-    return false;
   }
 }
 

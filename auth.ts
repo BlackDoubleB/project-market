@@ -44,22 +44,13 @@ export const { handlers, auth, signIn } = NextAuth(() => {
       }),
     ],
 
-    callbacks: {
-      session: async ({ session, token }) => {
-        if (token.exp && Date.now() > token.exp * 1000) {
-          return { ...session, expired: true };
-        }
-        return session;
-      },
-    },
-
     session: {
       strategy: "jwt",
     },
-    jwt: {
-      secret: process.env.AUTH_SECRET,
-    },
 
+    jwt: {
+      maxAge: 30 * 24 * 60 * 60,
+    },
     secret: process.env.AUTH_SECRET,
   };
 });

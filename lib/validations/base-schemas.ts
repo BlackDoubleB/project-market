@@ -123,18 +123,18 @@ export const FormSchemaUser = z.object({
     }),
 });
 
-export const FormSchemaUserAction = FormSchemaUser.extend({
-  email: z
-    .string({
-      required_error: "Email is required.",
-      invalid_type_error: "Email must be a string.",
-    })
-    .trim()
-    .min(1, "Email is required")
-    .refine((val) => val === "" || z.string().email().safeParse(val).success, {
-      message: "Invalid email",
-    }),
-});
+// export const FormSchemaUserAction = FormSchemaUser.extend({
+//   email: z
+//     .string({
+//       required_error: "Email is required.",
+//       invalid_type_error: "Email must be a string.",
+//     })
+//     .trim()
+//     .min(1, "Email is required")
+//     .refine((val) => val === "" || z.string().email().safeParse(val).success, {
+//       message: "Invalid email",
+//     }),
+// });
 
 export const FormSchemaUserRoute = FormSchemaUser.extend({
   email: z

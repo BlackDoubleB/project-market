@@ -22,7 +22,7 @@ export default function Form({ products }: { products: ProductFetch[] }) {
 
   const initialState: StateSale = {
     message: null as string | null | undefined,
-    errors: {} as Record<string, any>,
+    errors: {} as Record<string, number>, //cambio
   };
   const [state, formAction] = useActionState(createSale, initialState);
   const [stock, setStock] = useState(true);

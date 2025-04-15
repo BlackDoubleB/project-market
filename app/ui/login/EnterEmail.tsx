@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { Icon } from "@iconify/react";
 
 export function EnterEmail({
@@ -57,6 +56,7 @@ export function EnterEmail({
         setMessage(`Error: ${result.error.message}`);
       }
     } catch (error) {
+      console.log(error);
       setMessage("Hubo un problema al enviar el correo.");
     }
   };

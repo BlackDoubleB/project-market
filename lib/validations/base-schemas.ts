@@ -114,6 +114,7 @@ export const FormSchemaUser = z.object({
           });
         }
       } catch (error) {
+        console.log(error);
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Error checking email availability from ZOD",
@@ -167,6 +168,7 @@ export const FormSchemaUserRoute = FormSchemaUser.extend({
           });
         }
       } catch (error) {
+        console.log(error);
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Error checking email availability",

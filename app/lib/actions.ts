@@ -685,6 +685,7 @@ export async function deleteCategory(id: string): Promise<boolean> {
     revalidatePath("/dashboard/categories");
     return true; // Indica que la eliminación fue exitosa
   } catch (error) {
+    console.log("[deleteCategory] Error:", error);
     return false; // Indica que hubo un error
   }
 }

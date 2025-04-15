@@ -78,6 +78,7 @@ export function ResetPassword({
         formAction(formData);
       });
     } catch (error) {
+      console.log(error);
       setClientErrors({
         general: "An unexpected error occurred",
       });

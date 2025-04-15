@@ -9,7 +9,9 @@ import clsx from "clsx";
 import { startTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FormSchemaUser } from "@/lib/validations/base-schemas";
-
+interface Errors {
+  [key: string]: string[];
+}
 export default function Form({ roles }: { roles: RoleFetch[] }) {
   const initialState: StateUser = { message: null, errors: {} };
   const [state, formAction] = useActionState(createUser, initialState);
@@ -20,7 +22,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
   const [email, setEmail] = useState(""); // Estado para almacenar el email del usuario
   const [formData, setFormData] = useState<FormData | null>(null);
   const router = useRouter();
-  const [clientErrors, setClientErrors] = useState<any>(null);
+  const [clientErrors, setClientErrors] = useState<Errors | null>(null);
   const [hasValue, setHasValue] = useState(false);
   const [hasResend, setHasResend] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60); // 3 minutos en segundos
@@ -93,6 +95,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
         console.log("Error:", result.error);
       }
     } catch (error) {
+      console.log(error);
       setMessage("Hubo un problema al enviar el correo.");
     } finally {
       setLoading(false);
@@ -170,6 +173,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
       console.log("correcto");
       await sendEmail();
     } catch (error) {
+      console.log(error);
       setMessage("Error validating form");
       setLoading(false);
     }

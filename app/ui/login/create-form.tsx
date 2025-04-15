@@ -139,6 +139,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
         setIsCodeValid("invalid");
       }
     } catch (error) {
+      console.log(error);
       setMessage(`${result.message}`);
       setIsCodeValid("invalid");
     } finally {

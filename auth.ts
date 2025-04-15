@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 import { signInSchema } from "@/app/features/users/validations";
 import { getUserFromDb } from "@/app/utils/db";
 
-export const { handlers, auth, signIn, signOut } = NextAuth(() => {
+export const { handlers, auth, signIn } = NextAuth(() => {
   const pool = new Pool({ connectionString: process.env.POSTGRES_URL });
   return {
     adapter: PostgresAdapter(pool),
@@ -47,7 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
     callbacks: {
       session: async ({ session, token }) => {
         if (token.exp && Date.now() > token.exp * 1000) {
-          return null; // Invalida la sesión cuando el token expira
+          return { ...session, expired: true };
         }
         return session;
       },

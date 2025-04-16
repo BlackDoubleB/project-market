@@ -128,10 +128,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
         // Enviar el formulario con los datos guardados
         startTransition(async () => {
-          console.log("Enviando el formulario");
           if (formData) {
-            const result = await formAction(formData);
-            console.log("Resultado del servidor:", result);
+            await formAction(formData);
           }
         });
       } else {
@@ -146,6 +144,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
       setLoading(false);
     }
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -156,7 +155,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
     const data = new FormData(form);
 
     try {
-      // // Validar con Zod (incluyendo la validación asíncrona del email)
+      // Validar con Zod (incluyendo la validación asíncrona del email)
       const result = await FormSchemaUser.safeParseAsync(
         Object.fromEntries(data),
       );
@@ -180,12 +179,6 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
     }
   };
 
-  useEffect(() => {
-    if (state.message === "Usuario creado con éxito") {
-      router.push("/login"); // Redirige correctamente
-    }
-  }, [state.message, router]);
-
   return (
     <>
       <div
@@ -196,8 +189,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
           "opacity-75": modalup,
         })}
       ></div>
-      <div className="relative w-full max-w-md ">
-        <div className="p-10 rounded-2xl border-gray-300 dark:bg-gray-800 dark:border-gray-600 shadow-sm bg-white ">
+      <div className="relative w-full max-w-md  ">
+        <div className="p-10 rounded-2xl border-gray-300 dark:bg-gray-800 dark:border-gray-600 shadow-sm bg-white drop-shadow-lg drop-shadow-white/50">
           <form id="registration-form" onSubmit={handleSubmit}>
             <div className="flex justify-center">
               <h1 className="text-2xl py-10 text-black font-semibold dark:text-white">
@@ -205,7 +198,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
               </h1>
             </div>
 
-            {/* Role - Adaptado a la nueva plantilla */}
+            {/* Role  */}
             <div className="relative z-0 w-full mb-5">
               <div className="relative group">
                 <select
@@ -225,7 +218,9 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                 <label
                   htmlFor="role_id"
                   className={clsx(
-                    "peer-focus:font-medium absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6",
+                    "peer-focus:font-medium absolute text-sm duration-300 transform -translate-y-6 scale-75 " +
+                      "top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4 peer-placeholder-shown:scale-105 " +
+                      "peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6",
                     {
                       "text-blue-600 dark:text-blue-500": hasValue, // Color cuando hay valor
                       "text-gray-500 dark:text-gray-400": !hasValue, // Color por defecto
@@ -257,7 +252,10 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                 />
                 <label
                   htmlFor="person_name"
-                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4 peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300
+                   transform -translate-y-0 scale-105 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4
+                    peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-105
+                     peer-placeholder-shown:translate-y-0 peer-focus:scale-105 peer-focus:-translate-y-0"
                 >
                   First name
                 </label>
@@ -280,7 +278,10 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                 />
                 <label
                   htmlFor="lastname"
-                  className="peer-checked:bg-blue-600 peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4 peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300
+                   transform -translate-y-0 scale-105 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4
+                    peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-105
+                     peer-placeholder-shown:translate-y-0 peer-focus:scale-105 peer-focus:-translate-y-0"
                 >
                   Last name
                 </label>
@@ -308,7 +309,10 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
               />
               <label
                 htmlFor="dni"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4 peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300
+                   transform -translate-y-0 scale-105 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4
+                    peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-105
+                     peer-placeholder-shown:translate-y-0 peer-focus:scale-105 peer-focus:-translate-y-0"
               >
                 DNI
               </label>
@@ -333,7 +337,10 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
               />
               <label
                 htmlFor="user_name"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4 peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300
+                   transform -translate-y-0 scale-105 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4
+                    peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-105
+                     peer-placeholder-shown:translate-y-0 peer-focus:scale-105 peer-focus:-translate-y-0"
               >
                 Username
               </label>
@@ -358,7 +365,10 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
               />
               <label
                 htmlFor="password"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4 peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300
+                   transform -translate-y-0 scale-105 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4
+                    peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-105
+                     peer-placeholder-shown:translate-y-0 peer-focus:scale-105 peer-focus:-translate-y-0"
               >
                 Password
               </label>
@@ -387,7 +397,10 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
               />
               <label
                 htmlFor="email"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4 peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300
+                   transform -translate-y-0 scale-105 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4
+                    peer-focus:text-blue-600 dark:peer-focus:text-blue-500 peer-placeholder-shown:scale-105
+                     peer-placeholder-shown:translate-y-0 peer-focus:scale-105 peer-focus:-translate-y-0"
               >
                 Email address
               </label>
@@ -401,19 +414,25 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                     </p>
                   ))}
               </div>
+              {state.message === "Email not available" ? (
+                <p className="mt-1 text-sm text-red-500">{state.message}</p>
+              ) : null}
             </div>
 
             {/* Botones */}
-            <div className="flex justify-between mt-6">
+            <div className="flex justify-between mt-6 flex-wrap gap-2">
               <Link
                 href="/login"
-                className="text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-4 focus:outline-hidden focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                className="text-gray-700 dark:text-gray-300 bg-gray-100
+                dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700
+                 focus:outline-hidden focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="text-white bg-blue-700 hover:bg-blue-600 focus:outline-hidden
+                 font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer"
                 disabled={loading}
               >
                 {loading ? (
@@ -538,8 +557,31 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
             </div>
           </div>
         </div>
-        {/*Fin Modal*/}
       </div>
+
+      {state.message === "Usuario creado con éxito" ? (
+        <div className="absolute z-20 w-full h-full top-0 left-0 bg-neutral-800/75">
+          <div className=" h-full flex items-center justify-center">
+            <div className="bg-white rounded-md p-5 w-full max-w-md max-h-full flex items-center justify-center flex-col mx-2">
+              <div className="my-4 text-sm text-center flex items-center flex-col text-blue-800">
+                <p>Successful Registration</p>
+                <Icon
+                  icon="mdi:check-decagram"
+                  className="w-full max-w-40 h-40"
+                />
+              </div>
+              <Link href="/login">
+                <button
+                  type="button"
+                  className=" text-white bg-blue-800 hover:bg-blue-700 p-2 rounded-md cursor-pointer "
+                >
+                  Return to login
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

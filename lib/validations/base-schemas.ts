@@ -123,19 +123,6 @@ export const FormSchemaUser = z.object({
     }),
 });
 
-// export const FormSchemaUserAction = FormSchemaUser.extend({
-//   email: z
-//     .string({
-//       required_error: "Email is required.",
-//       invalid_type_error: "Email must be a string.",
-//     })
-//     .trim()
-//     .min(1, "Email is required")
-//     .refine((val) => val === "" || z.string().email().safeParse(val).success, {
-//       message: "Invalid email",
-//     }),
-// });
-
 export const FormSchemaUserRoute = FormSchemaUser.extend({
   email: z
     .string({
@@ -146,34 +133,6 @@ export const FormSchemaUserRoute = FormSchemaUser.extend({
     .min(1, "Email is required")
     .refine((val) => val === "" || z.string().email().safeParse(val).success, {
       message: "Invalid email",
-    })
-    .superRefine(async (val, ctx) => {
-      if (!val) return; // Si está vacío, ya se mostró el error
-
-      try {
-        const response = await fetch("http://localhost:3000/api/queries", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: val }),
-        });
-
-        console.log(response);
-        const data = await response.json();
-        if (data.exists) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Email already registered",
-          });
-        }
-      } catch (error) {
-        console.log(error);
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Error checking email availability",
-        });
-      }
     }),
 });
 

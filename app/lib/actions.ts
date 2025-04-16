@@ -84,69 +84,9 @@ export type StateSale = {
   }[];
 };
 
-// export async function createUser(prevState: StateUser, formData: FormData) {
-//   const validatedFields = FormSchemaUserAction.safeParse({
-//     role_id: formData.get("role_id"),
-//     person_name: formData.get("person_name"),
-//     dni: formData.get("dni"),
-//     lastname: formData.get("lastname"),
-//     user_name: formData.get("user_name"),
-//     password: formData.get("password"),
-//     email: formData.get("email"),
-//   });
-//
-//   if (!validatedFields.success) {
-//     console.log(
-//       "Errores de validación:",
-//       validatedFields.error.flatten().fieldErrors,
-//     );
-//
-//     return {
-//       errors: validatedFields.error.flatten().fieldErrors,
-//       message: "Missing Fields. Failed to Create User.",
-//     };
-//   }
-//
-//   const { role_id, person_name, dni, lastname, user_name, password, email } =
-//     validatedFields.data;
-//
-//   try {
-//     console.log("Intentando insertar en people...");
-//
-//     const resultPeople = await sql`
-//       INSERT INTO people (dni, person_name, lastname)
-//       VALUES (${dni}, ${person_name}, ${lastname})
-//       RETURNING person_id
-//       `;
-//     console.log("Resultado de people:", resultPeople);
-//     if (!resultPeople.rows.length)
-//       throw new Error("No se pudo obtener person_id");
-//     const person_id = resultPeople.rows[0]?.person_id;
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     const date_register = new Date();
-//     console.log("Insertando usuario en la base de datos...");
-//
-//     await sql`
-//       INSERT INTO users (role_id, person_id, user_name, password, date_register,email)
-//       VALUES (${role_id}, ${person_id}, ${user_name}, ${hashedPassword},${date_register.toISOString()}, ${email})
-//     `;
-//     revalidatePath("/login/create");
-//     console.log("usuario creado");
-//     return {
-//       message: "Usuario creado con éxito",
-//     };
-//   } catch (error) {
-//     console.error("❌ Error al crear usuario:", error);
-//     return {
-//       message: "Database Error: Failed to Create User.",
-//       error: error instanceof Error ? error.message : "Unknown error",
-//     };
-//   }
-// }
 export async function createUser(prevState: StateUser, formData: FormData) {
   try {
-    // 1. Validación asíncrona
-    const validatedFields = await FormSchemaUserRoute.safeParseAsync({
+    const validatedFields = FormSchemaUserRoute.safeParse({
       role_id: formData.get("role_id"),
       person_name: formData.get("person_name"),
       dni: formData.get("dni"),
@@ -167,11 +107,17 @@ export async function createUser(prevState: StateUser, formData: FormData) {
       };
     }
 
-    // 2. Procesamiento de datos
     const { role_id, person_name, dni, lastname, user_name, password, email } =
       validatedFields.data;
 
-    console.log("Intentando insertar en people...");
+    //validar existencia de Usuario
+    const result = await sql`
+      SELECT id FROM users WHERE LOWER(email) = LOWER(${email}) LIMIT 1
+    `;
+    if (result.rows.length > 0) {
+      return { message: "Email not available" };
+    }
+
     const resultPeople = await sql`
       INSERT INTO people (dni, person_name, lastname)
       VALUES (${dni}, ${person_name}, ${lastname})

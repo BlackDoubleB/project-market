@@ -19,18 +19,18 @@ import { SaleFetch } from "@/app/lib/definitions";
 
 export function Component({ sales }: { sales: SaleFetch[] }) {
   const dataMonth = [
-    { month: "january", total: 50000 },
-    { month: "february", total: 60000 },
-    { month: "march", total: 55000 },
-    { month: "april", total: 2500 },
-    { month: "may", total: 65000 },
-    { month: "june", total: 80000 },
-    { month: "july", total: 75000 },
-    { month: "august", total: 90000 },
-    { month: "september", total: 55000 },
-    { month: "october", total: 6800 },
-    { month: "november", total: 100000 },
-    { month: "december", total: 2000 },
+    { month: "january", total: 0 },
+    { month: "february", total: 0 },
+    { month: "march", total: 0 },
+    { month: "april", total: 0 },
+    { month: "may", total: 0 },
+    { month: "june", total: 0 },
+    { month: "july", total: 0 },
+    { month: "august", total: 0 },
+    { month: "september", total: 0 },
+    { month: "october", total: 0 },
+    { month: "november", total: 0 },
+    { month: "december", total: 0 },
   ];
   const monthsArray = [
     "january",

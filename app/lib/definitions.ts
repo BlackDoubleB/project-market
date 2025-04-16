@@ -161,6 +161,7 @@ export type SaleFetch = {
 };
 
 export type UserFetch = {
+  id: string;
   role_name: string;
   person_name: string;
   lastname: string;

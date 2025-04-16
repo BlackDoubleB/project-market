@@ -12,6 +12,8 @@ import {
   FormSchemaPassword,
   FormSchemaSale,
 } from "@/lib/validations/base-schemas";
+import { UserFetch } from "@/app/lib/definitions";
+import { fetchUser } from "@/app/lib/data";
 
 export type StateUser = {
   errors?: {
@@ -324,7 +326,7 @@ export async function createSale(
       message: "Missing Fields. Failed to Create Sale.",
     };
   }
-
+  const user: UserFetch = await fetchUser();
   const { products, method } = validatedFields.data;
 
   try {
@@ -369,8 +371,7 @@ export async function createSale(
     }
 
     const date_register = new Date();
-    const userResult =
-      await sql`SELECT id FROM users WHERE user_name = ${"User"}`;
+    const userResult = await sql`SELECT id FROM users WHERE id = ${user.id}`;
     const user_id = userResult.rows[0]?.id;
 
     await sql`BEGIN;`;

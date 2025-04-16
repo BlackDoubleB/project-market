@@ -550,7 +550,8 @@ export async function fetchUser() {
       people.dni,
       u.user_name,
       u.password,
-      u.email
+      u.email,
+      u.id
       FROM users AS u
       JOIN roles ON roles.role_id = u.role_id
       JOIN people ON people.person_id = u.person_id

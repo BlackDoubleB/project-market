@@ -89,14 +89,14 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
         setTimeLeft(60); // Reiniciar el contador a 60 segundos
         setHasResend((prev) => prev + 1); // Actualizar el contador de reenvíos
 
-        setMessage("Correo enviado con éxito 🎉");
+        setMessage("Mail sent successfully 🎉");
       } else {
         setMessage(`Error: ${result.error.message}`);
         console.log("Error:", result.error);
       }
     } catch (error) {
       console.log(error);
-      setMessage("Hubo un problema al enviar el correo.");
+      setMessage("There was a problem sending the email.");
     } finally {
       setLoading(false);
     }
@@ -147,7 +147,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+
     setMessage("");
 
     // Guardar los datos del formulario
@@ -166,7 +166,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
         setLoading(false);
         return;
       }
-
+      setLoading(true);
       // Si pasa la validación, guardar los datos y enviar el correo
       setFormData(data);
       setTimeLeft(60);
@@ -183,7 +183,6 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
     <>
       <div
         className={clsx("absolute top-0 -z-10 opacity-0  w-full h-full ", {
-          "opacity-100": modalup,
           "z-10": modalup,
           "bg-gray-600": modalup,
           "opacity-75": modalup,
@@ -222,8 +221,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                       "top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:rtl:translate-x-1/4 peer-placeholder-shown:scale-105 " +
                       "peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6",
                     {
-                      "text-blue-600 dark:text-blue-500": hasValue, // Color cuando hay valor
-                      "text-gray-500 dark:text-gray-400": !hasValue, // Color por defecto
+                      "text-blue-600 dark:text-blue-500": hasValue,
+                      "text-gray-500 dark:text-gray-400": !hasValue,
                     },
                   )}
                 >
@@ -454,7 +453,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
         {/*Modal*/}
         <div
-          className={clsx("absolute top-0 -z-10 opacity-0  h-full px-0", {
+          className={clsx("absolute top-0  opacity-0 -z-10  h-full px-0 ", {
             "opacity-100": modalup,
             "z-10": modalup,
           })}
@@ -473,7 +472,7 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
                 <div>
                   <form onSubmit={verifyCode}>
-                    <div className="flex flex-col items-center space-y-16">
+                    <div className="flex flex-col items-center space-y-5">
                       <div className="flex flex-row items-center justify-center gap-2 sm:gap-0 sm:justify-between mx-auto w-full max-w-xs">
                         <div className="w-full sm:w-16 h-16">
                           <input
@@ -512,31 +511,35 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
                       <div className="w-full max-w-xs">
                         <button
                           type="submit"
-                          className="flex flex-row items-center justify-center text-center w-full border rounded-xl outline-hidden py-5 bg-blue-700 border-none text-white text-sm shadow-xs"
+                          className="flex flex-row items-center justify-center text-center w-full border
+                          rounded-xl outline-hidden py-5 bg-blue-700 hover:bg-blue-600 border-none text-white
+                           text-sm shadow-xs cursor-pointer"
                         >
                           Verify Account
                         </button>
 
-                        {message === "Código  no encontrado o caducado" ||
-                        message === "Su codigo caduco, reenvie nuevamente" ||
-                        message ===
-                          "Has excedido el número máximo de intentos. Reenvie nuevamente" ||
-                        message ===
-                          "Último intento fallido. Reenvie nuevamente" ||
-                        message === "Error desconocido" ||
-                        message ===
-                          "No hay información de stack disponible" ? null : (
-                          <div className=" flex items-center justify-center">
+                        {message === "Mail sent successfully 🎉" ? (
+                          <p className="text-center text-green-500 text-sm mt-5">
+                            {message}
+                          </p>
+                        ) : (
+                          <p className="text-center text-red-500 text-sm mt-5">
+                            {message}
+                          </p>
+                        )}
+                        {message !== "Mail sent successfully 🎉" ? null : (
+                          <div className=" flex items-center justify-center mt-2 text-sm">
                             <p className="pr-1">{formattedTime}</p>
                             <Icon icon="ci:timer" />
                           </div>
                         )}
-
-                        <p className="text-center text-red-500">{message}</p>
                       </div>
 
-                      <div className="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
-                        <p>Didn`&apos;`t recieve code?</p>{" "}
+                      <div
+                        className=" flex flex-row items-center justify-center text-center
+                       text-sm font-medium space-x-1 text-gray-500"
+                      >
+                        <p>Didn&apos;t recieve code?</p>{" "}
                         <button
                           type="button"
                           onClick={sendEmail}

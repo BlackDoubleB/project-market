@@ -14,10 +14,10 @@ export default function Home() {
           >
             Market
           </h4>
-          <div className=" absolute pl-24 -top-2  z-20 ">
+          <div className="absolute pl-[70px] sm:pl-[85px] md:pl-24 -top-1 sm:-top-2  z-20 ">
             <img
               src="/icon-market-dark.png"
-              className="h-6 w-6  rounded-full"
+              className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6  rounded-full"
               alt="Market icon"
             />
           </div>
@@ -32,10 +32,10 @@ export default function Home() {
         <section>
           <p
             style={{ fontWeight: "200" }}
-            className={`text-base text-justify ${noto.className} `}
+            className={`text-sm sm:text-base text-justify ${noto.className} `}
           >
-            At Market, we`&apos;`ve created a platform specifically designed to
-            help you manage your business`&apos;`s sales quickly, easily, and
+            At Market, we&apos;ve created a platform specifically designed to
+            help you manage your business&apos;s sales quickly, easily, and
             efficiently. Our goal is to provide you with all the tools you need
             to keep track of your products and sales in one place. Whether you
             have a physical store or sell online, Market adapts to your business

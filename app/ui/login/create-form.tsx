@@ -7,7 +7,6 @@ import { Icon } from "@iconify/react";
 import { useState, useEffect } from "react";
 import clsx from "clsx";
 import { startTransition } from "react";
-import { useRouter } from "next/navigation";
 import { FormSchemaUser } from "@/lib/validations/base-schemas";
 interface Errors {
   [key: string]: string[];
@@ -18,14 +17,13 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [modalup, setModalup] = useState(false);
-  const [isCodeValid, setIsCodeValid] = useState(""); // Estado para verificar si el código es válido
-  const [email, setEmail] = useState(""); // Estado para almacenar el email del usuario
+  const [isCodeValid, setIsCodeValid] = useState("");
+  const [email, setEmail] = useState("");
   const [formData, setFormData] = useState<FormData | null>(null);
-  const router = useRouter();
   const [clientErrors, setClientErrors] = useState<Errors | null>(null);
   const [hasValue, setHasValue] = useState(false);
   const [hasResend, setHasResend] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60); // 3 minutos en segundos
+  const [timeLeft, setTimeLeft] = useState(60);
 
   console.log(isCodeValid);
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -44,11 +42,9 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
   useEffect(() => {
     if (!modalup) return;
 
-    // Limpiar cualquier timer existente
     const timerId = setTimeout(() => {}, 0);
     clearTimeout(timerId);
 
-    // Iniciar nuevo timer
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
@@ -60,9 +56,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [modalup, hasResend]); // Dependencias actualizadas
+  }, [modalup, hasResend]);
 
-  // Formatea minutos y segundos correctamente:
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const formattedTime = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
@@ -86,8 +81,8 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
       const result = await response.json();
       if (response.ok) {
         setModalup(true);
-        setTimeLeft(60); // Reiniciar el contador a 60 segundos
-        setHasResend((prev) => prev + 1); // Actualizar el contador de reenvíos
+        setTimeLeft(60);
+        setHasResend((prev) => prev + 1);
 
         setMessage("Mail sent successfully 🎉");
       } else {
@@ -123,10 +118,9 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
       if (response.ok) {
         setMessage(result.message);
-        setIsCodeValid("valid"); // Marcar el código como válido
-        setModalup(false); // Cerrar el modal
+        setIsCodeValid("valid");
+        setModalup(false);
 
-        // Enviar el formulario con los datos guardados
         startTransition(async () => {
           if (formData) {
             await formAction(formData);
@@ -150,12 +144,10 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
 
     setMessage("");
 
-    // Guardar los datos del formulario
     const form = e.currentTarget as HTMLFormElement;
     const data = new FormData(form);
 
     try {
-      // Validar con Zod (incluyendo la validación asíncrona del email)
       const result = await FormSchemaUser.safeParseAsync(
         Object.fromEntries(data),
       );
@@ -167,7 +159,6 @@ export default function Form({ roles }: { roles: RoleFetch[] }) {
         return;
       }
       setLoading(true);
-      // Si pasa la validación, guardar los datos y enviar el correo
       setFormData(data);
       setTimeLeft(60);
       console.log("correcto");

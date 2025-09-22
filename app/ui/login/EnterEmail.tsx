@@ -8,6 +8,8 @@ export function EnterEmail({
   email,
   setEmail,
   setUserId,
+  openaMessage,
+  setOpenMessage
 }: {
   className?: string;
   setMessage: (message: string) => void;
@@ -15,8 +17,9 @@ export function EnterEmail({
   email?: string;
   setEmail: (email: string) => void;
   setUserId: (userId: string) => void;
+  openaMessage?: boolean;
+  setOpenMessage: (show: boolean) => void;
 }) {
-  // Estado para almacenar el email del usuario
 
   const sendEmail = async () => {
     const responseExistEmail = await fetch("/api/queries", {
@@ -61,9 +64,23 @@ export function EnterEmail({
     }
   };
 
+  if (!openaMessage) return null;
   return (
-    <section className={`bg-gray-50 dark:bg-gray-900 ${className}`}>
-      <div className="flex items-center justify-center min-h-screen w-full max-w-sm">
+    <section className={`bg-gray-50/95 dark:bg-gray-900/95 ${className}`}>
+      <div className="flex flex-col items-center justify-center min-h-screen w-full max-w-sm">
+        <div className=" self-end cursor-pointer" onClick={() =>  setOpenMessage(false)}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="0.75em"
+            height="1em"
+            viewBox="0 0 384 512"
+          >
+            <path
+              fill="currentColor"
+              d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256L9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l137.3-137.4l137.4 137.3c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256l137.3-137.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7z"
+            />
+          </svg>
+        </div>
         <div
           className="w-full bg-white
          rounded-lg shadow dark:border  sm:max-w-md dark:bg-gray-800 dark:border-gray-700 p-8 m-4"

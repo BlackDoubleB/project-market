@@ -13,16 +13,16 @@ export const FormSchemaUser = z.object({
     .trim()
     .min(1, "User Name is required"),
   password: z.string().superRefine((val, ctx) => {
-    // 1. Si está vacío o es undefined
+
     if (!val || val.trim().length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Password is required", // Solo este mensaje
+        message: "Password is required", 
       });
-      return; // Detiene la validación aquí
+      return;
     }
 
-    // 2. Si es menor a 8 caracteres
+
     if (val.length < 8) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -31,7 +31,7 @@ export const FormSchemaUser = z.object({
       return;
     }
 
-    // 3. Si excede 32 caracteres
+
     if (val.length > 32) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

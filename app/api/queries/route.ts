@@ -5,13 +5,13 @@ export async function POST(request: Request) {
   try {
     const { email } = await request.json();
 
-    console.log("📩 Recibido email:", email);
+    console.log("Recibido email:", email);
 
     const result = await sql`
       SELECT id FROM users WHERE LOWER(email) = LOWER(${email}) LIMIT 1
     `;
 
-    console.log("🔍 Resultado de consulta:", result.rows);
+    console.log("Resultado de consulta:", result.rows);
 
     return NextResponse.json(
       {
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error(
-      "❌ Error en /api/queries:",
+      "Error en /api/queries:",
       error instanceof Error ? error.message : error,
     );
     return NextResponse.json(

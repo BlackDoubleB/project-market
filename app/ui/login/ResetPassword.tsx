@@ -40,7 +40,6 @@ export function ResetPassword({
       setClientErrors({
         password: passwordValidation.error.flatten().fieldErrors.password,
       });
-      // Validación del campo confirmPassword
       if (!confirmPassword.trim()) {
         setClientErrors((prev) => ({
           ...prev,

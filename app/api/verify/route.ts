@@ -18,8 +18,8 @@ export async function POST(request: Request) {
 
     const record = result.rows[0];
 
-    const expiresAt = new Date(record.expires_at); // Convierte el timestamp a Date
-    const now = new Date(); // Obtiene la fecha y hora actual
+    const expiresAt = new Date(record.expires_at); 
+    const now = new Date(); 
     if (expiresAt < now) {
       await sql`
       DELETE FROM verification_codes_rs
@@ -45,15 +45,11 @@ export async function POST(request: Request) {
           message:
             "You have exceeded the maximum number of attempts. Please try again.",
         },
-        { status: 429 }, // 429 Too Many Requests
+        { status: 429 },
       );
     }
 
     if (Number(record.code) === Number(code)) {
-      // await sql`
-      //   DELETE FROM verification_codes_rs
-      //   WHERE email = ${email} ;
-      // `;
       return Response.json({ valid: true, message: "Correct Code" });
     } else {
       await sql`
@@ -78,7 +74,6 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     console.error("Error in POST function:", error);
-    // Verificar si 'error' es una instancia de Error para extraer más información
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
     const errorStack =

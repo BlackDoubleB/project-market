@@ -27,7 +27,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
       </label>
 
       <input
-        className="peer block w-full rounded-2xl
+        className="peer block w-full rounded-2xl 
         focus:outline-none border-1 border-gray-300 focus:border-blue-200  focus:ring-blue-200 focus:ring-1
                  focus:shadow-md focus:shadow-blue-200/50
          py-[9px] pl-10 text-sm  placeholder:text-gray-500"

@@ -11,8 +11,9 @@ export function SignIn() {
     password: "",
   });
   const [showEnterEmail, setShowEnterEmail] = useState(false);
+   const [openaMessage, setOpenMessage] = useState(false);
+   console.log(openaMessage);
   const [error, setError] = useState("");
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -96,18 +97,23 @@ export function SignIn() {
                 />
               </div>
 
-              <div className="flex items-center ">
+              <div className="flex items-start flex-col ">
                 <p
                   className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500 hover:cursor-pointer"
-                  onClick={() => setShowEnterEmail(true)}
+                  onClick={() => {
+                    { setShowEnterEmail(true); setOpenMessage(true); }
+                  }}
                 >
                   Forgot password?
                 </p>
 
-                {showEnterEmail ? (
+                 {showEnterEmail ? (
                   <ResetWrapper
+                  openMessage={openaMessage}
+                  setOpenMessage={setOpenMessage}
+  
                     className={clsx({
-                      "absolute z-20 bg-opacity-85 bg-gray-500 top-0 w-full left-0 flex justify-center ":
+                      "absolute z-20  bg-gray-500/75 top-0 w-full left-0 flex justify-center ":
                         showEnterEmail,
                     })}
                   />
@@ -137,9 +143,12 @@ export function SignIn() {
                 </p>
               )}
             </form>
+           
           </div>
+          
         </div>
       </section>
+     
     </div>
   );
 }

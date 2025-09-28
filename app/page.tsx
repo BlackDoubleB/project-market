@@ -6,7 +6,7 @@ export default function Home() {
     <div
       className={`bg-neutral-950 text-cyan-50 ${lusitana.className} min-h-screen flex flex-col items-center`}
     >
-      <main className="flex flex-col gap-8  w-full max-w-[1072px] my-32 px-10">
+      <main className="flex flex-col gap-8  w-full max-w-[1072px] my-32 px-10 min-h-screen">
         <div className="relative ">
           <h4
             style={{ fontWeight: "700" }}

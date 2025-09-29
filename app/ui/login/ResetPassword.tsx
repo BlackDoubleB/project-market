@@ -17,7 +17,7 @@ export function ResetPassword({
 
   const [state, formAction] = useActionState<StatePassword, FormData>(
     updatePasswordWithId,
-    initialState,
+    initialState
   );
 
   const [password, setPassword] = useState("");
@@ -171,11 +171,17 @@ export function ResetPassword({
                 "Reset Password"
               )}
             </button>
-            {state.message && (
-              <p className="bg-red-100 text-red-700 font-semibold rounded-xl p-3 text-sm text-center border border-red-400 shadow-xs">
-                <span className="inline-block mr-1">⚠️</span> {state.message}
-              </p>
-            )}
+           {state?.message?.trim()
+  ? state.message === "Password updated successfully" ? (
+      <p className="bg-blue-100 text-blue-500 font-semibold rounded-xl p-3 text-sm text-center border border-blue-500 shadow-xs">
+        <span className="inline-block mr-1" /> {state.message}!
+      </p>
+    ) : (
+      <p className="bg-red-100 text-red-700 font-semibold rounded-xl p-3 text-sm text-center border border-red-400 shadow-xs">
+        <span className="inline-block mr-1">⚠️</span> {state.message}
+      </p>
+    )
+  : null}
           </form>
         </div>
       </div>

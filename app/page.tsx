@@ -14,13 +14,6 @@ export default function Home() {
           >
             Market
           </h4>
-          <div className="absolute pl-[70px] sm:pl-[85px] md:pl-24 -top-1 sm:-top-2  z-20 ">
-            <img
-              src="/icon-market-dark.png"
-              className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6  rounded-full"
-              alt="Market icon"
-            />
-          </div>
         </div>
         <h1
           style={{ fontWeight: "700" }}

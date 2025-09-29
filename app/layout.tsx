@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import './globals.css'; 
 import { inter } from "@/app/ui/fonts";
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -11,7 +11,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}> {children}</body>
+      <body className={`${inter.className} antialiased max-[300px]:break-all bg-neutral-950`}> {children}</body>
     </html>
   );
 }

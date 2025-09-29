@@ -4,13 +4,13 @@ import { Icon } from "@iconify/react";
 export default function Home() {
   return (
     <div
-      className={`text-cyan-50 ${lusitana.className} min-h-screen flex flex-col items-center`}
+      className={` ${lusitana.className} min-h-screen flex flex-col items-center`}
     >
       <main className="flex flex-col gap-8  w-full max-w-[1072px] my-32 px-10 min-h-screen">
         <div className="relative ">
           <h4
             style={{ fontWeight: "700" }}
-            className={`text-base sm:text-xl md:text-2xl border-l-2 pl-2 ${noto.className} `}
+            className={`text-base sm:text-xl md:text-2xl border-l-2  border-l-neutral-950 pl-2 ${noto.className} `}
           >
             Market
           </h4>
@@ -46,7 +46,7 @@ export default function Home() {
         <div className="flex gap-4 items-center flex-col sm:flex-row">
          
           <Link
-            className="rounded-full border-1 border-solid border-gray-50 transition-colors flex items-center justify-center gap-2 hover:bg-neutral-800  text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            className="rounded-full border-1 border-solid border-neutral-550 transition-colors flex items-center justify-center gap-2 hover:bg-neutral-800 bg-neutral-950 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 text-white"
             href="/login"
             target="_parent"
             rel="noopener noreferrer"
@@ -58,16 +58,16 @@ export default function Home() {
           <img
             src="/dashboard-phone.png"
             alt="Image of the phone"
-            className="rounded-lg  h-[400px] absolute z-20  -top-16 -right-1  w-full max-w-[193px] lg:block hidden drop-shadow-xl/25 drop-shadow-white"
+            className="rounded-lg  h-[400px] absolute z-20  -top-16 -right-1  w-full max-w-[193px] lg:block hidden drop-shadow-xl/25 drop-shadow-white border border-neutral-950"
           />
           <img
             src="/dashboard-home.png"
             alt="Image of the dashboard in computer"
-            className="rounded-lg  drop-shadow-xl/25 drop-shadow-white w-full max-w-[950px]"
+            className="rounded-lg  drop-shadow-xl/25 drop-shadow-white w-full max-w-[950px] border border-neutral-950"
           />
         </div>
       </main>
-      <footer className="mt-auto flex items-center justify-center h-20 w-full bg-neutral-900">
+      <footer className="mt-auto flex items-center justify-center h-20 w-full bg-neutral-900 text-white">
         <div className="w-full max-w-[1072px] px-10  flex justify-between flex-wrap gap-3 ">
           <div className="flex gap-6 flex-wrap  ">
             <Link

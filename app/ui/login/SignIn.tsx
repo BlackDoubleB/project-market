@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ResetWrapper } from "./ResetWrapper";
 import { clsx } from "clsx";
 
-export function SignIn() {
+export default function SignIn() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
